@@ -1,0 +1,11 @@
+{   
+    "10.2.0.101": {
+        "commands": [
+            "interface GigabitEthernet1/3",
+            "description aux interface",
+            "no switchport",
+            "ip address 192.168.1.1 255.255.255.0",
+            "no shutdown"
+        ]
+    }
+}

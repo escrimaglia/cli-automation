@@ -1,0 +1,11 @@
+{
+   "devices": [
+      {
+         "host": "X.X.X.X",
+         "username": "user",
+         "password": "password",
+         "device_type": "type",
+         "ssh_config_file": "~/.ssh/config"
+      }
+   ]
+}

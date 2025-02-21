@@ -4,8 +4,9 @@ sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), ".", "..
 import typer
 from typing_extensions import Annotated
 
-from cli_automation import netmiko_app
-from cli_automation import scrapli_app
+from cli_automation import telnet_app
+from cli_automation import tunnel_app
+from cli_automation import ssh_app
 
 __version__ = "1.0.4"
 
@@ -15,8 +16,10 @@ def check_version(value: bool):
         raise typer.Exit()
 
 app = typer.Typer(no_args_is_help=True)
-app.add_typer(netmiko_app.app, name="netmiko")
-app.add_typer(scrapli_app.app, name="scrapli")
+
+app.add_typer(ssh_app.app, name="SSH")
+app.add_typer(telnet_app.app, name="Telnet")
+app.add_typer(tunnel_app.app, name="Tunnel")
 
 
 @app.callback(invoke_without_command=True) 

@@ -16,3 +16,7 @@ class Model(BaseModel):
 class ModelPush(BaseModel):
     devices: Devices
     commands: List[str]
+
+class ModelTelnet(BaseModel):
+    devices: List[Devices]
+    commands: str

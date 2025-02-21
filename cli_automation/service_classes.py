@@ -1,70 +1,73 @@
-# Non Blocking Async Netmiko Class
+# Service classes for the CLI Automation project
 # Ed Scrimaglia
 
 import sys
 import os
-
 sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), '..', '.')))
 import asyncio
-import aiofiles
+#import aiofiles
 from netmiko import ConnectHandler, NetmikoAuthenticationException, NetMikoTimeoutException
 import paramiko
 from pydantic import ValidationError
 from datetime import datetime as dt
-import logging
-from .model import Model, Devices, ModelPush
+#import logging
+from .model import Model, Devices, ModelPush, ModelTelnet
 from typing import List
 import json
+from .clilogging import Logger
+import socks
+import socket
 
 
 class AsyncNetmikoPull():
+    def __new__(cls, set_verbose: dict):
+        proxy_host = "localhost"
+        proxy_port = 1080
+        socks.set_default_proxy(socks.SOCKS5, proxy_host, proxy_port)
+        socket.socket = socks.socksocket
+        return super().__new__(cls)
+
     def __init__(self, set_verbose: dict):
         self.verbose = set_verbose.get('verbose')
         self.logging = set_verbose.get('logging')
         self.single_host = set_verbose.get('single_host')
-        print (f"-> Logging level: {self.logging}")
-        if self.logging is not None:
-            logging.basicConfig(filename='netmiko.log', level=getattr(logging, self.logging.upper(), None))
-            self.logger = logging.getLogger("netmiko")
-            self.logger.info(f"Netmiko log entry created at {dt.now()}")
-        else:
-            self.logger = logging.getLogger("netmiko")
-
+        self.logger = Logger("cla.log",self.logging).set_logger()
+        
 
     async def netmiko_connection(self, device: dict, commands: List[str]) -> str:
         try:
             connection = await asyncio.to_thread(ConnectHandler, **device)
             output = []
             for command in commands:
-                self.logger.info(f"Executing command {command} on device {device['host']}")
+                self.logger.info(f"Executing command {command} on device {device['host'], dt.now()}")
                 result = await asyncio.to_thread(connection.send_command, command, use_textfsm=True)
                 output.append({command: result})
             await asyncio.to_thread(connection.disconnect)
             return output
         except NetmikoAuthenticationException:
-            self.logger.error(f"Error connecting to {device['host']}, authentication error")
-            return (f"Error connecting to {device['host']}, authentication error")
+            self.logger.error(f"Error connecting to {device['host']}, authentication error, {dt.now()}")
+            return (f"** Error connecting to {device['host']}, authentication error")
         except NetMikoTimeoutException:
-            self.logger.error(f"Error connecting to {device['host']}, Timeout error")
-            return (f"Error connecting to {device['host']}, Timeout error")
+            self.logger.error(f"Error connecting to {device['host']}, Timeout error, {dt.now()}")
+            return (f"** Error connecting to {device['host']}, Timeout error")
         except paramiko.ssh_exception.SSHException as ssh_error:
-            self.logger.error(f"Error connecting to {device['host']}, Paramiko {ssh_error}")
-            return (f"Error connecting to {device['host']}, Paramiko {ssh_error}")
+            self.logger.error(f"Error connecting to {device['host']}, Paramiko {ssh_error}, {dt.now()}")
+            return (f"** Error connecting to {device['host']}, Paramiko {ssh_error}")
         except Exception as error:
-            self.logger.error(f"Error connecting to {device['host']}: unexpected {error}")
-            return (f"Error connecting to {device['host']}: unexpected {str(error).replace('\n', ' ')}")
-       
-
+            self.logger.error(f"Error connecting to {device['host']}: unexpected {error}, {dt.now()}")
+            return (f"** Error connecting to {device['host']}: unexpected {str(error).replace('\n', ' ')}")
+        
 
     def data_validation(self, devices: List[Devices], commands: List[str]) -> None:
+        print (devices)
         if self.verbose >= 1:
-            print ("->", "About to execute Data Validation")
+            print ("->", f"About to execute Data Validation for {devices[0].get('host')}")
         try:
             Model(devices=devices, commands=commands)
         except ValidationError as error:
             self.logger.error(f"Data validation error: {error}")
             if self.verbose >= 1:
-                print (" ->", error)
+                print (f" ->, {error}")
             sys.exit(1)
 
 
@@ -84,17 +87,18 @@ class AsyncNetmikoPull():
     
 
 class AsyncNetmikoPushSingle():
+    def __new__(cls, set_verbose: dict):
+        proxy_host = "localhost"
+        proxy_port = 1080
+        socks.set_default_proxy(socks.SOCKS5, proxy_host, proxy_port)
+        socket.socket = socks.socksocket
+        return super().__new__(cls)
+     
     def __init__(self, set_verbose: dict):
         self.verbose = set_verbose.get('verbose')
         self.logging = set_verbose.get('logging')
         self.single_host = set_verbose.get('single_host')
-        print (f"-> Logging level: {self.logging}")
-        if self.logging is not None:
-            logging.basicConfig(filename='netmiko.log', level=getattr(logging, self.logging.upper(), None))
-            self.logger = logging.getLogger("netmiko")
-            self.logger.info(f"Netmiko log entry created at {dt.now()}")
-        else:
-            self.logger = logging.getLogger("netmiko")
+        self.logger = Logger("cla.log",self.logging).set_logger()
 
 
     async def netmiko_connection(self, device: dict, commands: List[str]) -> str:
@@ -102,7 +106,6 @@ class AsyncNetmikoPushSingle():
             connection = await asyncio.to_thread(ConnectHandler, **device)
             output = []
             self.logger.info(f"Configuring the following commands {commands} on device {device['host']}")
-            #result = await asyncio.to_thread(connection.send_config_from_file, config_file=device.get('host')+".txt")
             result = await asyncio.to_thread(connection.send_config_set, commands)
             result += await asyncio.to_thread(connection.save_config)
             output.append(result)
@@ -110,16 +113,16 @@ class AsyncNetmikoPushSingle():
             return output
         except NetmikoAuthenticationException:
             self.logger.error(f"Error connecting to {device['host']}, authentication error")
-            return (f"Error connecting to {device['host']}, authentication error")
+            return (f"** Error connecting to {device['host']}, authentication error")
         except NetMikoTimeoutException:
             self.logger.error(f"Error connecting to {device['host']}, Timeout error")
-            return (f"Error connecting to {device['host']}, Timeout error")
+            return (f"** Error connecting to {device['host']}, Timeout error")
         except paramiko.ssh_exception.SSHException as ssh_error:
             self.logger.error(f"Error connecting to {device['host']}, Paramiko {ssh_error}")
-            return (f"Error connecting to {device['host']}, Paramiko {ssh_error}")
+            return (f"** Error connecting to {device['host']}, Paramiko {ssh_error}")
         except Exception as error:
             self.logger.error(f"Error connecting to {device['host']}: unexpected {error}")
-            return (f"Error connecting to {device['host']}: unexpected {str(error).replace('\n', ' ')}")
+            return (f"** Error connecting to {device['host']}: unexpected {str(error).replace('\n', ' ')}")
 
 
     def data_validation(self, devices: List[Devices], commands: List[str]) -> None:
@@ -130,7 +133,7 @@ class AsyncNetmikoPushSingle():
         except ValidationError as error:
             self.logger.error(f"Data validation error: {error}")
             if self.verbose >= 1:
-                print (" ->", error)
+                print (f" ->, {error}")
             sys.exit(1)
 
 
@@ -147,35 +150,35 @@ class AsyncNetmikoPushSingle():
             output_data.append({"Device": device['host'], "Output": output})
         output_data = output_data[0] if self.single_host else output_data
         
-        if  isinstance(output_data.get('Output'), str):
-            if "Authentication to device failed" in output_data.get('Output'):
-                output_data['Output'] = "Authentication to device failed"
-        elif isinstance(output_data.get('Output'), list):
-            output_data['Output'] = "Successful configuration" if ("Invalid input" or "Error") not in output_data.get('Output')[-1] else "Congiguration failed, check the commands in the configuration file"
+        for output in output_data:
+            if isinstance(output.get('Output'), str):
+                if "Authentication to device failed" in output.get('Output'):
+                    output['Output'] = "Authentication to device failed"
+            elif isinstance(output.get('Output'), list):
+                output['Output'] = "Successful configuration" if ("Invalid input" or "Error") not in output.get('Output')[-1] else "Configuration failed, check the commands in the configuration file"
         
         return json.dumps(output_data, indent=2)
     
-
 class AsyncNetmikoPushMultiple():
+    def __new__(cls, set_verbose: dict):
+        proxy_host = "localhost"
+        proxy_port = 1080
+        socks.set_default_proxy(socks.SOCKS5, proxy_host, proxy_port)
+        socket.socket = socks.socksocket
+        return super().__new__(cls)
+     
     def __init__(self, set_verbose: dict):
         self.verbose = set_verbose.get('verbose')
         self.logging = set_verbose.get('logging')
         self.single_host = set_verbose.get('single_host')
-        print (f"-> Logging level: {self.logging}")
-        if self.logging is not None:
-            logging.basicConfig(filename='netmiko.log', level=getattr(logging, self.logging.upper(), None))
-            self.logger = logging.getLogger("netmiko")
-            self.logger.info(f"Netmiko log entry created at {dt.now()}")
-        else:
-            self.logger = logging.getLogger("netmiko")
-
+        self.logger = Logger("cla.log",self.logging).set_logger()
+      
 
     async def netmiko_connection(self, device: dict, commands: List[str]) -> str:
         try:
             connection = await asyncio.to_thread(ConnectHandler, **device)
             output = []
             self.logger.info(f"Configuring the following commands {commands} on device {device['host']}")
-            #result = await asyncio.to_thread(connection.send_config_from_file, config_file=device.get('host')+".txt")
             result = await asyncio.to_thread(connection.send_config_set, commands)
             result += await asyncio.to_thread(connection.save_config)
             output.append(result)
@@ -183,18 +186,18 @@ class AsyncNetmikoPushMultiple():
             return output
         except NetmikoAuthenticationException:
             self.logger.error(f"Error connecting to {device['host']}, authentication error")
-            return (f"Error connecting to {device['host']}, authentication error")
+            return (f"** Error connecting to {device['host']}, authentication error")
         except NetMikoTimeoutException:
             self.logger.error(f"Error connecting to {device['host']}, Timeout error")
-            return (f"Error connecting to {device['host']}, Timeout error")
+            return (f"** Error connecting to {device['host']}, Timeout error")
         except paramiko.ssh_exception.SSHException as ssh_error:
             self.logger.error(f"Error connecting to {device['host']}, Paramiko {ssh_error}")
-            return (f"Error connecting to {device['host']}, Paramiko {ssh_error}")
+            return (f"** Error connecting to {device['host']}, Paramiko {ssh_error}")
         except Exception as error:
             self.logger.error(f"Error connecting to {device['host']}: unexpected {error}")
-            return (f"Error connecting to {device['host']}: unexpected {str(error).replace('\n', ' ')}")
-
-
+            return (f"** Error connecting to {device['host']}: unexpected {str(error).replace('\n', ' ')}")
+        
+        
     def data_validation(self, devices: Devices, commands: List[str]) -> None:
         if self.verbose >= 1:
             print ("->", f"About to execute Data Validation for {devices.get('host')}")
@@ -203,7 +206,7 @@ class AsyncNetmikoPushMultiple():
         except ValidationError as error:
             self.logger.error(f"Data validation error: {error}")
             if self.verbose >= 1:
-                print (" ->", error)
+                print (f" ->, {error}")
             sys.exit(1)
 
 
@@ -234,143 +237,198 @@ class AsyncNetmikoPushMultiple():
             
         return json.dumps(output_data, indent=2)
 
+# class SyncNetmikoTelnet():
+#     def __new__(cls, set_verbose: dict):
+#         proxy_host = "localhost"
+#         proxy_port = 1080
+#         socks.set_default_proxy(socks.SOCKS5, proxy_host, proxy_port)
+#         socket.socket = socks.socksocket
+#         return super().__new__(cls)
+     
+#     def __init__(self, set_verbose: dict):
+#         self.verbose = set_verbose.get('verbose')
+#         self.logging = set_verbose.get('logging')
+#         self.logger = CliLogging(self.logging).set_logging()
 
-class ManageOutput():
+#     def device_connect(self, device: dict, command: str) -> List[str]:
+#         try:
+#             connection = ConnectHandler(**device)
+#             connection.send_command_timing(device.get('username'))
+#             connection.send_command_timing(device.get('password'))
+#             if device.get('secret'):
+#                 connection.enable()
+#             if self.verbose >=1: # Entrar en modo privilegiado si hay una clave enable
+#                 print("-> Conexión establecida correctamente.")
+#             connection.clear_buffer()
+#             output = connection.send_command_timing(command)
+#             connection.disconnect()
+#             #output = "\n".join(output)
+#             return output
+#         except NetmikoAuthenticationException:
+#             self.logger.error(f"Error connecting to {device['host']}, authentication error, {dt.now()}")
+#             return (f"** Error connecting to {device['host']}, authentication error")
+#         except NetMikoTimeoutException:
+#             self.logger.error(f"Error connecting to {device['host']}, Timeout error, {dt.now()}")
+#             return (f"** Error connecting to {device['host']}, Timeout error")
+#         except paramiko.ssh_exception.SSHException as ssh_error:
+#             self.logger.error(f"Error connecting to {device['host']}, Paramiko {ssh_error}, {dt.now()}")
+#             return (f"** Error connecting to {device['host']}, Paramiko {ssh_error}")
+#         except Exception as error:
+#             self.logger.error(f"Error connecting to {device['host']}: unexpected {error}, {dt.now()}")
+#             return (f"** Error connecting to {device['host']}: unexpected {str(error).replace('\n', ' ')}")
+
+#     def data_validation(self, devices: List[Devices], command: str) -> None:
+#         if self.verbose >= 1:
+#             print ("->", f"About to execute Data Validation for {devices[0].get('host')}")
+#         try:
+#             ModelTelnet(devices=devices, commands=command)
+#         except ValidationError as error:
+#             self.logger.error(f"Data validation error: {error}")
+#             if self.verbose >= 1:
+#                 print (" ->", error)
+#             sys.exit(1)
+
+#     def run(self, data: dict) -> dict:
+#         self.data_validation(data.get('devices'), data.get('command'))
+#         output = []
+#         for device in data.get('devices'):
+#             output.append(f"\nDevice: {device.get('host')}")
+#             if self.verbose >= 1:
+#                 print (f"-> Connecting to device {device['host']} via Telnet, executing command {data.get('command')}")
+#             results = self.device_connect(device, command=data.get('command'))
+#             output.append(results)
+
+#         return  "\n".join(output)
+
+
+class AsyncNetmikoTelnet():
+    def __new__(cls, set_verbose: dict):
+        proxy_host = "localhost"
+        proxy_port = 1080
+        socks.set_default_proxy(socks.SOCKS5, proxy_host, proxy_port)
+        socket.socket = socks.socksocket
+        return super().__new__(cls)
+
     def __init__(self, set_verbose: dict):
-        self.verbose = set_verbose.get('verbose')
-        self.result = set_verbose.get('result')
-        self.time = set_verbose.get('time')
+        self.verbose = set_verbose.get('verbose', 0)
+        self.logging = set_verbose.get('logging', 'INFO')
+        self.logger = Logger("cla.log",self.logging).set_logger()
+
+    async def device_connect(self, device: dict, command: str) -> str:
+        loop = asyncio.get_running_loop()
+        return await loop.run_in_executor(None, self.connect, device, command)
+
+    def connect(self, device: dict, command: str) -> str:
+        try:
+            connection = ConnectHandler(**device)
+            connection.send_command_timing(device.get('username'))
+            connection.send_command_timing(device.get('password'))
+            if device.get('secret'):
+                connection.enable()
+            connection.clear_buffer()
+            output = connection.send_command_timing(command)
+            connection.disconnect()
+            return f"\nDevice: {device['host']}\n{output.strip()}"
+        except NetmikoAuthenticationException:
+            self.logger.error(f"Error connecting to {device['host']}, authentication error, {dt.now()}")
+            return f"** Error connecting to {device['host']}, authentication error"
+        except NetMikoTimeoutException:
+            self.logger.error(f"Error connecting to {device['host']}, Timeout error, {dt.now()}")
+            return f"** Error connecting to {device['host']}, Timeout error"
+        except paramiko.ssh_exception.SSHException as ssh_error:
+            self.logger.error(f"Error connecting to {device['host']}, Paramiko {ssh_error}, {dt.now()}")
+            return f"** Error connecting to {device['host']}, Paramiko {ssh_error}"
+        except Exception as error:
+            self.logger.error(f"Error connecting to {device['host']}: unexpected {error}, {dt.now()}")
+            return f"** Error connecting to {device['host']}: unexpected {str(error).replace('\n', ' ')}"
+
+    async def data_validation(self, devices: List[dict], command: str) -> None:
+        if self.verbose >= 1:
+            print(f"-> About to execute Data Validation")
+        try:
+            ModelTelnet(devices=devices, commands=command)
+        except ValidationError as error:
+            self.logger.error(f"Data validation error: {error}")
+            if self.verbose >= 1:
+                print(f" -> {error}")
+            sys.exit(1)
+
+    async def run(self, data: dict) -> str:
+        await self.data_validation(data.get('devices'), data.get('command'))
+        output = []
+        tasks = []
+        for device in data.get('devices'):
+            tasks.append(self.device_connect(device, data.get('command')))
+            if self.verbose >= 1:
+                print(f"-> Connecting to device {device['host']}, executing command {data.get('command')}")
+        results = await asyncio.gather(*tasks)
+        output.extend(results)
+        self.logger.info("\n".join(output))
+        return "\n".join(output)
 
 
-    async def create_file(self) -> None:
-        async with aiofiles.open("output.json", "w") as f:
-            await f.write(self.result)
-
-
-    def print_verbose(self) -> None:
-        if self.verbose >= 2:
-            print (f"\n{self.result}")
-            print (f"-> Execution time: {self.time}")
-        
-
-class Templates():
-    def __init__(self, set_verbose: dict):
-        self.logging = set_verbose.get('logging')
-        print (f"-> Logging level: {self.logging}")
-        if self.logging is not None:
-            logging.basicConfig(filename='netmiko.log', level=getattr(logging, self.logging.upper(), None))
-            self.logger = logging.getLogger("netmiko")
-            self.logger.info(f"Netmiko log entry created at {dt.now()}")
-        else:
-            self.logger = logging.getLogger("netmiko")
-
-    async def create_template(self, file_name_hosts: str, file_name_commands) -> None:
-        hosts = {   
-            'devices': [
-                {
-                    'host': 'X.X.X.X',
-                    'username': 'user',
-                    'password': 'password',
-                    'device_type': 'type',
-                    'ssh_config_file': '~/.ssh/config'
-                }
-            ]
-        }
-        
-        commands = {
-            'X.X.X.X': {
-                'commands': [
-                    'show version',
-                    'show ip int brief'
-                ]
-            }
-        }
-
-        async with aiofiles.open(file_name_hosts, "w") as file:
-            await file.write(json.dumps(hosts, indent=2))
-        self.logger.info(f"Template {file_name_hosts} created")
-
-        async with aiofiles.open(file_name_commands, "w") as file:
-            await file.write(json.dumps(commands, indent=2))
-        self.logger.info(f"Template {file_name_commands} created")
-        result = {"result": f"Templates '{file_name_hosts}' and '{file_name_commands}' created"}
-
-        return json.dumps(result, indent=2)
-
-
-class SyncScrapliPull:
-    def __new__(cls):
-        from scrapli import Scrapli
-        cls.scrapli = Scrapli
+class SetSOCKS5Tunnel():
+    def __new__(cls, set_verbose: dict):
+        import subprocess
+        cls.subprocess = subprocess
         return super().__new__(cls)
     
-    def device_connect(self, host, username, password, commands):
-        device = {
-            "host": host,
-            "auth_username": username,
-            "auth_password": password,
-            "auth_strict_key": False,
-            "ssh_config_file": "~/.ssh/config",
-            "platform": "cisco_iosxe",
-        }
-
-        conn = self.Scrapli(**device)
-        conn.open()
-        print (f"-> Connected to {host}, commands: {commands}")
-        list_results = []
-        dict_results = {}
-        for command in commands:
-            results = conn.send_command(command)
-            structured_result = results.textfsm_parse_output()
-            list_results.append({command: structured_result})
-        dict_results.update({host: list_results})
-        conn.close()
-        return dict_results
-
-
-class AsyncScrapliPull:
-    def __new__(cls, set_verbose: dict):
-        from scrapli.driver.core import AsyncIOSXEDriver
-        cls.AsyncIOSXEDriver = AsyncIOSXEDriver
-        return super().__new__(cls)
-
+    
     def __init__(self, set_verbose: dict):
         self.verbose = set_verbose.get('verbose')
         self.logging = set_verbose.get('logging')
-        self.single_host = set_verbose.get('single_host')
-        print (f"-> Logging level: {self.logging}")
-        if self.logging is not None:
-            logging.basicConfig(filename='netmiko.log', level=getattr(logging, self.logging.upper(), None))
-            self.logger = logging.getLogger("netmiko")
-            self.logger.info(f"Netmiko log entry created at {dt.now()}")
-        else:
-            self.logger = logging.getLogger("netmiko")
-       
+        self.logger = Logger("cla.log",self.logging).set_logger()
 
-    async def device_connect(self, data: dict) -> dict:
-        devices = data.get('devices')
-        commands = data.get('commands')
-        dict_list = []
+    async def set_tunnel(self, jump_user: str, jump_host: str, port: int = 1080):        
+        if self.verbose >= 1:
+            print(f"-> Setting up the SOCKS5 tunnel to the Bastion Host {jump_user}@{jump_host}")
+        try:
+            command_pre = ["lsof", "-t", "-i:1080"]
+            check_process = await asyncio.create_subprocess_exec(
+               *command_pre,
+                stdout=asyncio.subprocess.PIPE, stderr=asyncio.subprocess.PIPE
+            )
+            stdout, _ = await check_process.communicate()
+            if stdout:
+                pid = stdout.decode().strip()
+                self.logger.info(f"SOCKS5 tunnel already running (PID {pid}")
+                return f"** SOCKS5 tunnel already running (PID {pid})"
 
-        async def asyncro(device):
+            command = ["ssh", "-D", str(port), "-N", "-C", "-f", f"{jump_user}@{jump_host}"]
+            process = await asyncio.create_subprocess_exec(
+                *command, stdout=asyncio.subprocess.DEVNULL, stderr=asyncio.subprocess.PIPE
+            )
+            self.logger.info(f"SOCKS5 tunnel started successfully")
+            return f"** SOCKS5 tunnel started successfully"
+        except Exception as error:
+            self.logger.error(f"Error setting up SOCKS5 tunnel: {error}")
+            sys.exit(1)
+
+
+    async def kill_tunnel(self, port: int = 1080):
+        pid_result = self.subprocess.run(["lsof", "-t", "-i:1080"], capture_output=True, text=True)
+        if pid_result.stdout:
+            pid = pid_result.stdout.strip()
             try:
-                if device.get('platform') == 'cisco_iosxe':
-                    driver = self.AsyncIOSXEDriver
-                    device.pop('platform')
-                async with driver(**device) as conn:
-                    list_results = []
-                    for command in commands:
-                        response = await conn.send_command(command)
-                        list_results.append({command: response.textfsm_parse_output()})
-                    dict_list.append({'Device': device['host'], 'Output': list_results})
+                command = ["kill", "-9", pid]
+                if self.verbose >= 1:
+                    print (f"-> Killing the SOCKS5 tunnel to the Bastion Host, local port {port}, process {pid}")
+                process = await asyncio.create_subprocess_exec(
+                    *command,
+                    stdout=asyncio.subprocess.PIPE,
+                    stderr=asyncio.subprocess.PIPE
+                )
+                stdout, stderr = await process.communicate()
+                if process.returncode == 0:
+                    result = f"\n** SOCKS5 tunnel (PID {pid}) killed successfully"
+                    self.logger.info(f"SOCKS5 tunnel (PID {pid}) killed successfully")
+                else:
+                    result = f"\n** Error executing the command:\n{stderr.decode().strip()}"
+                    self.logger.error(f"Error executing the command:\n{stderr.decode().strip()}")
             except Exception as error:
-                print(f"Error al conectar con {device['host']}: {error}")
-
-        tasks = []
-        for device in devices:
-            tasks.append(asyncro(device))
-            if self.verbose >= 1:
-                print (f"-> Connecting to device {device['host']}, executing commands {commands}")
-        await asyncio.gather(*tasks)
-
-        return json.dumps(dict_list, indent=2)
+                self.logger.error(f"Error executing the command: {error}")
+                sys.exit(1)
+        else:
+            result = f"\n** No SOCKS5 tunnel to kill"
+            self.logger.info("No SOCKS5 tunnel to kill")
+        return result

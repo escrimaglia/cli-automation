@@ -11,27 +11,20 @@ import paramiko
 from pydantic import ValidationError
 from datetime import datetime as dt
 #import logging
-from .model import Model, Devices, ModelPush, ModelTelnet
+from .model_srv import Model, Devices, ModelPush, ModelTelnet
 from typing import List
 import json
-from .clilogging import Logger
-import socks
-import socket
-
+from .files_srv import ManageFiles
+from .proxy_srv import TunnelProxy
 
 class AsyncNetmikoPull():
-    def __new__(cls, set_verbose: dict):
-        proxy_host = "localhost"
-        proxy_port = 1080
-        socks.set_default_proxy(socks.SOCKS5, proxy_host, proxy_port)
-        socket.socket = socks.socksocket
-        return super().__new__(cls)
-
     def __init__(self, set_verbose: dict):
         self.verbose = set_verbose.get('verbose')
         self.logging = set_verbose.get('logging')
         self.single_host = set_verbose.get('single_host')
-        self.logger = Logger("cla.log",self.logging).set_logger()
+        self.logger = set_verbose.get('logger')
+        tunnel = TunnelProxy(proxy_host="localhost", proxy_port=1080, logger=self.logger, verbose=self.verbose)
+        tunnel.set_proxy()
         
 
     async def netmiko_connection(self, device: dict, commands: List[str]) -> str:
@@ -39,27 +32,26 @@ class AsyncNetmikoPull():
             connection = await asyncio.to_thread(ConnectHandler, **device)
             output = []
             for command in commands:
-                self.logger.info(f"Executing command {command} on device {device['host'], dt.now()}")
+                self.logger.info(f"Executing command {command} on device {device['host']}")
                 result = await asyncio.to_thread(connection.send_command, command, use_textfsm=True)
                 output.append({command: result})
             await asyncio.to_thread(connection.disconnect)
             return output
         except NetmikoAuthenticationException:
-            self.logger.error(f"Error connecting to {device['host']}, authentication error, {dt.now()}")
+            self.logger.error(f"Error connecting to {device['host']}, authentication error")
             return (f"** Error connecting to {device['host']}, authentication error")
         except NetMikoTimeoutException:
-            self.logger.error(f"Error connecting to {device['host']}, Timeout error, {dt.now()}")
+            self.logger.error(f"Error connecting to {device['host']}, Timeout error")
             return (f"** Error connecting to {device['host']}, Timeout error")
         except paramiko.ssh_exception.SSHException as ssh_error:
-            self.logger.error(f"Error connecting to {device['host']}, Paramiko {ssh_error}, {dt.now()}")
+            self.logger.error(f"Error connecting to {device['host']}, Paramiko {ssh_error}")
             return (f"** Error connecting to {device['host']}, Paramiko {ssh_error}")
         except Exception as error:
-            self.logger.error(f"Error connecting to {device['host']}: unexpected {error}, {dt.now()}")
+            self.logger.error(f"Error connecting to {device['host']}: unexpected {error}")
             return (f"** Error connecting to {device['host']}: unexpected {str(error).replace('\n', ' ')}")
         
 
     def data_validation(self, devices: List[Devices], commands: List[str]) -> None:
-        print (devices)
         if self.verbose >= 1:
             print ("->", f"About to execute Data Validation for {devices[0].get('host')}")
         try:
@@ -87,18 +79,13 @@ class AsyncNetmikoPull():
     
 
 class AsyncNetmikoPushSingle():
-    def __new__(cls, set_verbose: dict):
-        proxy_host = "localhost"
-        proxy_port = 1080
-        socks.set_default_proxy(socks.SOCKS5, proxy_host, proxy_port)
-        socket.socket = socks.socksocket
-        return super().__new__(cls)
-     
     def __init__(self, set_verbose: dict):
         self.verbose = set_verbose.get('verbose')
         self.logging = set_verbose.get('logging')
         self.single_host = set_verbose.get('single_host')
-        self.logger = Logger("cla.log",self.logging).set_logger()
+        self.logger = set_verbose.get('logger')
+        #self.logger = Logger(level=self.logging).set_logger()
+        TunnelProxy(proxy_host="localhost", proxy_port=1080, logger=self.logger).set_proxy()
 
 
     async def netmiko_connection(self, device: dict, commands: List[str]) -> str:
@@ -160,18 +147,13 @@ class AsyncNetmikoPushSingle():
         return json.dumps(output_data, indent=2)
     
 class AsyncNetmikoPushMultiple():
-    def __new__(cls, set_verbose: dict):
-        proxy_host = "localhost"
-        proxy_port = 1080
-        socks.set_default_proxy(socks.SOCKS5, proxy_host, proxy_port)
-        socket.socket = socks.socksocket
-        return super().__new__(cls)
-     
     def __init__(self, set_verbose: dict):
         self.verbose = set_verbose.get('verbose')
         self.logging = set_verbose.get('logging')
         self.single_host = set_verbose.get('single_host')
-        self.logger = Logger("cla.log",self.logging).set_logger()
+        self.logger = set_verbose.get('logger')
+        #self.logger = Logger(level=self.logging).set_logger()
+        TunnelProxy(proxy_host="localhost", proxy_port=1080, logger=self.logger).set_proxy()
       
 
     async def netmiko_connection(self, device: dict, commands: List[str]) -> str:
@@ -302,17 +284,12 @@ class AsyncNetmikoPushMultiple():
 
 
 class AsyncNetmikoTelnet():
-    def __new__(cls, set_verbose: dict):
-        proxy_host = "localhost"
-        proxy_port = 1080
-        socks.set_default_proxy(socks.SOCKS5, proxy_host, proxy_port)
-        socket.socket = socks.socksocket
-        return super().__new__(cls)
-
     def __init__(self, set_verbose: dict):
         self.verbose = set_verbose.get('verbose', 0)
-        self.logging = set_verbose.get('logging', 'INFO')
-        self.logger = Logger("cla.log",self.logging).set_logger()
+        #self.logging = set_verbose.get('logging', 'INFO')
+        self.logger = set_verbose.get('logger')
+        #self.logger = Logger(level=self.logging).set_logger()
+        TunnelProxy(proxy_host="localhost", proxy_port=1080, logger=self.logger).set_proxy()
 
     async def device_connect(self, device: dict, command: str) -> str:
         loop = asyncio.get_running_loop()
@@ -363,72 +340,124 @@ class AsyncNetmikoTelnet():
                 print(f"-> Connecting to device {device['host']}, executing command {data.get('command')}")
         results = await asyncio.gather(*tasks)
         output.extend(results)
-        self.logger.info("\n".join(output))
         return "\n".join(output)
 
 
-class SetSOCKS5Tunnel():
-    def __new__(cls, set_verbose: dict):
-        import subprocess
-        cls.subprocess = subprocess
-        return super().__new__(cls)
+# class SetSocks5Tunnel():
+#     def __new__(cls, set_verbose: dict):
+#         import subprocess
+#         cls.subprocess = subprocess
+#         return super().__new__(cls)
     
     
-    def __init__(self, set_verbose: dict):
-        self.verbose = set_verbose.get('verbose')
-        self.logging = set_verbose.get('logging')
-        self.logger = Logger("cla.log",self.logging).set_logger()
-
-    async def set_tunnel(self, jump_user: str, jump_host: str, port: int = 1080):        
-        if self.verbose >= 1:
-            print(f"-> Setting up the SOCKS5 tunnel to the Bastion Host {jump_user}@{jump_host}")
-        try:
-            command_pre = ["lsof", "-t", "-i:1080"]
-            check_process = await asyncio.create_subprocess_exec(
-               *command_pre,
-                stdout=asyncio.subprocess.PIPE, stderr=asyncio.subprocess.PIPE
-            )
-            stdout, _ = await check_process.communicate()
-            if stdout:
-                pid = stdout.decode().strip()
-                self.logger.info(f"SOCKS5 tunnel already running (PID {pid}")
-                return f"** SOCKS5 tunnel already running (PID {pid})"
-
-            command = ["ssh", "-D", str(port), "-N", "-C", "-f", f"{jump_user}@{jump_host}"]
-            process = await asyncio.create_subprocess_exec(
-                *command, stdout=asyncio.subprocess.DEVNULL, stderr=asyncio.subprocess.PIPE
-            )
-            self.logger.info(f"SOCKS5 tunnel started successfully")
-            return f"** SOCKS5 tunnel started successfully"
-        except Exception as error:
-            self.logger.error(f"Error setting up SOCKS5 tunnel: {error}")
-            sys.exit(1)
+#     def __init__(self, set_verbose: dict):
+#         self.verbose = set_verbose.get('verbose')
+#         self.logging = set_verbose.get('logging')
+#         self.logger = set_verbose.get('logger')
 
 
-    async def kill_tunnel(self, port: int = 1080):
-        pid_result = self.subprocess.run(["lsof", "-t", "-i:1080"], capture_output=True, text=True)
-        if pid_result.stdout:
-            pid = pid_result.stdout.strip()
-            try:
-                command = ["kill", "-9", pid]
-                if self.verbose >= 1:
-                    print (f"-> Killing the SOCKS5 tunnel to the Bastion Host, local port {port}, process {pid}")
-                process = await asyncio.create_subprocess_exec(
-                    *command,
-                    stdout=asyncio.subprocess.PIPE,
-                    stderr=asyncio.subprocess.PIPE
-                )
-                stdout, stderr = await process.communicate()
-                if process.returncode == 0:
-                    result = f"\n** SOCKS5 tunnel (PID {pid}) killed successfully"
-                    self.logger.info(f"SOCKS5 tunnel (PID {pid}) killed successfully")
-                else:
-                    result = f"\n** Error executing the command:\n{stderr.decode().strip()}"
-                    self.logger.error(f"Error executing the command:\n{stderr.decode().strip()}")
-            except Exception as error:
-                self.logger.error(f"Error executing the command: {error}")
-                sys.exit(1)
-        else:
-            result = f"\n** No SOCKS5 tunnel to kill"
-            self.logger.info("No SOCKS5 tunnel to kill")
-        return result
+#     async def set_tunnel(self, jump_user: str, jump_host: str, port: int = 1080):        
+#         if self.verbose >= 1:
+#             print(f"-> Setting up the SOCKS5 tunnel to the Bastion Host {jump_user}@{jump_host}, local port {port}")
+#         try:
+#             command_pre = ["lsof", "-t", "-i:1080"]
+#             check_process = await asyncio.create_subprocess_exec(
+#                *command_pre,
+#                 stdout=asyncio.subprocess.PIPE, stderr=asyncio.subprocess.PIPE
+#             )
+#             stdout, _ = await check_process.communicate()
+#             if stdout:
+#                 pid = stdout.decode().strip()
+#                 self.logger.info(f"SOCKS5 tunnel already running (PID {pid}")
+#                 return f"** SOCKS5 tunnel already running (PID {pid})"
+
+#             command = ["ssh", "-D", str(port), "-N", "-C", "-f", f"{jump_user}@{jump_host}"]
+#             await asyncio.create_subprocess_exec(
+#                 *command, stdout=asyncio.subprocess.DEVNULL, stderr=asyncio.subprocess.PIPE
+#             )
+#             try:
+#                 mf = ManageFiles(self.logger)
+#                 content_file = await mf.read_file("config.json")
+#                 dic_content_file = json.loads(content_file)
+#                 dic_content_file['tunnel'] = True
+#             except Exception as error:
+#                 self.logger.error(f"Error reading the file constantes: {error}")
+#                 sys.exit(1)
+#             await mf.create_file("config.json", json.dumps(dic_content_file, indent=2))
+#             self.logger.info(f"SOCKS5 tunnel started successfully at {jump_user}@{jump_host}:{port}")
+#             return f"** SOCKS5 tunnel started successfully at {jump_user}@{jump_host}:{port}. Next step: configure the SOCKS5 Proxy in the application"
+#         except Exception as error:
+#             self.logger.error(f"Error setting up SOCKS5 tunnel: {error}")
+#             sys.exit(1)
+
+
+#     async def kill_tunnel(self, port: int = 1080):
+#         pid_result = self.subprocess.run(["lsof", "-t", "-i:1080"], capture_output=True, text=True)
+#         if pid_result.stdout:
+#             pid = pid_result.stdout.strip()
+#             try:
+#                 command = ["kill", "-9", pid]
+#                 if self.verbose >= 1:
+#                     print (f"-> Killing the SOCKS5 tunnel to the Bastion Host, local port {port}, process {pid}")
+#                 process = await asyncio.create_subprocess_exec(
+#                     *command,
+#                     stdout=asyncio.subprocess.PIPE,
+#                     stderr=asyncio.subprocess.PIPE
+#                 )
+#                 stdout, stderr = await process.communicate()
+#                 if process.returncode == 0:
+#                     try:
+#                         mf = ManageFiles(self.logger)
+#                         content_file = await mf.read_file("config.json")
+#                         dic_content_file = json.loads(content_file)
+#                         dic_content_file['tunnel'] = False
+#                     except Exception as error:
+#                         self.logger.error(f"Error reading the file constantes: {error}")
+#                         sys.exit(1)
+#                     await mf.create_file("config.json", json.dumps(dic_content_file, indent=2))
+#                     result = f"\n** SOCKS5 tunnel (PID {pid}) killed successfully"
+#                     self.logger.info(f"SOCKS5 tunnel (PID {pid}) killed successfully")
+#                 else:
+#                     result = f"\n** Error executing the command:\n{stderr.decode().strip()}"
+#                     self.logger.error(f"Error executing the command:\n{stderr.decode().strip()}")
+#             except Exception as error:
+#                 self.logger.error(f"Error executing the command: {error}")
+#                 sys.exit(1)
+#         else:
+#             result = f"\n** No SOCKS5 tunnel to kill"
+#             self.logger.info("No SOCKS5 tunnel to kill")
+#         return result
+    
+# class Templates():
+#     def __init__(self, set_verbose: dict):
+#         self.logging = set_verbose.get('logging')
+#         self.logger = set_verbose.get('logger')
+#         #self.logger = Logger(level=self.logging).set_logger()
+#         self.file = ManageFiles(logger=self.logger)
+
+#     async def create_template(self, file_name_hosts: str, file_name_commands) -> None:
+#         hosts = {   
+#             'devices': [
+#                 {
+#                     'host': 'X.X.X.X',
+#                     'username': 'user',
+#                     'password': 'password',
+#                     'device_type': 'type',
+#                     'session_log': 'cla.log',
+#                     'ssh_config_file': '~/.ssh/config'
+#                 }
+#             ]
+#         }
+        
+#         commands = {
+#             'X.X.X.X': {
+#                 'commands': [
+#                     'show version',
+#                     'show ip int brief'
+#                 ]
+#             }
+#         }
+
+#         await self.file.create_file(file_name_hosts, json.dumps(hosts, indent=2))
+#         await self.file.create_file(file_name_commands, json.dumps(commands, indent=2))
+       

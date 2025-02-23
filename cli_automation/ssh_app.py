@@ -9,13 +9,22 @@ from typing_extensions import Annotated
 from .service_classes import AsyncNetmikoPull, AsyncNetmikoPushSingle, AsyncNetmikoPushMultiple
 import asyncio
 from typing import List
-from .enum_classes import Logging, DeviceType
+from .enums_srv import Logging, DeviceType
 import json
 from .progress_bar import ProgressBar
 from datetime import datetime
-from .create_file import CreateFile
+from .files_srv import ManageFiles
+from .logging import Logger
+from pathlib import Path
 
 app = typer.Typer(no_args_is_help=True)
+logger = Logger()
+
+def validate_file():
+    file_name = Path("config.json")
+    if not file_name.exists():
+        print(f"** File {file_name} not found. Please run the command 'cla templates -v' to create the file\n")
+        raise SystemExit(1) 
 
 
 @app.command("pullsingle", help="Pull data from a Single Host", no_args_is_help=True)
@@ -28,7 +37,7 @@ def pull_single_host(
         device_type: Annotated[DeviceType, typer.Option("--type", "-t", help="device type", rich_help_panel="Connection Parameters", case_sensitive=False)] = "generic_telnet",
         port: Annotated[int, typer.Option("--port", "-p", help="port", rich_help_panel="Connection Parameters", case_sensitive=False)] = 22,
         verbose: Annotated[int, typer.Option("--verbose", "-v", count=True, help="Verbose level",rich_help_panel="Additional parameters")] = 0,
-        log: Annotated[Logging, typer.Option("--log", "-l", help="Log level", rich_help_panel="Additional parameters", case_sensitive=True)] = None,
+        log: Annotated[Logging, typer.Option("--log", "-l", help="Log level", rich_help_panel="Additional parameters", case_sensitive=True)] = Logging.info.value,
         global_delay: Annotated[float, typer.Option("--delay", "-d", help="port", rich_help_panel="Connection Parameters", case_sensitive=False)] = 0.1,
         ssh_config: Annotated[str, typer.Option("--cfg", "-s", help="ssh config file", rich_help_panel="Connection Parameters", case_sensitive=False)] = None,
 
@@ -44,6 +53,7 @@ def pull_single_host(
                     "secret": secret,
                     "device_type": device_type.value,
                     "port": port,
+                    "session_log": "cla.log",
                     "ssh_config_file": ssh_config,
                     "global_delay_factor": global_delay
                 }
@@ -51,12 +61,12 @@ def pull_single_host(
             "commands": commands
         }
 
-        set_verbose = {"verbose": verbose, "logging": log.value if log != None else None, "single_host": True}
+        set_verbose = {"verbose": verbose, "logging": log.value if log != None else None, "single_host": True, "logger": logger.logger}
         start = datetime.now()
         netm = AsyncNetmikoPull(set_verbose=set_verbose)
         result = await netm.run(datos)
         end = datetime.now()
-        cf = CreateFile(set_verbose=set_verbose)
+        cf = ManageFiles(logger.logger)
         await cf.create_file("output.json", result)
         if verbose >= 2:
             print (f"\n{result}")
@@ -71,7 +81,7 @@ def pull_multiple_host(
         devices: Annotated[typer.FileText, typer.Option("--hosts", "-h", help="group of hosts", metavar="FILENAME Json file", rich_help_panel="Hosts File Parameter", case_sensitive=False)],
         commands: Annotated[List[str], typer.Option("--cmd", "-c", help="commands to execute on device", rich_help_panel="Device Commands Parameter", case_sensitive=False)],
         verbose: Annotated[int, typer.Option("--verbose", "-v", count=True, help="Verbose level",rich_help_panel="Additional parameters")] = 0,
-        log: Annotated[Logging, typer.Option("--log", "-l", help="Log level", rich_help_panel="Additional parameters", case_sensitive=False)] = None,
+        log: Annotated[Logging, typer.Option("--log", "-l", help="Log level", rich_help_panel="Additional parameters", case_sensitive=False)] = Logging.info.value,
     ):
     
     async def process():
@@ -90,12 +100,12 @@ def pull_multiple_host(
             raise typer.Exit(code=1)
         
         datos_devices["commands"] = commands
-        set_verbose = {"verbose": verbose, "logging": log.value if log != None else None, "single_host": False}
+        set_verbose = {"verbose": verbose, "logging": log.value if log != None else None, "single_host": False, "logger": logger.logger}
         start = datetime.now()
         netm = AsyncNetmikoPull(set_verbose=set_verbose)
         result = await netm.run(datos_devices)
         end = datetime.now()
-        cf = CreateFile(set_verbose=set_verbose)
+        cf = ManageFiles(logger.logger)
         await cf.create_file("output.json", result)
         if verbose >= 2:
             print (f"\n{result}")
@@ -114,7 +124,7 @@ def push_single_host(
         cmd_file: Annotated[typer.FileText, typer.Option("--cmdf", "-f", help="commands to configure on device", metavar="FILENAME Json file",rich_help_panel="Configuration File Parameters", case_sensitive=False)] = None,
         ssh_config: Annotated[str, typer.Option("--cfg", "-s", help="ssh config file", rich_help_panel="Connection Parameters", case_sensitive=False)] = None,
         verbose: Annotated[int, typer.Option("--verbose", "-v", count=True, help="Verbose level",rich_help_panel="Additional parameters")] = 0,
-        log: Annotated[Logging, typer.Option("--log", "-l", help="Log level", rich_help_panel="Additional parameters", case_sensitive=False)] = None,
+        log: Annotated[Logging, typer.Option("--log", "-l", help="Log level", rich_help_panel="Additional parameters", case_sensitive=False)] = Logging.info.value,
     ):
 
     if commands == None and cmd_file == None:
@@ -153,12 +163,12 @@ def push_single_host(
             "commands": datos_cmds
         }
 
-        set_verbose = {"verbose": verbose, "logging": log.value if log != None else None, "single_host": True}
+        set_verbose = {"verbose": verbose, "logging": log.value if log != None else None, "single_host": True, "logger": logger.logger}
         start = datetime.now()
         netm = AsyncNetmikoPushSingle(set_verbose=set_verbose)
         result = await netm.run(datos)
         end = datetime.now()
-        cf = CreateFile(set_verbose=set_verbose)
+        cf = ManageFiles(logger.logger)
         await cf.create_file("output.json", result)
         if verbose >= 2:
             print (f"\n{result}")
@@ -173,7 +183,7 @@ def push_multiple_host(
         devices: Annotated[typer.FileText, typer.Option("--hosts", "-h", help="group of hosts", metavar="FILENAME Json file", rich_help_panel="Hosts File Parameters", case_sensitive=False)],
         cmd_file: Annotated[typer.FileText, typer.Option("--cmdf", "-f", help="commands to configure on device", metavar="FILENAME Json file",rich_help_panel="Configuration File Parameters", case_sensitive=False)],
         verbose: Annotated[int, typer.Option("--verbose", "-v", count=True, help="Verbose level",rich_help_panel="Additional parameters")] = 0,
-        log: Annotated[Logging, typer.Option("--log", "-l", help="Log level", rich_help_panel="Additional parameters", case_sensitive=False)] = None,
+        log: Annotated[Logging, typer.Option("--log", "-l", help="Log level", rich_help_panel="Additional parameters", case_sensitive=False)] = Logging.info.value,
     ):
 
     async def process():
@@ -212,36 +222,16 @@ def push_multiple_host(
             }
             datos.append(dic)
 
-        set_verbose = {"verbose": verbose, "logging": log.value if log != None else None, "single_host": False}
+        set_verbose = {"verbose": verbose, "logging": log.value if log != None else None, "single_host": False, "logger": logger.logger}
         start = datetime.now()
         netm = AsyncNetmikoPushMultiple(set_verbose=set_verbose)
         result = await netm.run(datos)
         end = datetime.now()
-        cf = CreateFile(set_verbose=set_verbose)
+        cf = ManageFiles(logger.logger)
         await cf.create_file("output.json", result)
         if verbose >= 2:
             print (f"\n{result}")
             print (f"-> Execution time: {end - start}")
-
-    progress = ProgressBar()
-    asyncio.run(progress.run_with_spinner(process))
-
-
-@app.command("templates", help="Download templates to create hosts and config commands files with the necessary information", no_args_is_help=True)
-def download_templates(
-        verbose: Annotated[int, typer.Option("--verbose", "-v", count=True, help="Verbose level",rich_help_panel="Additional parameters")] = 0,
-        log: Annotated[Logging, typer.Option("--log", "-l", help="Log level", rich_help_panel="Additional parameters", case_sensitive=False)] = None,
-    ):
-    from templates import Templates
-   
-    async def process():
-        hosts_file_name = "template_netmiko_hosts.json"
-        commands_file_name = "template_commands.json"
-        set_verbose = {"logging": log.value if log != None else None}
-        template = Templates(set_verbose=set_verbose)
-        result = await template.create_template(hosts_file_name, commands_file_name)
-        if verbose >= 2:
-            print (f"\n{result}")
 
     progress = ProgressBar()
     asyncio.run(progress.run_with_spinner(process))
@@ -252,6 +242,7 @@ def callback(ctx: typer.Context):
     """
     Access devices using SSH protocol
     """
+    validate_file()
     typer.echo(f"-> About to execute {ctx.invoked_subcommand} sub-command")
     
 

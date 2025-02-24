@@ -1,0 +1,12 @@
+{
+   "X.X.X.X": {
+      "commands": [
+         "enter privilege mode",
+         "enter configuration mode",
+         "config comand 1",
+         "config command 2",
+         "exit configuration mode",
+         "save configuration command"
+      ]
+   }
+}

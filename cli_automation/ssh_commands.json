@@ -1,0 +1,12 @@
+{
+    "10.2.0.101": {
+       "commands": [
+          "no interface loopback 4"
+       ]
+    },
+    "10.2.0.102": {
+       "commands": [
+          "no interface loopback 3"
+       ]
+    }
+ }

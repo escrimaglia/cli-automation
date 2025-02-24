@@ -4,13 +4,15 @@
             "host": "10.2.0.101",
             "username": "netsim",
             "password": "netsim1234",
-            "device_type": "generic_telnet"
+            "secret": "netsim1234",
+            "device_type": "cisco_ios"
         },
         {
             "host": "10.2.0.102",
             "username": "netsim",
             "password": "netsim1234",
-            "device_type": "generic_telnet"
+            "secret": "netsim1234",
+            "device_type": "cisco_ios"
         }
     ]
 }

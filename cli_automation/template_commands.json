@@ -1,8 +1,0 @@
-{
-  "X.X.X.X": {
-    "commands": [
-      "show version",
-      "show ip int brief"
-    ]
-  }
-}

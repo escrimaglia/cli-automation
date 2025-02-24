@@ -1,7 +1,7 @@
 from pydantic import BaseModel, Field
 from typing import List
 
-class Devices(BaseModel):
+class Device(BaseModel):
     host: str
     username: str
     password: str
@@ -10,13 +10,21 @@ class Devices(BaseModel):
     ssh_config_file: str | None = None
 
 class Model(BaseModel):
-    devices: List[Devices]
+    devices: List[Device]
     commands: List[str]
 
-class ModelPush(BaseModel):
-    devices: Devices
+class ModelSshPush(BaseModel):
+    device: Device
     commands: List[str]
 
-class ModelTelnet(BaseModel):
-    devices: List[Devices]
-    commands: str
+class ModelSshPull(BaseModel):
+    device: Device
+    commands: List[str]
+
+class ModelTelnetPush(BaseModel):
+    device: Device
+    commands: List[str]
+
+class ModelTelnetPull(BaseModel):
+    devices: List[Device]
+    command: str

@@ -3,18 +3,18 @@
 
 import sys
 import os
-sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), '..', ".")))
 import typer
 from typing_extensions import Annotated
-from typing import List
 from .enums_srv import Logging
 from .progress_bar import ProgressBar
 from datetime import datetime
-from .telnet_srv import AsyncNetmikoTelnet
+from .telnet_srv import AsyncNetmikoTelnetPull, AsyncNetmikoTelnetPush
 import asyncio
 import json
 from .logging import Logger
 from pathlib import Path
+
+sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), '..', ".")))
 
 app = typer.Typer(no_args_is_help=True)
 logger = Logger()
@@ -25,63 +25,14 @@ def validate_file():
         print(f"** File {file_name} not found. Please run the command 'cla templates -v' to create the file\n")
         raise SystemExit(1) 
 
-@app.command("pullsingle", help="Pull data from a Single Host", no_args_is_help=True)
-def pull_single_host(
-        host: Annotated[str, typer.Option("--host", "-h", help="host ip address", rich_help_panel="Connection Parameters", case_sensitive=False)],
-        user: Annotated[str, typer.Option("--user", "-u", help="username", rich_help_panel="Connection Parameters", case_sensitive=False)],
-        password: Annotated[str, typer.Option(prompt=True, help="password", metavar="password must be provided by keyboard",rich_help_panel="Connection Parameters", case_sensitive=False, hide_input=True, hidden=True)],
-        command: Annotated[str, typer.Option("--cmd", "-c", help="commands to execute on device", rich_help_panel="Device Commands Parameter", case_sensitive=False)],
-        secret: Annotated[str, typer.Option(prompt=True, help="secret", metavar="password must be provided by keyboard to raise privileges",rich_help_panel="Connection Parameters", case_sensitive=False, hide_input=True, hidden=True)] = None,
-        device_type: Annotated[str, typer.Option("--type", "-t", help="device type", rich_help_panel="Connection Parameters", case_sensitive=False)] = "generic_telnet",
-        port: Annotated[int, typer.Option("--port", "-p", help="port", rich_help_panel="Connection Parameters", case_sensitive=False)] = 23,
-        verbose: Annotated[int, typer.Option("--verbose", "-v", count=True, help="Verbose level",rich_help_panel="Additional parameters")] = 0,
-        log: Annotated[Logging, typer.Option("--log", "-l", help="Log level", rich_help_panel="Additional parameters", case_sensitive=True)] = Logging.info.value,
-        output: Annotated[typer.FileTextWrite, typer.Option("--output", "-o", help="output file", rich_help_panel="Additional parameters", case_sensitive=False)] = "output.json",
-        global_delay: Annotated[float, typer.Option("--delay", "-d", help="port", rich_help_panel="Connection Parameters", case_sensitive=False)] = 0.1,
-    ):
 
-    async def process():
-        datos = {
-            "devices": [
-                {
-                    "host": host,
-                    "username": user,
-                    "password": password,
-                    "device_type": device_type,
-                    "port": port,
-                    "secret": secret,
-                    "session_log": "cla.log",
-                    "global_delay_factor": global_delay
-                }
-            ],
-            "command": command
-        }
-
-        set_verbose = {"verbose": verbose, "logging": log.value if log != None else None, "logger": logger.logger}
-        if verbose == 2:
-            print (f"--> Parameters: {datos}")
-            print (f"--> Verbose: {set_verbose}")
-        start = datetime.now()
-        device = AsyncNetmikoTelnet(set_verbose)
-        result = await device.run(datos)
-        end = datetime.now()
-        output.write(result)
-        logger.logger.info(f"File {output.name} created")
-        if verbose in [1,2]:
-            print (f"{result}")  
-            print (f"-> Execution time: {end - start}")
-
-    progress = ProgressBar()
-    asyncio.run(progress.run_with_spinner(process))
-
-
-@app.command("pullmultiple", help="Pull data from Multiple Hosts", no_args_is_help=True)
+@app.command("pullconfig", help="Pull configuration from Hosts", no_args_is_help=True)
 def pull_multiple_host(
     devices: Annotated[typer.FileText, typer.Option("--hosts", "-h", help="group of hosts", metavar="FILENAME Json file", rich_help_panel="Hosts File Parameter", case_sensitive=False)],
     command: Annotated[str, typer.Option("--cmd", "-c", help="commands to execute on device", rich_help_panel="Device Commands Parameter", case_sensitive=False)],
-    verbose: Annotated[int, typer.Option("--verbose", "-v", count=True, help="Verbose level",rich_help_panel="Additional parameters")] = 0,
+    verbose: Annotated[int, typer.Option("--verbose", "-v", count=True, help="Verbose level",rich_help_panel="Additional parameters", max=2)] = 0,
     log: Annotated[Logging, typer.Option("--log", "-l", help="Log level", rich_help_panel="Additional parameters", case_sensitive=False)] = Logging.info.value,
-    output: Annotated[typer.FileTextWrite, typer.Option("--output", "-o", help="output file", rich_help_panel="Additional parameters", case_sensitive=False)] = "output.json",
+    output: Annotated[typer.FileTextWrite, typer.Option("--output", "-o", help="output file", metavar="FILENAME text file",rich_help_panel="Additional parameters", case_sensitive=False)] = "output.txt",
     ):
 
     async def process():
@@ -93,10 +44,10 @@ def pull_multiple_host(
         datos["command"] = command
         set_verbose = {"verbose": verbose, "logging": log.value if log != None else None, "logger": logger.logger}
         if verbose == 2:
-            print (f"--> Parameters: {datos}")
+            print (f"--> data: {datos}")
             print (f"--> Verbose: {set_verbose}")
         start = datetime.now()
-        device = AsyncNetmikoTelnet(set_verbose)
+        device = AsyncNetmikoTelnetPull(set_verbose)
         result = await device.run(datos)
         end = datetime.now()
         output.write(result)
@@ -108,20 +59,60 @@ def pull_multiple_host(
     progress = ProgressBar()
     asyncio.run(progress.run_with_spinner(process))
 
-@app.command("push-single", help="Push configuration to a Single Host", no_args_is_help=True)
-def push_single_host():
-    pass
+@app.command("pushconfig", help="Push configuration file to Hosts", no_args_is_help=True)
+def push_multiple_host(
+        devices: Annotated[typer.FileText, typer.Option("--hosts", "-h", help="group of hosts", metavar="FILENAME Json file", rich_help_panel="Hosts File Parameters", case_sensitive=False)],
+        cmd_file: Annotated[typer.FileText, typer.Option("--cmd", "-c", help="commands to configure on device", metavar="FILENAME Json file",rich_help_panel="Configuration File Parameters", case_sensitive=False)],
+        verbose: Annotated[int, typer.Option("--verbose", "-v", count=True, help="Verbose level",rich_help_panel="Additional parameters", max=2)] = 0,
+        log: Annotated[Logging, typer.Option("--log", "-l", help="Log level", rich_help_panel="Additional parameters", case_sensitive=False)] = Logging.info.value,
+        output: Annotated[typer.FileTextWrite, typer.Option("--output", "-o", help="output file", metavar="FILENAME text file", rich_help_panel="Additional parameters", case_sensitive=False)] = "output.json",
 
+    ):
 
-@app.command("push-multiple", help="Push configuration file to Multiple Hosts", no_args_is_help=True)
-def puh_multiple_host():
-    pass
+    async def process():
+        datos = []
+        datos_devices = json.loads(devices.read())
+        if "devices" not in datos_devices:
+            typer.echo(f"Error reading json file: devices key not found or reading an incorrect json file {devices.name}")
+            raise typer.Exit(code=1)
+        list_devices = datos_devices.get("devices")
+    
+        datos_cmds = json.loads(cmd_file.read())
+        for device in list_devices:
+            if device.get("host") not in datos_cmds:
+                typer.echo(f"Error reading json file: commands not found for host {device.get("host")} or reading an incorrect json file {cmd_file.name}")
+                raise typer.Exit(code=1)
+        
+            dic = {
+                "device": device,
+                "commands": datos_cmds.get(device.get("host")).get('commands')
+            }
+            datos.append(dic)
+
+        set_verbose = {"verbose": verbose, "logging": log.value if log != None else None, "single_host": False, "logger": logger.logger}
+        if verbose == 2:
+            print (f"--> data: {datos}")
+            print (f"--> Commands: {datos_cmds}")
+            print (f"--> Verbose: {set_verbose}")
+        start = datetime.now()
+        netm = AsyncNetmikoTelnetPush(set_verbose=set_verbose)
+        result = await netm.run(datos)
+        end = datetime.now()
+        output.write(result)
+        logger.logger.info(f"File {output.name} created")
+        if verbose in [1,2]:
+            print (f"\n{result}")
+            print (f"-> Execution time: {end - start}")
+
+    progress = ProgressBar()
+    asyncio.run(progress.run_with_spinner(process))
+
 
 
 @app.callback(invoke_without_command=True, help="Access devices using Telnet protocol")
 def callback(ctx: typer.Context):
     """
-    Access devices using Telnet protocol
+   Access network devices using Telnet protocol for automation
     """
     validate_file()
     typer.echo(f"-> About to execute {ctx.invoked_subcommand} sub-command")

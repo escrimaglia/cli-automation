@@ -1,0 +1,12 @@
+{
+   "X.X.X.X": {
+      "commands": [
+         "config terminal",
+         "interface loopback 3",
+         "description loopback interface",
+         "ip address 192.168.2.1 255.255.255.0",
+         "end",
+         "write mem"
+      ]
+   }
+}

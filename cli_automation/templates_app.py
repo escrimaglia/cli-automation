@@ -1,0 +1,31 @@
+import typer
+from typing_extensions import Annotated
+from .enums_srv import Logging
+from .progress_bar import ProgressBar
+from .templates_srv import Templates
+from .logging import Logger
+import asyncio
+
+app = typer.Typer(no_args_is_help=True)
+logger = Logger()
+
+@app.command("templates", epilog="Download templates to create the working files", rich_help_panel="Main Commands")
+def download_templates(
+        verbose: Annotated[int, typer.Option("--verbose", "-v", count=True, help="Verbose level",rich_help_panel="Additional parameters")] = 0,
+        log: Annotated[Logging, typer.Option("--log", "-l", help="Log level", rich_help_panel="Additional parameters", case_sensitive=False)] = Logging.info.value,
+    ):
+    """
+    Download templates to create the working files
+    """
+   
+    async def process():
+        set_verbose = {"logging": log.value if log != None else None, "logger": logger.logger}
+        if verbose == 2:
+            print (f"--> Verbose: {set_verbose}")
+        template = Templates(set_verbose=set_verbose)
+        await template.create_template(file_name=None)
+        if verbose in [1,2]:
+            print ("\nAll the templates have been successfully created")
+
+    progress = ProgressBar()
+    asyncio.run(progress.run_with_spinner(process))

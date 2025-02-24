@@ -37,13 +37,7 @@ class TunnelProxy:
             socks.set_default_proxy(socks.SOCKS5, proxy_host, proxy_port)
             socket.socket = socks.socksocket
             self.logger.info(f"\n-> Setting up the application to use the SOCKS5 tunnel, proxy-host: {proxy_host}, local-port: {proxy_port}")
-            if self.verbose >= 2:
-                print (f"\n-> Setting up the application to use the SOCKS5 tunnel, proxy-host: {proxy_host}, local-port: {proxy_port}")
+            print (f"\n-> Setting up the application to use the SOCKS5 tunnel, proxy-host: {proxy_host}, local-port: {proxy_port}")
         else:
             self.logger.info(f"\n-> Application can not use the SOCKS5 tunnel, tunnel is not Up and Running")
-            if self.verbose >= 2:
-                print (f"\n-> Application can not use the SOCKS5 tunnel, tunnel is not Up and Running")
-
-        
-          
-    
+            print (f"\n-> Application can not use the SOCKS5 tunnel, tunnel is not Up and Running")

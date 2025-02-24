@@ -10,8 +10,7 @@ from typing import List
 from .enums_srv import Logging
 from .progress_bar import ProgressBar
 from datetime import datetime
-from .files_srv import ManageFiles
-from .service_classes import AsyncNetmikoTelnet
+from .telnet_srv import AsyncNetmikoTelnet
 import asyncio
 import json
 from .logging import Logger
@@ -37,6 +36,7 @@ def pull_single_host(
         port: Annotated[int, typer.Option("--port", "-p", help="port", rich_help_panel="Connection Parameters", case_sensitive=False)] = 23,
         verbose: Annotated[int, typer.Option("--verbose", "-v", count=True, help="Verbose level",rich_help_panel="Additional parameters")] = 0,
         log: Annotated[Logging, typer.Option("--log", "-l", help="Log level", rich_help_panel="Additional parameters", case_sensitive=True)] = Logging.info.value,
+        output: Annotated[typer.FileTextWrite, typer.Option("--output", "-o", help="output file", rich_help_panel="Additional parameters", case_sensitive=False)] = "output.json",
         global_delay: Annotated[float, typer.Option("--delay", "-d", help="port", rich_help_panel="Connection Parameters", case_sensitive=False)] = 0.1,
     ):
 
@@ -58,14 +58,17 @@ def pull_single_host(
         }
 
         set_verbose = {"verbose": verbose, "logging": log.value if log != None else None, "logger": logger.logger}
+        if verbose == 2:
+            print (f"--> Parameters: {datos}")
+            print (f"--> Verbose: {set_verbose}")
         start = datetime.now()
         device = AsyncNetmikoTelnet(set_verbose)
-        results = await device.run(datos)
+        result = await device.run(datos)
         end = datetime.now()
-        cf = ManageFiles(logger.logger)
-        await cf.create_file("output.txt", results)
-        if verbose >= 2:
-            print (f"{results}")  
+        output.write(result)
+        logger.logger.info(f"File {output.name} created")
+        if verbose in [1,2]:
+            print (f"{result}")  
             print (f"-> Execution time: {end - start}")
 
     progress = ProgressBar()
@@ -78,32 +81,28 @@ def pull_multiple_host(
     command: Annotated[str, typer.Option("--cmd", "-c", help="commands to execute on device", rich_help_panel="Device Commands Parameter", case_sensitive=False)],
     verbose: Annotated[int, typer.Option("--verbose", "-v", count=True, help="Verbose level",rich_help_panel="Additional parameters")] = 0,
     log: Annotated[Logging, typer.Option("--log", "-l", help="Log level", rich_help_panel="Additional parameters", case_sensitive=False)] = Logging.info.value,
+    output: Annotated[typer.FileTextWrite, typer.Option("--output", "-o", help="output file", rich_help_panel="Additional parameters", case_sensitive=False)] = "output.json",
     ):
 
     async def process():
-        file_lines = ""
-        for line in devices:
-            file_lines += line
-        try:
-            datos_devices = json.loads(file_lines)
-        except json.JSONDecodeError as error:
-            typer.echo(f"Error reading json file: {error}")
-            raise typer.Exit(code=1)
-        
-        if "devices" not in datos_devices:
+        datos = json.loads(devices.read())
+        if "devices" not in datos:
             typer.echo("Error reading json file: devices key not found or reading an incorrect json file")
             raise typer.Exit(code=1)
         
-        datos_devices["command"] = command
+        datos["command"] = command
         set_verbose = {"verbose": verbose, "logging": log.value if log != None else None, "logger": logger.logger}
+        if verbose == 2:
+            print (f"--> Parameters: {datos}")
+            print (f"--> Verbose: {set_verbose}")
         start = datetime.now()
         device = AsyncNetmikoTelnet(set_verbose)
-        results = await device.run(datos_devices)
+        result = await device.run(datos)
         end = datetime.now()
-        cf = ManageFiles(logger.logger)
-        await cf.create_file("output.txt", results)
-        if verbose >= 2:
-            print (f"{results}")  
+        output.write(result)
+        logger.logger.info(f"File {output.name} created")
+        if verbose in [1,2]:
+            print (f"{result}")  
             print (f"-> Execution time: {end - start}")
 
     progress = ProgressBar()

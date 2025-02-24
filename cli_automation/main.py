@@ -15,6 +15,7 @@ from pathlib import Path
 from cli_automation import telnet_app
 from cli_automation import tunnel_app
 from cli_automation import ssh_app
+from cli_automation import templates_app
 
 logger = Logger()
 
@@ -43,9 +44,10 @@ def validate_file():
         pass
 
 
-app.add_typer(ssh_app.app, name="ssh")
-app.add_typer(telnet_app.app, name="telnet")
-app.add_typer(tunnel_app.app, name="tunnel")
+app.add_typer(ssh_app.app, name="ssh", rich_help_panel="Main Commands")
+app.add_typer(telnet_app.app, name="telnet", rich_help_panel="Main Commands")
+app.add_typer(tunnel_app.app, name="tunnel", rich_help_panel="Main Commands")
+app.add_typer(templates_app.app, rich_help_panel="Main Commands")
 
 
 @app.callback()
@@ -66,20 +68,3 @@ def main(ctx: typer.Context,
         typer.echo("Please specify a command, try --help")
         raise typer.Exit(1)
     typer.echo(f"-> About to execute command: {ctx.invoked_subcommand}")
-
-
-@app.command("templates", help="Download templates to create the working files", no_args_is_help=True)
-def download_templates(
-        verbose: Annotated[int, typer.Option("--verbose", "-v", count=True, help="Verbose level",rich_help_panel="Additional parameters")] = 0,
-        log: Annotated[Logging, typer.Option("--log", "-l", help="Log level", rich_help_panel="Additional parameters", case_sensitive=False)] = Logging.info.value,
-    ):
-   
-    async def process():
-        set_verbose = {"logging": log.value if log != None else None, "logger": logger.logger}
-        template = Templates(set_verbose=set_verbose)
-        await template.create_template(file_name=None)
-        if verbose >= 2:
-            print ("\nAll the templates have been successfully created")
-
-    progress = ProgressBar()
-    asyncio.run(progress.run_with_spinner(process))

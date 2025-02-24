@@ -56,4 +56,4 @@ class Templates():
                 self.logger.error(f"Error creating the template {var_name}. The template does not exist")
                 raise SystemExit(1)
 
-        self.logger.info("** All the templates have been successfully created")
+        self.logger.info("All the templates have been successfully created")

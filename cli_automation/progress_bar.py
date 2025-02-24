@@ -25,9 +25,9 @@ class ProgressBar:
         finally:
             stop_event.set()
             await spinner_task_coroutine
-        if message is None:
-            typer.echo(f"-> The process is finished..")
-        else:
-            typer.echo(f"-> The process {message} is finished..")
+        # if message is None:
+        #     typer.echo(f"-> The process is finished..")
+        # else:
+        #     typer.echo(f"-> The process {message} is finished..")
         
         return result

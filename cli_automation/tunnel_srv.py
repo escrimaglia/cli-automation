@@ -2,7 +2,6 @@ import sys
 import asyncio
 import json
 from .files_srv import ManageFiles
-import time
 
 
 class SetSocks5Tunnel():

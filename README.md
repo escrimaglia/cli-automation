@@ -14,23 +14,43 @@ $ cla [OPTIONS] COMMAND [ARGS]...
 **Options**:
 
 * `-V, --version`: Get the app version
-* `--install-completion`: Install completion for the current shell (highly recommended).
+* `--install-completion`: Install completion for the current shell.
 * `--show-completion`: Show completion for the current shell, to copy it or customize the installation.
 * `--help`: Show this message and exit.
 
 **Commands**:
 
-* `netmiko`: SSH library for network automation
-* `scrapli`: Telnet, SSH or NETCONF library for network...
+* `templates`: Download templates to create the working...
+* `ssh`: Access devices using SSH protocol
+* `telnet`: Access devices using Telnet protocol
+* `tunnel`: Manage SOCKS5 tunnel with Bastion Host
 
-## `cla netmiko`
+## `cla templates`
 
-SSH library for network automation
+Download templates to create the working files
 
 **Usage**:
 
 ```console
-$ cla netmiko [OPTIONS] COMMAND [ARGS]...
+$ cla templates [OPTIONS]
+```
+
+**Options**:
+
+* `-v, --verbose`: Verbose level  [default: 0]
+* `-l, --log [INFO|DEBUG|ERROR|WARNING|CRITICAL]`: Log level  [default: INFO]
+* `--help`: Show this message and exit.
+
+Download templates to create the working files
+
+## `cla ssh`
+
+Access devices using SSH protocol
+
+**Usage**:
+
+```console
+$ cla ssh [OPTIONS] COMMAND [ARGS]...
 ```
 
 **Options**:
@@ -39,20 +59,19 @@ $ cla netmiko [OPTIONS] COMMAND [ARGS]...
 
 **Commands**:
 
-* `pull-single`: Pull data from a Single Host
-* `pull-multiple`: Pull data from Multiple Hosts
-* `push-single`: Push configuration to a Single Host
-* `push-multiple`: Push configuration file to Multiple Hosts
-* `templates`: Download templates to create hosts and...
+* `pullsingle`: Pull data from a Single Host
+* `pullmultiple`: Pull data from Multiple Hosts
+* `pushsingle`: Push configuration to a Single Host
+* `pushmultiple`: Push configuration file to Multiple Hosts
 
-### `cla netmiko pull-single`
+### `cla ssh pullsingle`
 
 Pull data from a Single Host
 
 **Usage**:
 
 ```console
-$ cla netmiko pull-single [OPTIONS]
+$ cla ssh pullsingle [OPTIONS]
 ```
 
 **Options**:
@@ -60,20 +79,22 @@ $ cla netmiko pull-single [OPTIONS]
 * `-h, --host TEXT`: host ip address  [required]
 * `-u, --user TEXT`: username  [required]
 * `-c, --cmd TEXT`: commands to execute on device  [required]
-* `-t, --type [cisco_ios|cisco_xr|juniper_junos|arista_eos|huawei|alcatel_sros|autodetect]`: device type  [required]
-* `-s, --cfg TEXT`: ssh config file
+* `-t, --type [cisco_ios|cisco_xr|juniper_junos|arista_eos|huawei|alcatel_sros|autodetect]`: device type  [default: generic_telnet]
+* `-p, --port INTEGER`: port  [default: 22]
 * `-v, --verbose`: Verbose level  [default: 0]
-* `-l, --log [info|debug|error|warning|critical]`: Log level
+* `-l, --log [INFO|DEBUG|ERROR|WARNING|CRITICAL]`: Log level  [default: INFO]
+* `-d, --delay FLOAT`: port  [default: 0.1]
+* `-s, --cfg TEXT`: ssh config file
 * `--help`: Show this message and exit.
 
-### `cla netmiko pull-multiple`
+### `cla ssh pullmultiple`
 
 Pull data from Multiple Hosts
 
 **Usage**:
 
 ```console
-$ cla netmiko pull-multiple [OPTIONS]
+$ cla ssh pullmultiple [OPTIONS]
 ```
 
 **Options**:
@@ -81,17 +102,17 @@ $ cla netmiko pull-multiple [OPTIONS]
 * `-h, --hosts FILENAME Json file`: group of hosts  [required]
 * `-c, --cmd TEXT`: commands to execute on device  [required]
 * `-v, --verbose`: Verbose level  [default: 0]
-* `-l, --log [info|debug|error|warning|critical]`: Log level
+* `-l, --log [INFO|DEBUG|ERROR|WARNING|CRITICAL]`: Log level  [default: INFO]
 * `--help`: Show this message and exit.
 
-### `cla netmiko push-single`
+### `cla ssh pushsingle`
 
 Push configuration to a Single Host
 
 **Usage**:
 
 ```console
-$ cla netmiko push-single [OPTIONS]
+$ cla ssh pushsingle [OPTIONS]
 ```
 
 **Options**:
@@ -103,17 +124,17 @@ $ cla netmiko push-single [OPTIONS]
 * `-f, --cmdf FILENAME Json file`: commands to configure on device
 * `-s, --cfg TEXT`: ssh config file
 * `-v, --verbose`: Verbose level  [default: 0]
-* `-l, --log [info|debug|error|warning|critical]`: Log level
+* `-l, --log [INFO|DEBUG|ERROR|WARNING|CRITICAL]`: Log level  [default: INFO]
 * `--help`: Show this message and exit.
 
-### `cla netmiko push-multiple`
+### `cla ssh pushmultiple`
 
 Push configuration file to Multiple Hosts
 
 **Usage**:
 
 ```console
-$ cla netmiko push-multiple [OPTIONS]
+$ cla ssh pushmultiple [OPTIONS]
 ```
 
 **Options**:
@@ -121,33 +142,17 @@ $ cla netmiko push-multiple [OPTIONS]
 * `-h, --hosts FILENAME Json file`: group of hosts  [required]
 * `-f, --cmdf FILENAME Json file`: commands to configure on device  [required]
 * `-v, --verbose`: Verbose level  [default: 0]
-* `-l, --log [info|debug|error|warning|critical]`: Log level
+* `-l, --log [INFO|DEBUG|ERROR|WARNING|CRITICAL]`: Log level  [default: INFO]
 * `--help`: Show this message and exit.
 
-### `cla netmiko templates`
+## `cla telnet`
 
-Download templates to create hosts and config commands files with the necessary information
+Access devices using Telnet protocol
 
 **Usage**:
 
 ```console
-$ cla netmiko templates [OPTIONS]
-```
-
-**Options**:
-
-* `-v, --verbose`: Verbose level  [default: 0]
-* `-l, --log [info|debug|error|warning|critical]`: Log level
-* `--help`: Show this message and exit.
-
-## `cla scrapli`
-
-Telnet, SSH or NETCONF library for network automation. Yet under development
-
-**Usage**:
-
-```console
-$ cla scrapli [OPTIONS] COMMAND [ARGS]...
+$ cla telnet [OPTIONS] COMMAND [ARGS]...
 ```
 
 **Options**:
@@ -156,35 +161,129 @@ $ cla scrapli [OPTIONS] COMMAND [ARGS]...
 
 **Commands**:
 
-* `pull-data`: Pull data from devices
-* `push-data`: Push data to devices
+* `pullsingle`: Pull data from a Single Host
+* `pullmultiple`: Pull data from Multiple Hosts
+* `push-single`: Push configuration to a Single Host
+* `push-multiple`: Push configuration file to Multiple Hosts
 
-### `cla scrapli pull-data`
+### `cla telnet pullsingle`
 
-Pull data from devices
+Pull data from a Single Host
 
 **Usage**:
 
 ```console
-$ cla scrapli pull-data [OPTIONS]
+$ cla telnet pullsingle [OPTIONS]
+```
+
+**Options**:
+
+* `-h, --host TEXT`: host ip address  [required]
+* `-u, --user TEXT`: username  [required]
+* `-c, --cmd TEXT`: commands to execute on device  [required]
+* `-t, --type TEXT`: device type  [default: generic_telnet]
+* `-p, --port INTEGER`: port  [default: 23]
+* `-v, --verbose`: Verbose level  [default: 0]
+* `-l, --log [INFO|DEBUG|ERROR|WARNING|CRITICAL]`: Log level  [default: INFO]
+* `-d, --delay FLOAT`: port  [default: 0.1]
+* `--help`: Show this message and exit.
+
+### `cla telnet pullmultiple`
+
+Pull data from Multiple Hosts
+
+**Usage**:
+
+```console
+$ cla telnet pullmultiple [OPTIONS]
+```
+
+**Options**:
+
+* `-h, --hosts FILENAME Json file`: group of hosts  [required]
+* `-c, --cmd TEXT`: commands to execute on device  [required]
+* `-v, --verbose`: Verbose level  [default: 0]
+* `-l, --log [INFO|DEBUG|ERROR|WARNING|CRITICAL]`: Log level  [default: INFO]
+* `--help`: Show this message and exit.
+
+### `cla telnet push-single`
+
+Push configuration to a Single Host
+
+**Usage**:
+
+```console
+$ cla telnet push-single [OPTIONS]
 ```
 
 **Options**:
 
 * `--help`: Show this message and exit.
 
-### `cla scrapli push-data`
+### `cla telnet push-multiple`
 
-Push data to devices
+Push configuration file to Multiple Hosts
 
 **Usage**:
 
 ```console
-$ cla scrapli push-data [OPTIONS]
+$ cla telnet push-multiple [OPTIONS]
 ```
 
 **Options**:
 
 * `--help`: Show this message and exit.
 
-`Author: Ed Scrimaglia`
+## `cla tunnel`
+
+Manage SOCKS5 tunnel with Bastion Host
+
+**Usage**:
+
+```console
+$ cla tunnel [OPTIONS] COMMAND [ARGS]...
+```
+
+**Options**:
+
+* `--help`: Show this message and exit.
+
+**Commands**:
+
+* `setup`: Setup SOCKS5 tunnel to the Bastion Host
+* `kill`: Kill SOCKS5 tunnel to the bastion Host
+
+### `cla tunnel setup`
+
+Setup SOCKS5 tunnel to the Bastion Host
+
+**Usage**:
+
+```console
+$ cla tunnel setup [OPTIONS]
+```
+
+**Options**:
+
+* `-u, --user TEXT`: bastion host username  [required]
+* `-b, --bastion TEXT`: bastion host ip address  [required]
+* `-p, --port INTEGER`: local port  [default: 1080]
+* `-v, --verbose`: Verbose level  [default: 0]
+* `-l, --log [INFO|DEBUG|ERROR|WARNING|CRITICAL]`: Log level  [default: INFO]
+* `--help`: Show this message and exit.
+
+### `cla tunnel kill`
+
+Kill SOCKS5 tunnel to the bastion Host
+
+**Usage**:
+
+```console
+$ cla tunnel kill [OPTIONS]
+```
+
+**Options**:
+
+* `-v, --verbose`: Verbose level  [default: 0]
+* `-l, --log [INFO|DEBUG|ERROR|WARNING|CRITICAL]`: Log level  [default: INFO]
+* `--help`: Show this message and exit.

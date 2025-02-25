@@ -1,8 +1,8 @@
 {
    "X.X.X.X": {
       "commands": [
-         "interface loopback 4",
-         "ip address 192.168.3.1 255.255.255.0"
-       ]
+         "show version",
+         "show ip int brief"
+      ]
    }
 }

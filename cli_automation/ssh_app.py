@@ -13,17 +13,11 @@ from .enums_srv import Logging
 import json
 from .progress_bar import ProgressBar
 from datetime import datetime
-from .logging import Logger
-from pathlib import Path
+#from .logging import Logger
+from . import logger
 
 app = typer.Typer(no_args_is_help=True)
-logger = Logger()
-
-def validate_file():
-    file_name = Path("config.json")
-    if not file_name.exists():
-        print(f"** File {file_name} not found. Please run the command 'cla templates -v' to create the file\n")
-        raise SystemExit(1) 
+#logger = Logger()
 
 
 @app.command("pullconfig", help="Pull configurations from Hosts", no_args_is_help=True)
@@ -43,10 +37,9 @@ def pull_multiple_host(
             raise typer.Exit(code=1)
         
         datos["commands"] = commands
-        set_verbose = {"verbose": verbose, "logging": log.value if log != None else None, "single_host": False, "logger": logger.logger}
+        set_verbose = {"verbose": verbose, "logging": log.value if log != None else None, "single_host": False, "logger": logger}
         if verbose == 2:
-            print (f"--> data: {datos}")
-            print (f"--> Verbose: {set_verbose}")
+            print (f"--> data: {json.dumps(datos, indent=3)}")  
         start = datetime.now()
         netm = AsyncNetmikoPull(set_verbose=set_verbose)
         result = await netm.run(datos)
@@ -91,11 +84,9 @@ def push_multiple_host(
             }
             datos.append(dic)
 
-        set_verbose = {"verbose": verbose, "logging": log.value if log != None else None, "single_host": False, "logger": logger.logger}
+        set_verbose = {"verbose": verbose, "logging": log.value if log != None else None, "single_host": False, "logger": logger}
         if verbose == 2:
-            print (f"--> data: {datos}")
-            print (f"--> Commands: {datos_cmds}")
-            print (f"--> Verbose: {set_verbose}")
+            print (f"--> data: {json.dumps(datos, indent=3)}")
         start = datetime.now()
         netm = AsyncNetmikoPush(set_verbose=set_verbose)
         result = await netm.run(datos)
@@ -115,7 +106,6 @@ def callback(ctx: typer.Context):
     """
     Access network devices using SSH protocol for automation
     """
-    validate_file()
     typer.echo(f"-> About to execute {ctx.invoked_subcommand} sub-command")
     
 

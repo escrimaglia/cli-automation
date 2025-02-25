@@ -20,8 +20,8 @@ class AsyncNetmikoPull():
         self.logging = set_verbose.get('logging')
         self.single_host = set_verbose.get('single_host')
         self.logger = set_verbose.get('logger')
-        tunnel = TunnelProxy(proxy_host="localhost", proxy_port=1080, logger=self.logger, verbose=self.verbose)
-        tunnel.set_proxy()
+        proxy = TunnelProxy(logger=self.logger, verbose=self.verbose, proxy_host="localhost", proxy_port=1080)
+        proxy.set_proxy()
         
 
     async def netmiko_connection(self, device: dict, commands: List[str]) -> str:
@@ -83,8 +83,8 @@ class AsyncNetmikoPush():
         self.logging = set_verbose.get('logging')
         self.single_host = set_verbose.get('single_host')
         self.logger = set_verbose.get('logger')
-        tunnel = TunnelProxy(proxy_host="localhost", proxy_port=1080, logger=self.logger, verbose=self.verbose)
-        tunnel.set_proxy()
+        proxy = TunnelProxy(logger=self.logger, verbose=self.verbose, proxy_host="localhost", proxy_port=1080)
+        proxy.set_proxy()
       
 
     async def netmiko_connection(self, device: dict, commands: List[str]) -> str:

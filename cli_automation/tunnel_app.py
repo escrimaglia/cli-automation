@@ -10,19 +10,11 @@ from .progress_bar import ProgressBar
 from .enums_srv import Logging
 import asyncio
 from .tunnel_srv import SetSocks5Tunnel
-from .logging import Logger
-from pathlib import Path
+from . import logger
+#from .logging import Logger
 
 app = typer.Typer(no_args_is_help=True)
-logger = Logger()
-
-
-def validate_file():
-    file_name = Path("config.json")
-    if not file_name.exists():
-        print(f"** File {file_name} not found. Please run the command 'cla templates -v' to create the file\n")
-        raise SystemExit(1) 
-    
+#logger = Logger()
 
 @app.command("setup", help="Setup SOCKS5 tunnel to the Bastion Host", no_args_is_help=True)
 def set_tunnel(
@@ -34,7 +26,7 @@ def set_tunnel(
     ):
 
     async def process():
-        set_verbose = {"verbose": verbose, "logging": log.value if log != None else None, "logger": logger.logger}
+        set_verbose = {"verbose": verbose, "logging": log.value if log != None else None, "logger": logger}
         tunnel = SetSocks5Tunnel(set_verbose)
         await tunnel.set_tunnel(bastion_user, bastion_host, local_port)
 
@@ -49,7 +41,7 @@ def kill_tunnel(
     ):
    
     async def process():
-        set_verbose = {"verbose": verbose, "logging": log.value if log != None else None, "logger": logger.logger}
+        set_verbose = {"verbose": verbose, "logging": log.value if log != None else None, "logger": logger}
         tunnel = SetSocks5Tunnel(set_verbose)
         await tunnel.kill_tunnel()
         
@@ -63,7 +55,6 @@ def callback(ctx: typer.Context):
     Managing a SOCKS5 tunnel with the Bastion Host. A SOCKS5 tunnel is created when the cla app runs from a machine that doesn't have 
     direct access to the devices and needs to go through a Bastion Host. To verify if the tunnel is working, you can use the command lsof -i:{}
     """
-    validate_file()
     typer.echo(f"-> About to execute {ctx.invoked_subcommand} sub-command")
     
 

@@ -11,20 +11,13 @@ from datetime import datetime
 from .telnet_srv import AsyncNetmikoTelnetPull, AsyncNetmikoTelnetPush
 import asyncio
 import json
-from .logging import Logger
-from pathlib import Path
+from . import logger
+#from .logging import Logger
 
 sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), '..', ".")))
 
 app = typer.Typer(no_args_is_help=True)
-logger = Logger()
-
-def validate_file():
-    file_name = Path("config.json")
-    if not file_name.exists():
-        print(f"** File {file_name} not found. Please run the command 'cla templates -v' to create the file\n")
-        raise SystemExit(1) 
-
+#logger = Logger()
 
 @app.command("pullconfig", help="Pull configuration from Hosts", no_args_is_help=True)
 def pull_multiple_host(
@@ -42,16 +35,15 @@ def pull_multiple_host(
             raise typer.Exit(code=1)
         
         datos["command"] = command
-        set_verbose = {"verbose": verbose, "logging": log.value if log != None else None, "logger": logger.logger}
+        set_verbose = {"verbose": verbose, "logging": log.value if log != None else None, "logger": logger}
         if verbose == 2:
-            print (f"--> data: {datos}")
-            print (f"--> Verbose: {set_verbose}")
+            print (f"--> data: {json.dumps(datos, indent=3)}")
         start = datetime.now()
         device = AsyncNetmikoTelnetPull(set_verbose)
         result = await device.run(datos)
         end = datetime.now()
         output.write(result)
-        logger.logger.info(f"File {output.name} created")
+        logger.info(f"File {output.name} created")
         if verbose in [1,2]:
             print (f"{result}")  
             print (f"-> Execution time: {end - start}")
@@ -89,11 +81,9 @@ def push_multiple_host(
             }
             datos.append(dic)
 
-        set_verbose = {"verbose": verbose, "logging": log.value if log != None else None, "single_host": False, "logger": logger.logger}
+        set_verbose = {"verbose": verbose, "logging": log.value if log != None else None, "single_host": False, "logger": logger}
         if verbose == 2:
-            print (f"--> data: {datos}")
-            print (f"--> Commands: {datos_cmds}")
-            print (f"--> Verbose: {set_verbose}")
+            print (f"--> data: {json.dumps(datos, indent=3)}")
         start = datetime.now()
         netm = AsyncNetmikoTelnetPush(set_verbose=set_verbose)
         result = await netm.run(datos)
@@ -108,13 +98,11 @@ def push_multiple_host(
     asyncio.run(progress.run_with_spinner(process))
 
 
-
 @app.callback(invoke_without_command=True, help="Access devices using Telnet protocol")
 def callback(ctx: typer.Context):
     """
-   Access network devices using Telnet protocol for automation
+    Access network devices using Telnet protocol for automation
     """
-    validate_file()
     typer.echo(f"-> About to execute {ctx.invoked_subcommand} sub-command")
 
 # if __name__ == "__main__":

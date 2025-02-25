@@ -4,7 +4,7 @@ from .files_srv import ManageFiles
 class Templates():
     def __init__(self, set_verbose: dict):
         self.logger = set_verbose.get('logger')
-        self.file = ManageFiles(logger=self.logger)
+        self.file = ManageFiles()
 
     async def create_template(self, file_name: str = None) -> None:
         hosts = {   

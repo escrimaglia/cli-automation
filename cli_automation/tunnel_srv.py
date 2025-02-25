@@ -2,6 +2,7 @@ import sys
 import asyncio
 import json
 from .files_srv import ManageFiles
+from . import config_data
 
 
 class SetSocks5Tunnel():
@@ -45,19 +46,13 @@ class SetSocks5Tunnel():
                 await asyncio.create_subprocess_exec(
                     *command, stdout=asyncio.subprocess.DEVNULL, stderr=asyncio.subprocess.PIPE
                 )
+                mf = ManageFiles()
+                config_data['tunnel'] = True
+                await mf.create_file("config.json", json.dumps(config_data, indent=2))
                 self.logger.info(f"SOCKS5 tunnel started successfully at {jump_user}@{jump_host}:{port}")
                 print (f"\n** SOCKS5 tunnel started successfully at {jump_user}@{jump_host}:{port}")
-                try:
-                    mf = ManageFiles(self.logger)
-                    content_file = await mf.read_file("config.json")
-                    dic_content_file = json.loads(content_file)
-                    dic_content_file['tunnel'] = True
-                    await mf.create_file("config.json", json.dumps(dic_content_file, indent=2))
-                    self.logger.info(f"Config file updated, tunnel status: True")
-                except Exception as error:
-                    self.logger.error(f"Error reading the file constantes: {error}")
-                    sys.exit(1)
         except Exception as error:
+            print (error)
             self.logger.error(f"Error setting up SOCKS5 tunnel: {error}")
             sys.exit(1)
 
@@ -76,15 +71,9 @@ class SetSocks5Tunnel():
                 )
                 stdout, stderr = await process.communicate()
                 if process.returncode == 0:
-                    try:
-                        mf = ManageFiles(self.logger)
-                        content_file = await mf.read_file("config.json")
-                        dic_content_file = json.loads(content_file)
-                        dic_content_file['tunnel'] = False
-                    except Exception as error:
-                        self.logger.error(f"Error reading the file constantes: {error}")
-                        sys.exit(1)
-                    await mf.create_file("config.json", json.dumps(dic_content_file, indent=2))
+                    mf = ManageFiles()
+                    config_data['tunnel'] = False
+                    await mf.create_file("config.json", json.dumps(config_data, indent=2))
                     self.logger.info(f"Config file updated, tunnel status: False")
                     print (f"\n** SOCKS5 tunnel (PID {pid}) killed successfully")
                     self.logger.info(f"SOCKS5 tunnel (PID {pid}) killed successfully")
@@ -98,3 +87,6 @@ class SetSocks5Tunnel():
         else:
             print (f"\n** No SOCKS5 tunnel to kill")
             self.logger.info("No SOCKS5 tunnel to kill")
+
+    async def get_tunnel_status(self):
+        pass

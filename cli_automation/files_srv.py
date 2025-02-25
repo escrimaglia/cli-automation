@@ -1,9 +1,9 @@
 import aiofiles
 import sys
-from .logging import Logger
+from . import logger
 
 class ManageFiles():
-    def __init__(self, logger: Logger = None):
+    def __init__(self):
         self.logger = logger
         
     async def create_file(self, file_name: str, content: str) -> None:

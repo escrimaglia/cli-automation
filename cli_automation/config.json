@@ -1,5 +1,5 @@
 {
-  "tunnel": true,
+  "tunnel": false,
   "version": "1.0.4",
   "app": "cla",
   "telnet_prompts": [

@@ -3,45 +3,37 @@ import os
 sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), ".", "..")))
 import typer
 from typing_extensions import Annotated
-import asyncio
-from cli_automation.enums_srv import Logging
-from cli_automation.progress_bar import ProgressBar
-from cli_automation.templates_srv import Templates
-from cli_automation.logging import Logger
-from cli_automation.files_srv import ManageFiles
-import json
-from pathlib import Path
+#from cli_automation.logging import Logger
+from cli_automation import config_data
+#from cli_automation import logger
 
 from cli_automation import telnet_app
 from cli_automation import tunnel_app
 from cli_automation import ssh_app
 from cli_automation import templates_app
 
-logger = Logger()
+#logger = Logger()
 
 app = typer.Typer(no_args_is_help=True)
 
-__version__ = ""
-
 def check_version(value: bool):
     if value:
-        validate_file()
-        print (f"version: {__version__}")
+        print (f"version: {config_data.get("version")}")
         raise typer.Exit()
 
 
-def validate_file():
-    file_name = Path("config.json")
-    if not file_name.exists():
-        print(f"** File {file_name} not found. Please run the command 'cla templates -v' to create the file\n")
-        raise SystemExit(1)
-    else:
-        # Read the file take version value
-        with open(file_name, "r") as file:
-            data = json.load(file)
-            global __version__
-            __version__ = data.get("version")
-        pass
+# def validate_file():
+#     file_name = Path("config.json")
+#     if not file_name.exists():
+#         print(f"** File {file_name} not found. Please run the command 'cla templates -v' to create the file\n")
+#         raise SystemExit(1)
+#     else:
+#         # Read the file take version value
+#         with open(file_name, "r") as file:
+#             data = json.load(file)
+#             global __version__
+#             __version__ = data.get("version")
+#         pass
 
 
 app.add_typer(ssh_app.app, name="ssh", rich_help_panel="Main Commands")
@@ -64,6 +56,7 @@ def main(ctx: typer.Context,
     developed for networking engineers who have not yet advanced in programming knowledge.  
     LA version 1 focuses exclusively on Network Automation, while version 2 will introduce Cloud Automation capabilities.
     """
+    
     if ctx.invoked_subcommand is None:
         typer.echo("Please specify a command, try --help")
         raise typer.Exit(1)

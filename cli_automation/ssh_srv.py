@@ -111,32 +111,32 @@ class AsyncNetmikoPush():
             return (f"** Error connecting to {device['host']}: unexpected {str(error).replace('\n', ' ')}")
         
         
-    def data_validation(self, data: List[dict]) -> None:
-        for dev_dict in data:
+    def data_validation(self, data: dict) -> None:
+        if self.verbose in [1,2]:
+            print ("->", f"About to execute Data Validation")
+        try:
+            ModelSshPush(devices=data.get('devices'), commands=data.get('commands'))
+        except ValidationError as error:
+            self.logger.error(f"Data validation error: {error}")
             if self.verbose in [1,2]:
-                print ("->", f"About to execute Data Validation for {dev_dict.get('device').get('host')}")
-            try:
-                ModelSshPush(device=dev_dict.get('device'), commands=dev_dict.get('commands'))
-            except ValidationError as error:
-                self.logger.error(f"Data validation error: {error}")
-                if self.verbose >= 1:
-                    print (f" ->, {error}")
-                sys.exit(1)
+                print (f" ->, {error}")
+            sys.exit(1)
 
 
-    async def run(self, data: List[dict]) -> dict:
+    async def run(self, data: dict) -> dict:
         self.data_validation(data=data)   
         tasks = []
-        for dev_dict in data:
-            device = dev_dict.get('device')
-            commands = dev_dict.get('commands')
+        commands = data.get('commands')
+        for device in data.get('devices'):
+            #device = dev_dict.get('devices')
+            #commands = dev_dict.get('commands')
             tasks.append(self.netmiko_connection(device, commands=commands))
-            if self.verbose >= 1:
+            if self.verbose in [1,2]:
                 print (f"-> Connecting to device {device['host']}, configuring commands {commands}")
         results = await asyncio.gather(*tasks)
         output_data = []
-        for device, output in zip(data, results):
-            output_data.append({"Device": device.get('device').get('host'), "Output": output})
+        for device, output in zip(data.get('devices'), results):
+            output_data.append({"Device": device.get('host'), "Output": output})
         #output_data = output_data[0] if self.single_host else output_data
         for output in output_data:
             if isinstance(output.get('Output'), list):

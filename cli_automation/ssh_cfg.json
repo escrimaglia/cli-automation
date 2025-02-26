@@ -1,12 +1,14 @@
 {
     "10.2.0.101": {
        "commands": [
-          "no interface loopback 4"
+          "interface loopback 4",
+          "ip address 192.168.2.1 255.255.255.0"
        ]
     },
     "10.2.0.102": {
        "commands": [
-          "no interface loopback 3"
+          "interface loopback 4",
+          "ip address 192.168.2.2 255.255.255.0"
        ]
     }
  }

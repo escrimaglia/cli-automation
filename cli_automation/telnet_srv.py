@@ -23,9 +23,11 @@ class AsyncNetmikoTelnetPull():
         proxy = TunnelProxy(logger=self.logger, verbose=self.verbose, proxy_host="localhost", proxy_port=1080)
         proxy.set_proxy()
 
+
     async def device_connect(self, device: dict, command: str) -> str:
         loop = asyncio.get_running_loop()
         return await loop.run_in_executor(None, self.connect, device, command)
+
 
     def connect(self, device: dict, command: str) -> str:
         try:
@@ -52,6 +54,7 @@ class AsyncNetmikoTelnetPull():
             self.logger.error(f"Error connecting to {device['host']}: unexpected {error}")
             return f"** Error connecting to {device['host']}: unexpected {str(error).replace('\n', ' ')}"
 
+
     def data_validation(self, data: ModelTelnetPull) -> None:
         devices = data.get('devices')
         command = data.get('command')
@@ -64,6 +67,7 @@ class AsyncNetmikoTelnetPull():
             if self.verbose >= 1:
                 print(f" -> {error}")
             sys.exit(1)
+
 
     async def run(self, data: dict) -> str:
         self.data_validation(data=data)
@@ -90,9 +94,11 @@ class AsyncNetmikoTelnetPush():
         content = await mf.read_file("config.json")  # Await the coroutine
         return content
 
+
     async def device_connect(self, device: dict, command: List[str], prompts: List[str]) -> str:
         loop = asyncio.get_running_loop()
         return await loop.run_in_executor(None, self.connect, device, command, prompts)
+
 
     def connect(self, device: dict, commands: str, prompts: List[str]) -> str:
         try:
@@ -134,6 +140,7 @@ class AsyncNetmikoTelnetPush():
             self.logger.error(f"Error connecting to {device['host']}: unexpected {error}")
             return f"** Error connecting to {device['host']}: unexpected {str(error).replace('\n', ' ')}"
 
+
     def data_validation(self, data: List[ModelTelnetPush]) -> None:
         for device in data:
             if self.verbose in [1,2]:
@@ -171,8 +178,7 @@ class AsyncNetmikoTelnetPush():
                 else: 
                     output['Output'] = "Configuration successfully applied"
             else:
-                output['Output'] = "Unknown configuration status"
-            
+                output['Output'] = "Unknown configuration status" 
         dict_output = {}
         for device in output_data:
             dict_output.update({"Device": device["Device"], "Result": device["Output"]})

@@ -17,6 +17,7 @@ class SetSocks5Tunnel():
         self.logging = set_verbose.get('logging')
         self.logger = set_verbose.get('logger')
 
+
     async def check_pid(self):
         try:
             command_pre = ["lsof", "-t", "-i:1080"]
@@ -32,6 +33,7 @@ class SetSocks5Tunnel():
             self.logger.error(f"Error checking the PID: {error}")
             sys.exit(1)
         return stdout
+
 
 
     async def set_tunnel(self, jump_user: str, jump_host: str, port: int = 1080):        

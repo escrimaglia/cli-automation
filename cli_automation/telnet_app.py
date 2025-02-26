@@ -12,12 +12,10 @@ from .telnet_srv import AsyncNetmikoTelnetPull, AsyncNetmikoTelnetPush
 import asyncio
 import json
 from . import logger
-#from .logging import Logger
 
 sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), '..', ".")))
 
 app = typer.Typer(no_args_is_help=True)
-#logger = Logger()
 
 @app.command("pullconfig", help="Pull configuration from Hosts", no_args_is_help=True)
 def pull_multiple_host(

@@ -11,10 +11,8 @@ from .enums_srv import Logging
 import asyncio
 from .tunnel_srv import SetSocks5Tunnel
 from . import logger
-#from .logging import Logger
 
 app = typer.Typer(no_args_is_help=True)
-#logger = Logger()
 
 @app.command("setup", help="Setup SOCKS5 tunnel to the Bastion Host", no_args_is_help=True)
 def set_tunnel(

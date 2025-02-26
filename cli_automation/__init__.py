@@ -2,17 +2,27 @@ import json
 from pathlib import Path
 import logging
 import logging.handlers
+import typer
+import os
+
+
 
 json_path = Path(__file__).parent / "config.json"
-
 class ClaConfig():
     def __init__(self):
+        self.config_data = {
+            "tunnel": False,
+            "version": "1.0.4",
+            "app": "cla",
+            "log_file": "cla.log",
+            "telnet_prompts": [">", "#", "(config)#", "(config-if)#", "$", "%", "> (doble)","# (doble)", "?", ")", "!", "*", "~", ":]", "]", ">", "##"]
+        }
         try:
             with open(json_path, "r") as read_file:
                 self.config_data = json.load(read_file)
-        except FileNotFoundError as error:
-            print(f"** File config.json not found. Please run the command 'cla templates -v' to create the file\n")
-            exit(1)
+        except FileNotFoundError:
+            with open(json_path, "w") as write_file:
+                json.dump(self.config_data, write_file, indent=3)
 
     def get_config(self):
         return self.config_data
@@ -33,6 +43,6 @@ class Logger:
 
     def get_logger(self):
         return self.logger
-    
+
 config_data = ClaConfig().get_config()
 logger = Logger().get_logger()

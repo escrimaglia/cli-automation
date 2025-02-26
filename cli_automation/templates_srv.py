@@ -1,5 +1,6 @@
 import json
 from .files_srv import ManageFiles
+import sys
 
 class Templates():
     def __init__(self, set_verbose: dict):
@@ -7,7 +8,7 @@ class Templates():
         self.file = ManageFiles()
 
     async def create_template(self, file_name: str = None) -> None:
-        hosts = {   
+        example_hosts_file = {   
             'devices': [
                 {
                     'host': 'X.X.X.X',
@@ -15,12 +16,13 @@ class Templates():
                     'password': 'password',
                     'device_type': 'type',
                     'session_log': 'cla.log',
+                    'global_delay_factor': None,
                     'ssh_config_file': '~/.ssh/config'
                 }
             ]
         }
         
-        ssh_commands = {
+        example_ssh_commands_file = {
             'X.X.X.X': {
                 'commands': [
                     'show version',
@@ -29,7 +31,7 @@ class Templates():
             }
         }
 
-        telnet_commands_structure = {
+        example_telnet_commands_structure = {
             'X.X.X.X': {
                 'commands': [
                     'enter privilege mode',
@@ -42,7 +44,7 @@ class Templates():
             }
         }
 
-        telnet_commands_example = {
+        example_telnet_commands_example = {
             "X.X.X.X": {
                 "commands": [
                     'config terminal',
@@ -55,32 +57,28 @@ class Templates():
             }
         }
 
-        config = {
-            "tunnel": False,
-            "version": "1.0.4",
-            "app": "cla",
-            "telnet_prompts": [">", "#", "(config)#", "(config-if)#", "$", "%", "> (doble)","# (doble)", "?", ")", "!", "*", "~", ":]", "]", ">", "##"]
-        }
+        # config = {
+        #     "tunnel": False,
+        #     "version": "1.0.4",
+        #     "app": "cla",
+        #     "log_file": "cla.log",
+        #     "telnet_prompts": [">", "#", "(config)#", "(config-if)#", "$", "%", "> (doble)","# (doble)", "?", ")", "!", "*", "~", ":]", "]", ">", "##"]
+        # }
 
-        templates = [hosts, ssh_commands, telnet_commands_structure, telnet_commands_example, config]
+        files = [example_hosts_file, example_ssh_commands_file, example_telnet_commands_structure, example_telnet_commands_example]
         if file_name is None:
-            for template in templates:
+            for template in files:
                 var_name = [name for name, value in locals().items() if value is template][0]
-                if var_name != "config":
-                    await self.file.create_file("template_"+var_name+".json", json.dumps(template, indent=3))
-                else:
-                    await self.file.create_file(var_name+".json", json.dumps(template, indent=3))
+                await self.file.create_file(var_name+".json", json.dumps(template, indent=3))
+               
         else:
             file_name = file_name.split(".")[0] if "." in file_name else file_name
-            if file_name in templates:
+            if file_name in files:
                 var_name = [name for name, value in locals().items() if value is template][0]
-                if file_name != "config":
-                    await self.file.create_file("template_"+var_name+".json", json.dumps(file_name, indent=3))
-                else:
-                    await self.file.create_file(var_name+".json", json.dumps(file_name, indent=3))
+                await self.file.create_file(var_name+".json", json.dumps(file_name, indent=3))
             else:
                 print (f"** Error creating the template {var_name}. The template does not exist")
                 self.logger.error(f"Error creating the template {var_name}. The template does not exist")
-                raise SystemExit(1)
+                sys.exit(1)
 
         self.logger.info("All the templates have been successfully created")

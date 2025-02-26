@@ -1,7 +1,8 @@
 {
-  "tunnel": false,
+  "tunnel": true,
   "version": "1.0.4",
   "app": "cla",
+  "log_file": "cla.log",
   "telnet_prompts": [
     ">",
     "#",

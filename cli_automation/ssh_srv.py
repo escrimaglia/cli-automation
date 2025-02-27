@@ -11,6 +11,7 @@ from .model_srv import ModelSshPull, ModelSshPush, Device
 from typing import List
 import json
 from .proxy_srv import TunnelProxy
+from .tunnel_srv import SetSocks5Tunnel
 
 sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), '..', '.')))
 
@@ -83,8 +84,11 @@ class AsyncNetmikoPush():
         self.logging = set_verbose.get('logging')
         self.single_host = set_verbose.get('single_host')
         self.logger = set_verbose.get('logger')
-        proxy = TunnelProxy(logger=self.logger, verbose=self.verbose, proxy_host="localhost", proxy_port=1080)
-        proxy.set_proxy()
+        tunnel = SetSocks5Tunnel(set_verbose=set_verbose)
+        tunnel_id = tunnel.check_pid()
+        if tunnel_id:
+            proxy = TunnelProxy(logger=self.logger, verbose=self.verbose, proxy_host="localhost", proxy_port=1080)
+            proxy.set_proxy()
       
 
     async def netmiko_connection(self, device: dict, commands: List[str]) -> str:

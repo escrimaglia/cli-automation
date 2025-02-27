@@ -62,7 +62,7 @@ def push_single_host(
         cmd_file: Annotated[typer.FileText, typer.Option("--cmdf", "-f", help="commands to configure on device", metavar="FILENAME Json file",rich_help_panel="Config Parameters", case_sensitive=False)] = None,
         ssh_config: Annotated[str, typer.Option("--cfg", "-s", help="ssh config file", rich_help_panel="Connection Parameters", case_sensitive=False)] = None,
         global_delay: Annotated[float, typer.Option("--delay", "-d", help="global delay factor", rich_help_panel="Connection Parameters", case_sensitive=False)] = .1,
-        #session_log: Annotated[str, typer.Option("--slog", "-s", help="Log file to record the session logs", rich_help_panel="Connection Parameters", case_sensitive=False)] = "cla.log",
+        session_log: Annotated[str, typer.Option("--slog", "-s", help="Log file to record the session logs", rich_help_panel="Connection Parameters", case_sensitive=False)] = None,
         verbose: Annotated[int, typer.Option("--verbose", "-v", count=True, help="Verbose level",rich_help_panel="Additional parameters", max=2)] = 0,
         log: Annotated[Logging, typer.Option("--llog", "-l", help="Log level", rich_help_panel="Additional parameters", case_sensitive=False)] = Logging.info.value,
         output: Annotated[typer.FileTextWrite, typer.Option("--output", "-o", help="output file", rich_help_panel="Additional parameters", case_sensitive=False)] = "output.json",
@@ -93,6 +93,7 @@ def push_single_host(
                     "secret": secret,
                     "device_type": device_type.value,
                     "global_delay_factor": global_delay,
+                    "session_log": session_log,
                     "ssh_config_file": ssh_config
                 }
             ],

@@ -1,7 +1,7 @@
 import asyncio
 import typer
 
-class ProgressBar:
+class ProgressBar():
     async def spinner_task(self, stop_event: asyncio.Event, message: str = None):
         spinner_frames = ["⠋", "⠙", "⠹", "⠸", "⠼", "⠴", "⠦", "⠧", "⠇", "⠏"]
 

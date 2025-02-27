@@ -1,5 +1,5 @@
 {
-  "tunnel": true,
+  "tunnel": false,
   "version": "1.0.4",
   "app": "cla",
   "log_file": "cla.log",
@@ -21,5 +21,8 @@
     "]",
     ">",
     "##"
-  ]
+  ],
+  "bastion_host": "netsim.octupus.com",
+  "bastion_user": "root",
+  "local_port": 1080
 }

@@ -17,16 +17,16 @@ app = typer.Typer(no_args_is_help=True)
 @app.command("setup", help="Setup SOCKS5 tunnel to the Bastion Host", no_args_is_help=True)
 def set_tunnel(
         bastion_user: Annotated[str, typer.Option("--user", "-u", help="bastion host username", rich_help_panel="Tunnel Parameters", case_sensitive=False)],
-        bastion_host: Annotated[str, typer.Option("--bastion", "-b", help="bastion host ip address", rich_help_panel="Tunnel Parameters", case_sensitive=False)],
+        bastion_host: Annotated[str, typer.Option("--bastion", "-b", help="bastion name or ip address", rich_help_panel="Tunnel Parameters", case_sensitive=False)],
         local_port: Annotated[int, typer.Option("--port", "-p", help="local port", rich_help_panel="Tunnel Parameters", case_sensitive=False)] = 1080,
         verbose: Annotated[int, typer.Option("--verbose", "-v", count=True, help="Verbose level",rich_help_panel="Additional parameters")] = 0,
         log: Annotated[Logging, typer.Option("--log", "-l", help="Log level", rich_help_panel="Additional parameters", case_sensitive=False)] = Logging.info.value,
     ):
 
     async def process():
-        set_verbose = {"verbose": verbose, "logging": log.value if log != None else None, "logger": logger}
+        set_verbose = {"verbose": verbose, "logging": log.value if log != None else None, "logger": logger, "bastion_host": bastion_host, "bastion_user":bastion_user ,"local_port": local_port}
         tunnel = SetSocks5Tunnel(set_verbose)
-        await tunnel.set_tunnel(bastion_user, bastion_host, local_port)
+        await tunnel.set_tunnel()
 
     progress = ProgressBar()
     asyncio.run(progress.run_with_spinner(process))

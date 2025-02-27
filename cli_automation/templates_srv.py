@@ -15,9 +15,7 @@ class Templates():
                     'username': 'user',
                     'password': 'password',
                     'device_type': 'type',
-                    'session_log': 'cla.log',
-                    'global_delay_factor': None,
-                    'ssh_config_file': '~/.ssh/config'
+                    'global_delay_factor': None
                 }
             ]
         }

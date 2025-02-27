@@ -4,35 +4,51 @@ import sys
 import os
 sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), '..', ".")))
 from . import config_data
+from .tunnel_srv import SetSocks5Tunnel
 
 
-class TunnelProxy:
+class TunnelProxy():
     def __init__(self, logger, verbose, proxy_host: str = "localhost", proxy_port: int = 1080):
         self.proxy_host = proxy_host
         self.proxy_port = proxy_port
         self.logger = logger
         self.verbose = verbose
+        self.bastion_host = config_data.get('bastion_host')
+        self.local_port = config_data.get('local_port')
+        self.bastion_user = config_data.get('bastion_user')
+        self.tunnel = config_data.get('tunnel')
 
-    # async def handle_read_file(self):
-    #         mf = ManageFiles(self.logger)
-    #         content = await mf.read_file("config.json")  # Await the coroutine
-    #         return content
-
-    # def set_proxy(self):
-    #     loop = asyncio.get_event_loop()
-    #     if loop.is_running():
-    #         task = loop.create_task(self.handle_read_file())  # Schedule the coroutine
-    #         task.add_done_callback(lambda t: self.get_result(t.result()))
-    #     else:
-    #         result = loop.run_until_complete(self.handle_read_file())
-    #         self.get_result(result)
         
     def set_proxy(self):
-        if config_data.get('tunnel'):
+        if self.tunnel:
+            set_verbose = {
+                            'verbose': self.verbose, 
+                            'logger': self.logger, 
+                            'logging': None, 
+                            'bastion_host': self.bastion_host, 
+                            'local_port': self.local_port, 
+                            'bastion_user': self.bastion_user
+                        }
+            tunnel = SetSocks5Tunnel(set_verbose=set_verbose)
+            process_id = tunnel.sync_check_pid()
+            if len(process_id) > 0:
+                self.test_proxy(22)
+            else:
+                self.logger.info(f"Application can not use the SOCKS5 tunnel, tunnel is not Up and Running")
+                print (f"-> Application can not use the SOCKS5 tunnel, tunnel is not Up and Running")
+        else:
+            print (f"-> SOCKS5 tunnel to BastionHost is not configured, if needed please run 'cla tunnel setup'")
+            self.logger.info(f"SOCKS5 tunnel to BastionHost is not configured, if needed please run 'cla tunnel setup'")
+
+    
+    def test_proxy(self, test_port=22):
+        try:
             socks.set_default_proxy(socks.SOCKS5, self.proxy_host, self.proxy_port)
             socket.socket = socks.socksocket
-            self.logger.info(f"\n-> Setting up the application to use the SOCKS5 tunnel, proxy-host: {self.proxy_host}, local-port: {self.proxy_port}")
-            print (f"\n-> Setting up the application to use the SOCKS5 tunnel, proxy-host: {self.proxy_host}, local-port: {self.proxy_port}")
-        else:
-            self.logger.info(f"\n-> Application can not use the SOCKS5 tunnel, tunnel is not Up and Running")
-            print (f"\n-> Application can not use the SOCKS5 tunnel, tunnel is not Up and Running")
+            socket.socket().connect((self.bastion_host, test_port))
+            self.logger.info(f"Setting up the application to use the SOCKS5 tunnel, proxy-host: {self.proxy_host}, local-port: {self.proxy_port}")
+            print (f"-> Setting up the application to use the SOCKS5 tunnel, proxy-host: {self.proxy_host}, local-port: {self.proxy_port}") 
+        except (socks.ProxyConnectionError, socket.error):
+            self.logger.info(f"Application can not use the SOCKS5 tunnel, tunnel is not Up and Running")
+            print (f"** Application can not use the SOCKS5 tunnel, tunnel is not Up and Running. Start SOCKS5 tunnel with 'cla tunnel setup'")
+            sys.exit(1)

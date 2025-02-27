@@ -2,9 +2,6 @@ import json
 from pathlib import Path
 import logging
 import logging.handlers
-import typer
-import os
-
 
 
 json_path = Path(__file__).parent / "config.json"
@@ -12,7 +9,7 @@ class ClaConfig():
     def __init__(self):
         self.config_data = {
             "tunnel": False,
-            "version": "1.0.4",
+            "version": "1.0.4 - XXI - By Ed Scrimaglia",
             "app": "cla",
             "log_file": "cla.log",
             "telnet_prompts": [">", "#", "(config)#", "(config-if)#", "$", "%", "> (doble)","# (doble)", "?", ")", "!", "*", "~", ":]", "]", ">", "##"]

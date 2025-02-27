@@ -16,7 +16,7 @@ from cli_automation import ssh_app
 
 sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), ".", "..")))
 
-app = typer.Typer(no_args_is_help=True)
+app = typer.Typer()
 
 def check_version(value: bool):
     if value:
@@ -29,7 +29,11 @@ app.add_typer(tunnel_app.app, name="tunnel", rich_help_panel="Main Commands")
 #app.add_typer(templates_app.app, name="files", rich_help_panel="Main Commands")
 
 
-@app.command("templates", short_help="Create working files", help="Download templates to create the working files", rich_help_panel="Main Commands", no_args_is_help=True)
+@app.command("templates", short_help="Create working files", 
+            help="Download templates to create the working files", 
+            rich_help_panel="Main Commands", 
+            no_args_is_help=True
+            )
 def download_templates(
     verbose: Annotated[int, typer.Option("--verbose", "-v", count=True, help="Verbose level",rich_help_panel="Additional parameters")] = 0,
     log: Annotated[Logging, typer.Option("--log", "-l", help="Log level", rich_help_panel="Additional parameters", case_sensitive=False)] = Logging.info.value,
@@ -65,3 +69,6 @@ def main(ctx: typer.Context,
         typer.echo("Please specify a command, try --help")
         raise typer.Exit(1)
     typer.echo (f"-> About to execute command: {ctx.invoked_subcommand}")
+
+if __name__ == "__main__":  
+    app()

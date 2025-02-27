@@ -171,5 +171,5 @@ def callback(ctx: typer.Context):
     typer.echo(f"-> About to execute {ctx.invoked_subcommand} sub-command")
     
 
-# if __name__ == "__main__":
-#     app()
+if __name__ == "__main__":
+    app()

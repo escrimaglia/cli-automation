@@ -55,14 +55,6 @@ class Templates():
             }
         }
 
-        # config = {
-        #     "tunnel": False,
-        #     "version": "1.0.4",
-        #     "app": "cla",
-        #     "log_file": "cla.log",
-        #     "telnet_prompts": [">", "#", "(config)#", "(config-if)#", "$", "%", "> (doble)","# (doble)", "?", ")", "!", "*", "~", ":]", "]", ">", "##"]
-        # }
-
         files = [example_hosts_file, example_ssh_commands_file, example_telnet_commands_structure, example_telnet_commands_example]
         if file_name is None:
             for template in files:

@@ -12,7 +12,6 @@ from cli_automation import logger
 from cli_automation import telnet_app
 from cli_automation import tunnel_app
 from cli_automation import ssh_app
-#from cli_automation import templates_app
 
 sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), ".", "..")))
 
@@ -30,12 +29,13 @@ app.add_typer(tunnel_app.app, name="tunnel", rich_help_panel="Main Commands")
 
 
 @app.command("templates", short_help="Create working files", 
-            help="Download templates to create the working files", 
+            help="""The cla templates command generates example files, which can be used to create working files—both 
+            for connection parameters and for device configuration commands""", 
             rich_help_panel="Main Commands", 
             no_args_is_help=True
             )
 def download_templates(
-    verbose: Annotated[int, typer.Option("--verbose", "-v", count=True, help="Verbose level",rich_help_panel="Additional parameters")] = 0,
+    verbose: Annotated[int, typer.Option("--verbose", "-v", count=True, help="Verbose level",rich_help_panel="Additional parameters", max=2)] = 0,
     log: Annotated[Logging, typer.Option("--log", "-l", help="Log level", rich_help_panel="Additional parameters", case_sensitive=False)] = Logging.info.value,
     ):
    
@@ -59,9 +59,11 @@ def main(ctx: typer.Context,
             callback=check_version,
             is_eager=True)] = None):
     """
-    CLA (Command Line interface Automation) is a Python-based application designed to automate infrastructure directly from the command line. 
-    With CLA, there is no need to write a single line of code, users simply follow the options presented in the help menu. It was specifically 
-    developed for networking engineers who have not yet advanced in programming knowledge.  
+    CLA (Command Line interface Automation) is a Python-based application designed to automate infrastructure directly from the command line.
+    With CLA, there is no need to write a single line of code, users simply follow the options presented in the help menu. CLA was specifically
+    designed for networking engineers who have not yet advanced in programming knowledge.
+    CLA lets you both extract configurations and set up networking devices, doing it all asynchronously. You can enter connection and configuration
+    parameters either via the command line or using JSON files.
     LA version 1 focuses exclusively on Network Automation, while version 2 will introduce Cloud Automation capabilities.
     """
     
@@ -70,5 +72,5 @@ def main(ctx: typer.Context,
         raise typer.Exit(1)
     typer.echo (f"-> About to execute command: {ctx.invoked_subcommand}")
 
-if __name__ == "__main__":  
-    app()
+# if __name__ == "__main__":  
+#     app()

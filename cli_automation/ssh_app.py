@@ -17,6 +17,56 @@ from . import logger
 
 app = typer.Typer(no_args_is_help=True)
 
+@app.command("onepull", help="Pull config from a single Host", no_args_is_help=True)
+def pull_single_host(
+        host: Annotated[str, typer.Option("--host", "-h", help="host ip address", rich_help_panel="Connection Parameters", case_sensitive=False)],
+        user: Annotated[str, typer.Option("--user", "-u", help="username", rich_help_panel="Connection Parameters", case_sensitive=False)],
+        password: Annotated[str, typer.Option(prompt=True, help="password", metavar="password must be provided by keyboard",rich_help_panel="Connection Parameters", case_sensitive=False, hide_input=True, hidden=True)],
+        commands: Annotated[List[str], typer.Option("--cmd", "-c", help="commands to execute on device", rich_help_panel="Commands Parameter", case_sensitive=False)],
+        secret: Annotated[str, typer.Option(prompt=True, help="secret", metavar="password must be provided by keyboard to raise privileges",rich_help_panel="Connection Parameters", case_sensitive=False, hide_input=True, hidden=True)],
+        device_type: Annotated[DeviceType, typer.Option("--type", "-t", help="device type", rich_help_panel="Connection Parameters", case_sensitive=False)],
+        port: Annotated[int, typer.Option("--port", "-p", help="port", rich_help_panel="Connection Parameters", case_sensitive=False)] = 22,
+        verbose: Annotated[int, typer.Option("--verbose", "-v", count=True, help="Verbose level",rich_help_panel="Additional parameters", max=2)] = 0,
+        log: Annotated[Logging, typer.Option("--log", "-l", help="Log level", rich_help_panel="Additional parameters", case_sensitive=True)] = Logging.info.value,
+        output: Annotated[typer.FileTextWrite, typer.Option("--output", "-o", help="output file", rich_help_panel="Additional parameters", case_sensitive=False)] = "output.json",
+        global_delay: Annotated[float, typer.Option("--delay", "-d", help="port", rich_help_panel="Connection Parameters", case_sensitive=False)] = 0.1,
+        ssh_config: Annotated[str, typer.Option("--cfg", "-s", help="ssh config file", rich_help_panel="Connection Parameters", case_sensitive=False)] = None,
+
+    ):
+    
+    async def process():
+        datos = {
+            "devices": [
+                {
+                    "host": host,
+                    "username": user,
+                    "password": password,
+                    "secret": secret,
+                    "device_type": device_type.value,
+                    "port": port,
+                    "ssh_config_file": ssh_config,
+                    "global_delay_factor": global_delay
+                }
+            ],
+            "commands": commands
+        }
+
+        
+        set_verbose = {"verbose": verbose, "logging": log.value if log != None else None, "single_host": True, "logger": logger}
+        if verbose == 2:
+            print (f"--> data: {json.dumps(datos, indent=3)}")
+        start = datetime.now()
+        netm = AsyncNetmikoPull(set_verbose=set_verbose)
+        result = await netm.run(datos)
+        end = datetime.now()
+        output.write(result)
+        if verbose in [1,2]:
+            print (f"\n{result}")
+            print (f"-> Execution time: {end - start}")
+
+    progress = ProgressBar()
+    asyncio.run(progress.run_with_spinner(process))
+
 
 @app.command("pullconfig", help="Pull config from hosts in host file", no_args_is_help=True)
 def pull_multiple_host(
@@ -51,7 +101,7 @@ def pull_multiple_host(
     asyncio.run(progress.run_with_spinner(process))
 
 
-@app.command("quickpush", help="Push config to a single host", no_args_is_help=True)
+@app.command("onepush", help="Push config to a single host", no_args_is_help=True)
 def push_single_host(
         host: Annotated[str, typer.Option("--host", "-h", help="host ip address", rich_help_panel="Connection Parameters", case_sensitive=False)],
         user: Annotated[str, typer.Option("--user", "-u", help="username", rich_help_panel="Connection Parameters", case_sensitive=False)],
@@ -60,12 +110,12 @@ def push_single_host(
         device_type: Annotated[DeviceType, typer.Option("--type", "-t", help="device type", rich_help_panel="Connection Parameters", case_sensitive=False)],
         commands: Annotated[List[str], typer.Option("--cmd", "-c", help="commands to configure on device",rich_help_panel="Config Parameters", case_sensitive=False)] = None,
         cmd_file: Annotated[typer.FileText, typer.Option("--cmdf", "-f", help="commands to configure on device", metavar="FILENAME Json file",rich_help_panel="Config Parameters", case_sensitive=False)] = None,
-        ssh_config: Annotated[str, typer.Option("--cfg", "-s", help="ssh config file", rich_help_panel="Connection Parameters", case_sensitive=False)] = None,
-        global_delay: Annotated[float, typer.Option("--delay", "-d", help="global delay factor", rich_help_panel="Connection Parameters", case_sensitive=False)] = .1,
-        session_log: Annotated[str, typer.Option("--slog", "-s", help="Log file to record the session logs", rich_help_panel="Connection Parameters", case_sensitive=False)] = None,
+        port: Annotated[int, typer.Option("--port", "-p", help="port", rich_help_panel="Connection Parameters", case_sensitive=False)] = 22,        
         verbose: Annotated[int, typer.Option("--verbose", "-v", count=True, help="Verbose level",rich_help_panel="Additional parameters", max=2)] = 0,
         log: Annotated[Logging, typer.Option("--llog", "-l", help="Log level", rich_help_panel="Additional parameters", case_sensitive=False)] = Logging.info.value,
         output: Annotated[typer.FileTextWrite, typer.Option("--output", "-o", help="output file", rich_help_panel="Additional parameters", case_sensitive=False)] = "output.json",
+        global_delay: Annotated[float, typer.Option("--delay", "-d", help="global delay factor", rich_help_panel="Connection Parameters", case_sensitive=False)] = .1,
+        ssh_config: Annotated[str, typer.Option("--cfg", "-s", help="ssh config file", rich_help_panel="Connection Parameters", case_sensitive=False)] = None,
 
     ):
 
@@ -92,8 +142,8 @@ def push_single_host(
                     "password": password,
                     "secret": secret,
                     "device_type": device_type.value,
+                    "port": port,
                     "global_delay_factor": global_delay,
-                    "session_log": session_log,
                     "ssh_config_file": ssh_config
                 }
             ],
@@ -163,13 +213,12 @@ def push_multiple_host(
     asyncio.run(progress.run_with_spinner(process))
 
 
-@app.callback(invoke_without_command=True, help="Access devices using SSH protocol")
+@app.callback(invoke_without_command=True, short_help="Accesses devices via the SSH protocol")
 def callback(ctx: typer.Context):
     """
-    Access network devices using SSH protocol for automation
+    The cla ssh command allows access to devices via the SSH protocol. The command can be used to pull or push configurations to devices.
     """
     typer.echo(f"-> About to execute {ctx.invoked_subcommand} sub-command")
     
-
-if __name__ == "__main__":
-    app()
+# if __name__ == "__main__":
+#     app()

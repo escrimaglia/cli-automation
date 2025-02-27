@@ -14,12 +14,12 @@ from . import logger
 
 app = typer.Typer(no_args_is_help=True)
 
-@app.command("setup", help="Setup SOCKS5 tunnel to the Bastion Host", no_args_is_help=True)
+@app.command("setup", short_help="Setup SOCKS5 tunnel to the Bastion Host", no_args_is_help=True)
 def set_tunnel(
         bastion_user: Annotated[str, typer.Option("--user", "-u", help="bastion host username", rich_help_panel="Tunnel Parameters", case_sensitive=False)],
         bastion_host: Annotated[str, typer.Option("--bastion", "-b", help="bastion name or ip address", rich_help_panel="Tunnel Parameters", case_sensitive=False)],
         local_port: Annotated[int, typer.Option("--port", "-p", help="local port", rich_help_panel="Tunnel Parameters", case_sensitive=False)] = 1080,
-        verbose: Annotated[int, typer.Option("--verbose", "-v", count=True, help="Verbose level",rich_help_panel="Additional parameters")] = 0,
+        verbose: Annotated[int, typer.Option("--verbose", "-v", count=True, help="Verbose level",rich_help_panel="Additional parameters", max=2)] = 0,
         log: Annotated[Logging, typer.Option("--log", "-l", help="Log level", rich_help_panel="Additional parameters", case_sensitive=False)] = Logging.info.value,
     ):
 
@@ -32,7 +32,7 @@ def set_tunnel(
     asyncio.run(progress.run_with_spinner(process))
 
 
-@app.command("kill", help="Kill SOCKS5 tunnel to the bastion Host")
+@app.command("kill", short_help="Kill SOCKS5 tunnel to the bastion Host")
 def kill_tunnel(
         verbose: Annotated[int, typer.Option("--verbose", "-v", count=True, help="Verbose level",rich_help_panel="Additional parameters")] = 0,
         log: Annotated[Logging, typer.Option("--log", "-l", help="Log level", rich_help_panel="Additional parameters", case_sensitive=False)] = Logging.info.value,
@@ -47,14 +47,15 @@ def kill_tunnel(
     asyncio.run(progress.run_with_spinner(process))
 
 
-@app.callback(invoke_without_command=True, help="Manage SOCKS5 tunnel with Bastion Host")
+@app.callback(invoke_without_command=True, short_help="Manage SOCKS5 tunnel with Bastion Host")
 def callback(ctx: typer.Context):
     """
-    Managing a SOCKS5 tunnel with the Bastion Host. A SOCKS5 tunnel is created when the cla app runs from a machine that doesn't have 
-    direct access to the devices and needs to go through a Bastion Host. To verify if the tunnel is working, you can use the command lsof -i:{}
+    Sometimes, the machine running CLA doesn’t have direct access to the devices and must go through a Bastion Host or Jump Host. To connect via a Bastion Host, you can 
+    either configure SSH specifically or set up a tunnel. Personally, I think creating a tunnel is more efficient since it avoids SSH configuration. Using cla tunnel, 
+    you can create or remove a SOCKS5 tunnel. CLA constantly monitors the tunnel’s status, but you can also manually check it using the Linux command lsof -i:{local_port}.
     """
     typer.echo(f"-> About to execute {ctx.invoked_subcommand} sub-command")
     
 
-if __name__ == "__main__":
-    app()
+# if __name__ == "__main__":
+#     app()

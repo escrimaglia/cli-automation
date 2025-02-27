@@ -14,4 +14,3 @@ class DeviceType(Enum):
     arista_eos = "arista_eos"
     huawei = "huawei"
     nokia_sros = "alcatel_sros"
-    autodetect = "autodetect"

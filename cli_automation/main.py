@@ -34,16 +34,14 @@ app.add_typer(tunnel_app.app, name="tunnel", rich_help_panel="Main Commands")
             no_args_is_help=True
             )
 def download_templates(
-    verbose: Annotated[int, typer.Option("--verbose", "-v", count=True, help="Verbose level",rich_help_panel="Additional parameters", max=2)] = 0,
-    log: Annotated[Logging, typer.Option("--log", "-l", help="Log level", rich_help_panel="Additional parameters", case_sensitive=False)] = Logging.info.value,
+        log: Annotated[Logging, typer.Option("--log", "-l", help="Log level", rich_help_panel="Additional parameters", case_sensitive=False)] = Logging.info.value,
     ):
    
     async def process():
         set_verbose = {"logging": log.value if log != None else None, "logger": logger}
         template = Templates(set_verbose=set_verbose)
         await template.create_template(file_name=None)
-        if verbose in [1,2]:
-            print ("\nAll the templates have been successfully created")
+        print ("\n** All the templates have been successfully created")
 
     progress = ProgressBar()
     asyncio.run(progress.run_with_spinner(process))
@@ -58,16 +56,17 @@ def main(ctx: typer.Context,
             callback=check_version,
             is_eager=True)] = None):
     """
-    CLA `Command Line interface Automation` is a Python-based application designed to automate infrastructure directly from the command line.
+    CLA `Command Line interface Automation` is a Typer Python-based application designed to automate infrastructure directly from the command line.
     With CLA, there is no need to write a single line of code, users simply follow the options presented in the help menu. When I thought about building CLA, 
-    I considered those network engineers who have not yet acquired the necessary software knowledge to advance in automation practices, so `CLA was specifically 
-    designed for those engineers who have not yet advanced in programming knowledge but need to move on on Network Autoamation`.
+    I considered those network engineers who have not yet acquired the necessary software knowledge, so `CLA was specifically designed to enable engineers who 
+    have not yet acquired software knowledge to progress in the practice of automation`.
     CLA lets you both extract configurations and set up networking devices, doing it all asynchronously. You can enter connection and configuration
     parameters either via the command line or using JSON files.
+    Another reason I decided to develop CLA is to enable its commands to be invoked from any programming language, once again, without requiring a single line of code for automation.
     CLA version 1 focuses exclusively on Network Automation, while version 2 will introduce Cloud Automation capabilities.
-
-    Ed Scrimaglia
-    """
+    
+    `CLA is a project developed by Ed Scrimaglia`
+    """ 
     
     if ctx.invoked_subcommand is None:
         typer.echo("Please specify a command, try --help")

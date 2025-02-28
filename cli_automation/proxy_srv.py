@@ -2,9 +2,11 @@ import socks
 import socket
 import sys
 import os
-sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), '..', ".")))
 from . import config_data
 from .tunnel_srv import SetSocks5Tunnel
+
+sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), '..', ".")))
+
 
 
 class TunnelProxy():
@@ -35,7 +37,8 @@ class TunnelProxy():
                 self.test_proxy(22)
             else:
                 self.logger.info(f"Application can not use the SOCKS5 tunnel, tunnel is not Up and Running")
-                print (f"-> Application can not use the SOCKS5 tunnel, tunnel is not Up and Running")
+                if self.verbose in [1,2]:
+                    print (f"-> Application can not use the SOCKS5 tunnel, tunnel is not Up and Running")
         else:
             print (f"-> SOCKS5 tunnel to BastionHost is not configured, if needed please run 'cla tunnel setup'")
             self.logger.info(f"SOCKS5 tunnel to BastionHost is not configured, if needed please run 'cla tunnel setup'")
@@ -47,7 +50,8 @@ class TunnelProxy():
             socket.socket = socks.socksocket
             socket.socket().connect((self.bastion_host, test_port))
             self.logger.info(f"Setting up the application to use the SOCKS5 tunnel, proxy-host: {self.proxy_host}, local-port: {self.proxy_port}")
-            print (f"-> Setting up the application to use the SOCKS5 tunnel, proxy-host: {self.proxy_host}, local-port: {self.proxy_port}") 
+            if self.verbose in [1,2]:
+                print (f"-> Setting up the application to use the SOCKS5 tunnel, proxy-host: {self.proxy_host}, local-port: {self.proxy_port}") 
         except (socks.ProxyConnectionError, socket.error):
             self.logger.info(f"Application can not use the SOCKS5 tunnel, tunnel is not Up and Running")
             print (f"** Application can not use the SOCKS5 tunnel, tunnel is not Up and Running. Start SOCKS5 tunnel with 'cla tunnel setup'")

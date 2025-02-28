@@ -19,6 +19,7 @@ class SetSocks5Tunnel():
         self.bastion_host = set_verbose.get('bastion_host')
         self.local_port = set_verbose.get('local_port')
         self.bastion_user = set_verbose.get('bastion_user')
+        self.file = ManageFiles(self.logger)
 
     
     async def async_check_pid(self):
@@ -68,12 +69,11 @@ class SetSocks5Tunnel():
                 process = await asyncio.create_subprocess_exec(
                     *command, stdout=asyncio.subprocess.DEVNULL, stderr=asyncio.subprocess.PIPE
                 )
-                mf = ManageFiles()
                 config_data['bastion_host'] = self.bastion_host
                 config_data['bastion_user'] = self.bastion_user
                 config_data['local_port'] = self.local_port
                 config_data['tunnel'] = True
-                await mf.create_file("config.json", json.dumps(config_data, indent=2))
+                await self.file.create_file("config.json", json.dumps(config_data, indent=2))
                 self.logger.info(f"SOCKS5 tunnel started successfully at {self.bastion_user}@{self.bastion_host}:{self.local_port}")
                 print (f"** SOCKS5 tunnel started successfully at {self.bastion_user}@{self.bastion_host}:{self.local_port}")
             else:
@@ -99,9 +99,8 @@ class SetSocks5Tunnel():
                 )
                 stdout, stderr = await process.communicate()
                 if process.returncode == 0:
-                    mf = ManageFiles()
                     config_data['tunnel'] = False
-                    await mf.create_file("config.json", json.dumps(config_data, indent=2))
+                    await self.file.create_file("config.json", json.dumps(config_data, indent=2))
                     self.logger.info(f"Config file updated, tunnel status: False")
                     print (f"\n** SOCKS5 tunnel (PID {pid}) killed successfully")
                     self.logger.info(f"SOCKS5 tunnel (PID {pid}) killed successfully")

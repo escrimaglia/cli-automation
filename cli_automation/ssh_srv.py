@@ -7,7 +7,7 @@ import asyncio
 from netmiko import ConnectHandler, NetmikoAuthenticationException, NetMikoTimeoutException
 import paramiko
 from pydantic import ValidationError
-from .model_srv import ModelSshPull, ModelSshPush, Device
+from .model_srv import ModelSsh
 from typing import List
 import json
 from .proxy_srv import TunnelProxy
@@ -49,22 +49,19 @@ class AsyncNetmikoPull():
             return (f"** Error connecting to {device['host']}: unexpected {str(error).replace('\n', ' ')}")
         
 
-    def data_validation(self, device: Device, commands: List[str]) -> None:
+    def data_validation(self, data: ModelSsh) -> None:
         if self.verbose in [1,2]:
-            print ("->", f"About to execute Data Validation for {device.get('host')}")
+            print ("->", f"About to execute Data Validation")
         try:
-            ModelSshPull(device=device, commands=commands)
+            ModelSsh(devices=data.get('devices'), commands=data.get('commands'))
         except ValidationError as error:
             self.logger.error(f"Data validation error: {error}")
-            if self.verbose in [1,2]:
-                print (f"->, {error}")
+            print (f"->, {error}")
             sys.exit(1)
 
 
     async def run(self, data: dict) -> dict:
-        for device in data.get('devices'):
-            self.data_validation(device=device, commands=data.get('commands'))
-        #self.data_validation(data.get('devices'), data.get('commands'))
+        self.data_validation(data)
         tasks = []
         for device in data.get('devices'):
             tasks.append(self.netmiko_connection(device, commands=data.get('commands')))
@@ -115,15 +112,14 @@ class AsyncNetmikoPush():
             return (f"** Error connecting to {device['host']}: unexpected {str(error).replace('\n', ' ')}")
         
         
-    def data_validation(self, data: dict) -> None:
+    def data_validation(self, data: ModelSsh) -> None:
         if self.verbose in [1,2]:
             print ("->", f"About to execute Data Validation")
         try:
-            ModelSshPush(devices=data.get('devices'), commands=data.get('commands'))
+            ModelSsh(devices=data.get('devices'), commands=data.get('commands'))
         except ValidationError as error:
             self.logger.error(f"Data validation error: {error}")
-            if self.verbose in [1,2]:
-                print (f" ->, {error}")
+            print (f" ->, {error}")
             sys.exit(1)
 
 

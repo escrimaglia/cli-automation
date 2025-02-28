@@ -32,6 +32,7 @@ class AsyncNetmikoTelnetPull():
     def connect(self, device: dict, command: str) -> str:
         try:
             device['device_type'] = 'generic_telnet'
+            device["global_delay_factor"] = 2
             connection = ConnectHandler(**device)
             connection.send_command_timing(device.get('username'))
             connection.send_command_timing(device.get('password'))
@@ -56,16 +57,13 @@ class AsyncNetmikoTelnetPull():
 
 
     def data_validation(self, data: ModelTelnetPull) -> None:
-        devices = data.get('devices')
-        command = data.get('command')
-        if self.verbose >= 1:
+        if self.verbose in [1,2]:
             print(f"-> About to execute Data Validation")
         try:
-            ModelTelnetPull(devices=devices, command=command)
+            ModelTelnetPull(devices=data.get('devices'), command=data.get('command'))
         except ValidationError as error:
             self.logger.error(f"Data validation error: {error}")
-            if self.verbose >= 1:
-                print(f" -> {error}")
+            print(f" -> {error}")
             sys.exit(1)
 
 
@@ -75,7 +73,7 @@ class AsyncNetmikoTelnetPull():
         tasks = []
         for device in data.get('devices'):
             tasks.append(self.device_connect(device, data.get('command')))
-            if self.verbose >= 1:
+            if self.verbose in [1,2]:
                 print(f"-> Connecting to device {device['host']}, executing command {data.get('command')}")
         results = await asyncio.gather(*tasks)
         output.extend(results)
@@ -141,20 +139,18 @@ class AsyncNetmikoTelnetPush():
             return f"** Error connecting to {device['host']}: unexpected {str(error).replace('\n', ' ')}"
 
 
-    def data_validation(self, data: List[ModelTelnetPush]) -> None:
-        for device in data:
-            if self.verbose in [1,2]:
-                print (f"-> About to execute Data Validation for {device.get('device').get('host')}")
-            try:
-                ModelTelnetPush(device=device.get('device'), commands=device.get('commands'))
-            except ValidationError as error:
-                self.logger.error(f"Data validation error: {error}")
-                if self.verbose >= 1:
-                    print (f" ->, {error}")
-                sys.exit(1)
+    def data_validation(self, data: ModelTelnetPush) -> None:
+        if self.verbose in [1,2]:
+                print(f"-> About to execute Data Validation")
+        try:
+            ModelTelnetPush(devices=data.get('device'), commands=data.get('commands'))
+        except ValidationError as error:
+            self.logger.error(f"Data validation error: {error}")
+            print (f" ->, {error}")
+            sys.exit(1)
 
     
-    async def run(self, data: List[dict]) -> dict:
+    async def run(self, data: dict) -> dict:
         self.data_validation(data=data)
         prompts = config_data.get("telnet_prompts")
         tasks = []

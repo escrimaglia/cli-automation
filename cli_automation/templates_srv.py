@@ -5,7 +5,7 @@ import sys
 class Templates():
     def __init__(self, set_verbose: dict):
         self.logger = set_verbose.get('logger')
-        self.file = ManageFiles()
+        self.file = ManageFiles(self.logger)
 
     async def create_template(self, file_name: str = None) -> None:
         example_hosts_file = {   

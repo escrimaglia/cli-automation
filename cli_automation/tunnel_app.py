@@ -50,9 +50,11 @@ def kill_tunnel(
 @app.callback(invoke_without_command=True, short_help="Manage SOCKS5 tunnel with Bastion Host")
 def callback(ctx: typer.Context):
     """
-    Sometimes, the machine running CLA doesn’t have direct access to the devices and must go through a Bastion Host or Jump Host. To connect via a Bastion Host, you can 
-    either configure SSH specifically or set up a tunnel. Personally, I think creating a tunnel is more efficient since it avoids SSH configuration. Using cla tunnel, 
-    you can create or remove a SOCKS5 tunnel. CLA constantly monitors the tunnel’s status, but you can also manually check it using the Linux command lsof -i:{local_port}.
+    Sometimes, the machine running CLA doesn’t have direct access to the devices and must go through a Bastion Host or Jump Host. To connect via a Bastion Host, 
+    you can either configure SSH specifically or set up a tunnel. Personally, I think creating a tunnel is more efficient since it avoids SSH configuration. 
+    Using `cla tunnel`, you can create or remove a SOCKS5 tunnel. For cla tunnel to function properly, the host running CLA must have easy access to the 
+    Bastion Host (it should be listed in the Bastion Host's known_hosts file). CLA constantly monitors the tunnel’s status, but you can also manually check it using 
+    the Linux command `lsof -i:{local_port}`.
     """
     typer.echo(f"-> About to execute {ctx.invoked_subcommand} sub-command")
     

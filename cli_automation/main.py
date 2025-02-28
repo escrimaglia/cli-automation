@@ -25,7 +25,6 @@ def check_version(value: bool):
 app.add_typer(ssh_app.app, name="ssh", rich_help_panel="Main Commands")
 app.add_typer(telnet_app.app, name="telnet", rich_help_panel="Main Commands")
 app.add_typer(tunnel_app.app, name="tunnel", rich_help_panel="Main Commands")
-#app.add_typer(templates_app.app, name="files", rich_help_panel="Main Commands")
 
 
 @app.command("templates", short_help="Create working files", 
@@ -59,12 +58,15 @@ def main(ctx: typer.Context,
             callback=check_version,
             is_eager=True)] = None):
     """
-    CLA (Command Line interface Automation) is a Python-based application designed to automate infrastructure directly from the command line.
-    With CLA, there is no need to write a single line of code, users simply follow the options presented in the help menu. CLA was specifically
-    designed for networking engineers who have not yet advanced in programming knowledge.
+    CLA `Command Line interface Automation` is a Python-based application designed to automate infrastructure directly from the command line.
+    With CLA, there is no need to write a single line of code, users simply follow the options presented in the help menu. When I thought about building CLA, 
+    I considered those network engineers who have not yet acquired the necessary software knowledge to advance in automation practices, so `CLA was specifically 
+    designed for those engineers who have not yet advanced in programming knowledge but need to move on on Network Autoamation`.
     CLA lets you both extract configurations and set up networking devices, doing it all asynchronously. You can enter connection and configuration
     parameters either via the command line or using JSON files.
-    LA version 1 focuses exclusively on Network Automation, while version 2 will introduce Cloud Automation capabilities.
+    CLA version 1 focuses exclusively on Network Automation, while version 2 will introduce Cloud Automation capabilities.
+
+    Ed Scrimaglia
     """
     
     if ctx.invoked_subcommand is None:

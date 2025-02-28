@@ -1,11 +1,12 @@
 # `cla`
 
 CLA `Command Line interface Automation` is a Python-based application designed to automate infrastructure directly from the command line.
-With CLA, there is no need to write a single line of code, users simply follow the options presented in the help menu. `CLA was specifically
-designed for networking engineers who have not yet advanced in programming knowledge`.
+With CLA, there is no need to write a single line of code, users simply follow the options presented in the help menu. When I thought about building CLA, I considered those network engineers who have not yet acquired the necessary software knowledge to advance in automation practices, so `CLA was specifically designed for those engineers who have not yet advanced in programming knowledge but need to move on on Network Autoamation`.
 CLA lets you both extract configurations and set up networking devices, doing it all asynchronously. You can enter connection and configuration
 parameters either via the command line or using JSON files.
 LA version 1 focuses exclusively on Network Automation, while version 2 will introduce Cloud Automation capabilities.
+
+`Ed Scrimaglia`
 
 **Usage**:
 
@@ -211,7 +212,7 @@ $ cla telnet pushconfig [OPTIONS]
 
 ## `cla tunnel`
 
-Sometimes, the machine running CLA doesn’t have direct access to the devices and must go through a Bastion Host or Jump Host. To connect via a Bastion Host, you can either configure SSH specifically or set up a tunnel. Personally, I think creating a tunnel is more efficient since it avoids SSH configuration. Using `cla tunnel`, you can create or remove a SOCKS5 tunnel. CLA constantly monitors the tunnel’s status, but you can also manually check it using the Linux command `lsof -i:{local_port}`.
+Sometimes, the machine running CLA doesn’t have direct access to the devices and must go through a Bastion Host or Jump Host. To connect via a Bastion Host, you can either configure SSH specifically or set up a tunnel. Personally, I think creating a tunnel is more efficient since it avoids SSH configuration. Using `cla tunnel`, you can create or remove a SOCKS5 tunnel. For `cla tunnel` to function properly, the host running CLA must have easy access to the Bastion Host (it should be listed in the Bastion Host's known_hosts file). CLA constantly monitors the tunnel’s status, but you can also manually check it using the Linux command `lsof -i:{local_port}`.
 
 **Usage**:
 
@@ -261,6 +262,4 @@ $ cla tunnel kill [OPTIONS]
 
 ### `cla Logging`
 
-CLA includes an efficient Log System that allows you to view INFO, DEBUG, CRITICAL, and ERROR details for each operation performed by CLA.
-
-#### By Ed Scrimaglia - <edgardo.scrimaglia@gmail.com>
+CLA includes an efficient Log System that allows you to view INFO, DEBUG, CRITICAL, and ERROR details for each operation performed by CLA. `cla-loging` includes a log file rotation based on file size. Each time the log file exceeds 5 MB, a new log file will be created.

@@ -9,7 +9,7 @@ class ManageFiles():
         try:
             async with aiofiles.open(file_name, "w") as file:
                 await file.write(content)
-            self.logger.info(f"File {file_name} created")
+            self.logger.info(f"File {file_name} created/updated")
         except Exception as error:
             self.logger.error(f"File {file_name} not created, error {error}")
             print (f"\n** File {file_name} not created, error: {error}")

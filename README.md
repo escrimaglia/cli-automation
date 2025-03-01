@@ -5,7 +5,7 @@ With CLA, there is no need to write a single line of code, users simply follow t
 CLA lets you both extract configurations and set up networking devices, doing it all asynchronously. You can enter connection and configuration
 parameters either via the command line or using JSON files.
 Another reason I decided to develop CLA is to enable its commands to be invoked from any programming language, once again, without requiring a single line of code for automation.
-CLA version 1 focuses exclusively on Network Automation, while version 2 will introduce Cloud Automation capabilities.
+CLA version 1 focuses exclusively on Network Automation, while version 2 will introduce Cloud Automation capabilities.  
 
 `Ed Scrimaglia`
 

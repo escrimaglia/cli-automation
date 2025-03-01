@@ -4,6 +4,7 @@ import sys
 
 class Templates():
     def __init__(self, set_verbose: dict):
+        self.verbose = set_verbose.get('verbose')
         self.logger = set_verbose.get('logger')
         self.file = ManageFiles(self.logger)
 

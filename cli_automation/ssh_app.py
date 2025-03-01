@@ -4,6 +4,7 @@
 import sys
 import os
 sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), '..', ".")))
+
 import typer
 from typing_extensions import Annotated
 from .ssh_srv import AsyncNetmikoPull, AsyncNetmikoPush
@@ -15,9 +16,10 @@ from .progress_bar import ProgressBar
 from datetime import datetime
 from . import logger
 
+
 app = typer.Typer(no_args_is_help=True)
 
-@app.command("onepull", help="Pull config from a single Host", no_args_is_help=True)
+@app.command("onepull", help="Pull config from a single host", no_args_is_help=True)
 def pull_single_host(
         host: Annotated[str, typer.Option("--host", "-h", help="host ip address", rich_help_panel="Connection Parameters", case_sensitive=False)],
         user: Annotated[str, typer.Option("--user", "-u", help="username", rich_help_panel="Connection Parameters", case_sensitive=False)],
@@ -84,7 +86,9 @@ def pull_multiple_host(
             typer.echo("Error reading json file: devices key not found or reading an incorrect json file")
             raise typer.Exit(code=1)
         
-        datos["commands"] = commands
+        command = json.loads(commands.read())
+        print (f"command: {command}")
+        datos["commands"] = command
         set_verbose = {"verbose": verbose, "logging": log.value if log != None else None, "single_host": False, "logger": logger}
         if verbose == 2:
             print (f"--> data: {json.dumps(datos, indent=3)}")  

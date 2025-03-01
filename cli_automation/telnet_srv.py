@@ -1,20 +1,20 @@
 # Telnet classes for the CLI Automation project
 # Ed Scrimaglia
 
+import sys
+import os
+sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), '..', '.')))
+
 from netmiko import ConnectHandler, NetmikoAuthenticationException, NetMikoTimeoutException
 from pydantic import ValidationError
 from .model_srv import ModelTelnetPull, ModelTelnetPush
 from .proxy_srv import TunnelProxy
 import asyncio
 import paramiko
-import sys
 from typing import List
-import os
 import json
 from .files_srv import ManageFiles
 from . import config_data
-
-sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), '..', '.')))
 
 class AsyncNetmikoTelnetPull():
     def __init__(self, set_verbose: dict):

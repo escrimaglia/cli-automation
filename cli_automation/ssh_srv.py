@@ -3,6 +3,8 @@
 
 import sys
 import os
+sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), '..', '.')))
+
 import asyncio
 from netmiko import ConnectHandler, NetmikoAuthenticationException, NetMikoTimeoutException
 import paramiko
@@ -13,7 +15,6 @@ import json
 from .proxy_srv import TunnelProxy
 from .tunnel_srv import SetSocks5Tunnel
 
-sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), '..', '.')))
 
 class AsyncNetmikoPull():
     def __init__(self, set_verbose: dict):

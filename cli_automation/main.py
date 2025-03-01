@@ -1,5 +1,7 @@
 import sys
 import os
+sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), ".", "..")))
+
 import typer
 from typing_extensions import Annotated
 from cli_automation import config_data
@@ -13,7 +15,6 @@ from cli_automation import telnet_app
 from cli_automation import tunnel_app
 from cli_automation import ssh_app
 
-sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), ".", "..")))
 
 app = typer.Typer()
 
@@ -34,11 +35,12 @@ app.add_typer(tunnel_app.app, name="tunnel", rich_help_panel="Main Commands")
             no_args_is_help=True
             )
 def download_templates(
+        verbose: Annotated[int, typer.Option("--verbose", "-v", count=True, help="Verbose level",rich_help_panel="Additional parameters", max=2)] = 1,
         log: Annotated[Logging, typer.Option("--log", "-l", help="Log level", rich_help_panel="Additional parameters", case_sensitive=False)] = Logging.info.value,
     ):
    
     async def process():
-        set_verbose = {"logging": log.value if log != None else None, "logger": logger}
+        set_verbose = {"logging": log.value if log != None else None, "logger": logger, "verbose": verbose}
         template = Templates(set_verbose=set_verbose)
         await template.create_template(file_name=None)
         print ("\n** All the templates have been successfully created")
@@ -63,9 +65,9 @@ def main(ctx: typer.Context,
     CLA lets you both extract configurations and set up networking devices, doing it all asynchronously. You can enter connection and configuration
     parameters either via the command line or using JSON files.
     Another reason I decided to develop CLA is to enable its commands to be invoked from any programming language, once again, without requiring a single line of code for automation.
-    CLA version 1 focuses exclusively on Network Automation, while version 2 will introduce Cloud Automation capabilities.
+    CLA version 1 focuses exclusively on Network Automation, while version 2 will introduce Cloud Automation capabilities.  
     
-    `CLA is a project developed by Ed Scrimaglia`
+    `Ed Scrimaglia`
     """ 
     
     if ctx.invoked_subcommand is None:

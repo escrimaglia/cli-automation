@@ -3,6 +3,8 @@
 
 import sys
 import os
+sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), '..', ".")))
+
 import typer
 from typing_extensions import Annotated
 from .enums_srv import Logging
@@ -12,8 +14,6 @@ from .telnet_srv import AsyncNetmikoTelnetPull, AsyncNetmikoTelnetPush
 import asyncio
 import json
 from . import logger
-
-sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), '..', ".")))
 
 app = typer.Typer(no_args_is_help=True)
 

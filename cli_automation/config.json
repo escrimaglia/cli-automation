@@ -1,5 +1,5 @@
 {
-  "tunnel": false,
+  "tunnel": true,
   "version": "1.0.5 - XXI - By Ed Scrimaglia",
   "app": "cla",
   "log_file": "cla.log",

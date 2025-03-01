@@ -7,12 +7,12 @@ sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), '..', ".
 
 import typer
 from typing_extensions import Annotated
-from .ssh_srv import AsyncNetmikoPull, AsyncNetmikoPush
+from .svc_ssh import AsyncNetmikoPull, AsyncNetmikoPush
 import asyncio
 from typing import List
-from .enums_srv import Logging, DeviceType
+from .svc_enums import Logging, DeviceType
 import json
-from .progress_bar import ProgressBar
+from .svc_progress import ProgressBar
 from datetime import datetime
 from . import logger
 
@@ -21,17 +21,17 @@ app = typer.Typer(no_args_is_help=True)
 
 @app.command("onepull", help="Pull config from a single host", no_args_is_help=True)
 def pull_single_host(
-        host: Annotated[str, typer.Option("--host", "-h", help="host ip address", rich_help_panel="Connection Parameters", case_sensitive=False)],
+        host: Annotated[str, typer.Option("--host", "-h", help="host name or ip address", rich_help_panel="Connection Parameters", case_sensitive=False)],
         user: Annotated[str, typer.Option("--user", "-u", help="username", rich_help_panel="Connection Parameters", case_sensitive=False)],
         password: Annotated[str, typer.Option(prompt=True, help="password", metavar="password must be provided by keyboard",rich_help_panel="Connection Parameters", case_sensitive=False, hide_input=True, hidden=True)],
-        commands: Annotated[List[str], typer.Option("--cmd", "-c", help="commands to execute on device", rich_help_panel="Commands Parameter", case_sensitive=False)],
+        commands: Annotated[List[str], typer.Option("--cmd", "-c", help="commands to execute on the device", rich_help_panel="Commands Parameter", case_sensitive=False)],
         secret: Annotated[str, typer.Option(prompt=True, help="secret", metavar="password must be provided by keyboard to raise privileges",rich_help_panel="Connection Parameters", case_sensitive=False, hide_input=True, hidden=True)],
         device_type: Annotated[DeviceType, typer.Option("--type", "-t", help="device type", rich_help_panel="Connection Parameters", case_sensitive=False)],
-        port: Annotated[int, typer.Option("--port", "-p", help="port", rich_help_panel="Connection Parameters", case_sensitive=False)] = 22,
-        verbose: Annotated[int, typer.Option("--verbose", "-v", count=True, help="Verbose level",rich_help_panel="Additional parameters", max=2)] = 0,
-        log: Annotated[Logging, typer.Option("--log", "-l", help="Log level", rich_help_panel="Additional parameters", case_sensitive=True)] = Logging.info.value,
+        port: Annotated[int, typer.Option("--port", "-p", help="port", rich_help_panel="Connection Parameters")] = 22,
+        verbose: Annotated[int, typer.Option("--verbose", "-v", count=True, help="verbose level",rich_help_panel="Additional parameters", min=0, max=2)] = 0,
+        log: Annotated[Logging, typer.Option("--log", "-l", help="log level", rich_help_panel="Additional parameters", case_sensitive=True)] = Logging.info.value,
         output: Annotated[typer.FileTextWrite, typer.Option("--output", "-o", help="output file", rich_help_panel="Additional parameters", case_sensitive=False)] = "output.json",
-        global_delay: Annotated[float, typer.Option("--delay", "-d", help="port", rich_help_panel="Connection Parameters", case_sensitive=False)] = 0.1,
+        global_delay: Annotated[float, typer.Option("--delay", "-d", help="global delay", rich_help_panel="Connection Parameters", min=.1, max=4)] = 0.1,
         ssh_config: Annotated[str, typer.Option("--cfg", "-s", help="ssh config file", rich_help_panel="Connection Parameters", case_sensitive=False)] = None,
 
     ):
@@ -73,9 +73,9 @@ def pull_single_host(
 @app.command("pullconfig", help="Pull config from hosts in host file", no_args_is_help=True)
 def pull_multiple_host(
         devices: Annotated[typer.FileText, typer.Option("--hosts", "-h", help="group of hosts", metavar="FILENAME Json file", rich_help_panel="Hosts File Parameter", case_sensitive=False)],
-        commands: Annotated[List[str], typer.Option("--cmd", "-c", help="commands to execute on device", rich_help_panel="Device Commands Parameter", case_sensitive=False)],
-        verbose: Annotated[int, typer.Option("--verbose", "-v", count=True, help="Verbose level",rich_help_panel="Additional parameters", max=2)] = 0,
-        log: Annotated[Logging, typer.Option("--log", "-l", help="Log level", rich_help_panel="Additional parameters", case_sensitive=False)] = Logging.info.value,
+        commands: Annotated[List[str], typer.Option("--cmd", "-c", help="commands to execute on the device", rich_help_panel="Device Commands Parameter", case_sensitive=False)],
+        verbose: Annotated[int, typer.Option("--verbose", "-v", count=True, help="verbose level",rich_help_panel="Additional parameters", min=0, max=2)] = 0,
+        log: Annotated[Logging, typer.Option("--log", "-l", help="log level", rich_help_panel="Additional parameters", case_sensitive=False)] = Logging.info.value,
         output: Annotated[typer.FileTextWrite, typer.Option("--output", "-o", help="output file", metavar="FILENAME Json file", rich_help_panel="Additional parameters", case_sensitive=False)] = "output.json",
 
     ):
@@ -107,18 +107,18 @@ def pull_multiple_host(
 
 @app.command("onepush", help="Push config to a single host", no_args_is_help=True)
 def push_single_host(
-        host: Annotated[str, typer.Option("--host", "-h", help="host ip address", rich_help_panel="Connection Parameters", case_sensitive=False)],
+        host: Annotated[str, typer.Option("--host", "-h", help="host name or ip address", rich_help_panel="Connection Parameters", case_sensitive=False)],
         user: Annotated[str, typer.Option("--user", "-u", help="username", rich_help_panel="Connection Parameters", case_sensitive=False)],
         password: Annotated[str, typer.Option(prompt=True, help="password", metavar="password must be provided by keyboard",rich_help_panel="Connection Parameters", case_sensitive=False, hide_input=True, hidden=True)],
         secret: Annotated[str, typer.Option(prompt=True, help="enable password", metavar="password for privilege mode",rich_help_panel="Connection Parameters", case_sensitive=False, hide_input=True, hidden=True)],        
         device_type: Annotated[DeviceType, typer.Option("--type", "-t", help="device type", rich_help_panel="Connection Parameters", case_sensitive=False)],
-        commands: Annotated[List[str], typer.Option("--cmd", "-c", help="commands to configure on device",rich_help_panel="Config Parameters", case_sensitive=False)] = None,
-        cmd_file: Annotated[typer.FileText, typer.Option("--cmdf", "-f", help="commands to configure on device", metavar="FILENAME Json file",rich_help_panel="Config Parameters", case_sensitive=False)] = None,
-        port: Annotated[int, typer.Option("--port", "-p", help="port", rich_help_panel="Connection Parameters", case_sensitive=False)] = 22,        
-        verbose: Annotated[int, typer.Option("--verbose", "-v", count=True, help="Verbose level",rich_help_panel="Additional parameters", max=2)] = 0,
-        log: Annotated[Logging, typer.Option("--llog", "-l", help="Log level", rich_help_panel="Additional parameters", case_sensitive=False)] = Logging.info.value,
+        commands: Annotated[List[str], typer.Option("--cmd", "-c", help="commands to configure on the device",rich_help_panel="Config Parameters", case_sensitive=False)] = None,
+        cmd_file: Annotated[typer.FileText, typer.Option("--cmdf", "-f", help="commands to configure on the device", metavar="FILENAME Json file",rich_help_panel="Config Parameters", case_sensitive=False)] = None,
+        port: Annotated[int, typer.Option("--port", "-p", help="port", rich_help_panel="Connection Parameters")] = 22,        
+        verbose: Annotated[int, typer.Option("--verbose", "-v", count=True, help="verbose level",rich_help_panel="Additional parameters", min=0, max=2)] = 0,
+        log: Annotated[Logging, typer.Option("--llog", "-l", help="log level", rich_help_panel="Additional parameters", case_sensitive=False)] = Logging.info.value,
         output: Annotated[typer.FileTextWrite, typer.Option("--output", "-o", help="output file", rich_help_panel="Additional parameters", case_sensitive=False)] = "output.json",
-        global_delay: Annotated[float, typer.Option("--delay", "-d", help="global delay factor", rich_help_panel="Connection Parameters", case_sensitive=False)] = .1,
+        global_delay: Annotated[float, typer.Option("--delay", "-d", help="global delay factor", rich_help_panel="Connection Parameters", min=.1, max=4)] = .1,
         ssh_config: Annotated[str, typer.Option("--cfg", "-s", help="ssh config file", rich_help_panel="Connection Parameters", case_sensitive=False)] = None,
 
     ):
@@ -173,9 +173,9 @@ def push_single_host(
 @app.command("pushconfig", help="Push config file to hosts in hosts file", no_args_is_help=True)
 def push_multiple_host(
         devices: Annotated[typer.FileText, typer.Option("--hosts", "-h", help="group of hosts", metavar="FILENAME Json file", rich_help_panel="Hosts File Parameters", case_sensitive=False)],
-        cmd_file: Annotated[typer.FileText, typer.Option("--cmd", "-c", help="commands to configure on device", metavar="FILENAME Json file",rich_help_panel="Configuration File Parameters", case_sensitive=False)],
-        verbose: Annotated[int, typer.Option("--verbose", "-v", count=True, help="Verbose level",rich_help_panel="Additional parameters", max=2)] = 0,
-        log: Annotated[Logging, typer.Option("--log", "-l", help="Log level", rich_help_panel="Additional parameters", case_sensitive=False)] = Logging.info.value,
+        cmd_file: Annotated[typer.FileText, typer.Option("--cmd", "-c", help="commands to configure on the device", metavar="FILENAME Json file",rich_help_panel="Configuration File Parameters", case_sensitive=False)],
+        verbose: Annotated[int, typer.Option("--verbose", "-v", count=True, help="verbose level",rich_help_panel="Additional parameters", min=0, max=2)] = 0,
+        log: Annotated[Logging, typer.Option("--log", "-l", help="log level", rich_help_panel="Additional parameters", case_sensitive=False)] = Logging.info.value,
         output: Annotated[typer.FileTextWrite, typer.Option("--output", "-o", help="output file", metavar="FILENAME Json file", rich_help_panel="Additional parameters", case_sensitive=False)] = "output.json",
 
     ):

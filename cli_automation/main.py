@@ -5,15 +5,15 @@ sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), ".", "..
 import typer
 from typing_extensions import Annotated
 from cli_automation import config_data
-from cli_automation.enums_srv import Logging
-from cli_automation.progress_bar import ProgressBar
-from cli_automation.templates_srv import Templates
+from cli_automation.svc_enums import Logging
+from cli_automation.svc_progress import ProgressBar
+from cli_automation.svc_templates import Templates
 import asyncio
 from cli_automation import logger
 
-from cli_automation import telnet_app
-from cli_automation import tunnel_app
-from cli_automation import ssh_app
+from cli_automation import app_telnet
+from cli_automation import app_tunnel
+from cli_automation import app_ssh
 
 
 app = typer.Typer()
@@ -23,9 +23,9 @@ def check_version(value: bool):
         typer.echo (f"version: {config_data.get("version")}")
         raise typer.Exit()
 
-app.add_typer(ssh_app.app, name="ssh", rich_help_panel="Main Commands")
-app.add_typer(telnet_app.app, name="telnet", rich_help_panel="Main Commands")
-app.add_typer(tunnel_app.app, name="tunnel", rich_help_panel="Main Commands")
+app.add_typer(app_ssh.app, name="ssh", rich_help_panel="Main Commands")
+app.add_typer(app_telnet.app, name="telnet", rich_help_panel="Main Commands")
+app.add_typer(app_tunnel.app, name="tunnel", rich_help_panel="Main Commands")
 
 
 @app.command("templates", short_help="Create working files", 

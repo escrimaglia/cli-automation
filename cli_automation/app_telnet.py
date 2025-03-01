@@ -7,10 +7,10 @@ sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), '..', ".
 
 import typer
 from typing_extensions import Annotated
-from .enums_srv import Logging
-from .progress_bar import ProgressBar
+from .svc_enums import Logging
+from .svc_progress import ProgressBar
 from datetime import datetime
-from .telnet_srv import AsyncNetmikoTelnetPull, AsyncNetmikoTelnetPush
+from .svc_telnet import AsyncNetmikoTelnetPull, AsyncNetmikoTelnetPush
 import asyncio
 import json
 from . import logger
@@ -20,9 +20,9 @@ app = typer.Typer(no_args_is_help=True)
 @app.command("pullconfig", help="Pull configuration from Hosts", no_args_is_help=True)
 def pull_multiple_host(
         devices: Annotated[typer.FileText, typer.Option("--hosts", "-h", help="group of hosts", metavar="FILENAME Json file", rich_help_panel="Hosts File Parameter", case_sensitive=False)],
-        command: Annotated[str, typer.Option("--cmd", "-c", help="commands to execute on device", rich_help_panel="Device Commands Parameter", case_sensitive=False)],
-        verbose: Annotated[int, typer.Option("--verbose", "-v", count=True, help="Verbose level",rich_help_panel="Additional parameters", max=2)] = 0,
-        log: Annotated[Logging, typer.Option("--log", "-l", help="Log level", rich_help_panel="Additional parameters", case_sensitive=False)] = Logging.info.value,
+        command: Annotated[str, typer.Option("--cmd", "-c", help="commands to execute on the device", rich_help_panel="Device Commands Parameter", case_sensitive=False)],
+        verbose: Annotated[int, typer.Option("--verbose", "-v", count=True, help="verbose level",rich_help_panel="Additional parameters", min=0, max=2)] = 0,
+        log: Annotated[Logging, typer.Option("--log", "-l", help="log level", rich_help_panel="Additional parameters", case_sensitive=False)] = Logging.info.value,
         output: Annotated[typer.FileTextWrite, typer.Option("--output", "-o", help="output file", metavar="FILENAME text file",rich_help_panel="Additional parameters", case_sensitive=False)] = "output.txt",
     ):
 
@@ -52,9 +52,9 @@ def pull_multiple_host(
 @app.command("pushconfig", help="Push configuration file to Hosts", no_args_is_help=True)
 def push_multiple_host(
         devices: Annotated[typer.FileText, typer.Option("--hosts", "-h", help="group of hosts", metavar="FILENAME Json file", rich_help_panel="Hosts File Parameters", case_sensitive=False)],
-        cmd_file: Annotated[typer.FileText, typer.Option("--cmd", "-c", help="commands to configure on device", metavar="FILENAME Json file",rich_help_panel="Configuration File Parameters", case_sensitive=False)],
-        verbose: Annotated[int, typer.Option("--verbose", "-v", count=True, help="Verbose level",rich_help_panel="Additional parameters", max=2)] = 0,
-        log: Annotated[Logging, typer.Option("--log", "-l", help="Log level", rich_help_panel="Additional parameters", case_sensitive=False)] = Logging.info.value,
+        cmd_file: Annotated[typer.FileText, typer.Option("--cmd", "-c", help="commands to configure on the device", metavar="FILENAME Json file",rich_help_panel="Configuration File Parameters", case_sensitive=False)],
+        verbose: Annotated[int, typer.Option("--verbose", "-v", count=True, help="verbose level",rich_help_panel="Additional parameters", min=0, max=2)] = 0,
+        log: Annotated[Logging, typer.Option("--log", "-l", help="log level", rich_help_panel="Additional parameters", case_sensitive=False)] = Logging.info.value,
         output: Annotated[typer.FileTextWrite, typer.Option("--output", "-o", help="output file", metavar="FILENAME text file", rich_help_panel="Additional parameters", case_sensitive=False)] = "output.json",
     ):
 

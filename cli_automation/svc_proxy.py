@@ -6,7 +6,7 @@ sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), '..', ".
 import socks
 import socket
 from . import config_data
-from .tunnel_srv import SetSocks5Tunnel
+from .svc_tunnel import SetSocks5Tunnel
 
 
 class TunnelProxy():
@@ -32,17 +32,17 @@ class TunnelProxy():
                             'bastion_user': self.bastion_user
                         }
             tunnel = SetSocks5Tunnel(set_verbose=set_verbose)
-            process_id = tunnel.sync_check_pid()
-            if process_id:
+            status = tunnel.is_tunnel_active()
+            if status:
                 self.test_proxy(22)
             else:
-                self.logger.error(f"Application can not use the SOCKS5 tunnel, tunnel is not Up, check tunnel status with 'cla tunnel status'")
+                self.logger.error(f"Application can not use the tunnel, it is not Up, check tunnel status with 'cla tunnel status'")
                 if self.verbose in [1,2]:
-                    print (f"** Application can not use the SOCKS5 tunnel, tunnel is not Up, check tunnel status with 'cla tunnel status'")
+                    print (f"** Application can not use the tunnel, it is not Up, check tunnel status with 'cla tunnel status'")
                 sys.exit(1)
         else:
-            print (f"-> SOCKS5 tunnel to BastionHost is not configured, if needed please run 'cla tunnel setup'")
-            self.logger.info(f"SOCKS5 tunnel to BastionHost is not configured, if needed please run 'cla tunnel setup'")
+            print (f"-> Tunnel to BastionHost is not configured, if needed please run 'cla tunnel setup'")
+            self.logger.info(f"Tunnel to BastionHost is not configured, if needed please run 'cla tunnel setup'")
 
     
     def test_proxy(self, test_port=22):
@@ -50,10 +50,10 @@ class TunnelProxy():
             socks.set_default_proxy(socks.SOCKS5, self.proxy_host, self.proxy_port)
             socket.socket = socks.socksocket
             socket.socket().connect((self.bastion_host, test_port))
-            self.logger.info(f"Setting up the application to use the SOCKS5 tunnel. Tunnel tested at remote-port {test_port}")
+            self.logger.info(f"Setting up the application to use the tunnel. Tunnel tested at remote-port {test_port}")
             if self.verbose in [2]:
-                print (f"-> Setting up the application to use the SOCKS5 tunnel. Tunnel tested at remote-port {test_port}") 
+                print (f"-> Setting up the application to use the tunnel. Tunnel tested at remote-port {test_port}") 
         except (socks.ProxyConnectionError, socket.error):
-            self.logger.info(f"Application can not use the SOCKS5 tunnel, tunnel is not Up and Running")
-            print (f"** Application can not use the SOCKS5 tunnel, tunnel is not Up and Running. Start SOCKS5 tunnel with 'cla tunnel setup'")
+            self.logger.info(f"Application can not use the tunnel, tunnel is not Up and Running")
+            print (f"** Application can not use the tunnel, tunnel is not Up and Running. Start tunnel with 'cla tunnel setup'")
             sys.exit(1)

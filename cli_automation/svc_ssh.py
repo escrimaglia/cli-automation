@@ -9,11 +9,11 @@ import asyncio
 from netmiko import ConnectHandler, NetmikoAuthenticationException, NetMikoTimeoutException
 import paramiko
 from pydantic import ValidationError
-from .model_srv import ModelSsh
+from .svc_model import ModelSsh
 from typing import List
 import json
-from .proxy_srv import TunnelProxy
-from .tunnel_srv import SetSocks5Tunnel
+from .svc_proxy import TunnelProxy
+from .svc_tunnel import SetSocks5Tunnel
 
 
 class AsyncNetmikoPull():

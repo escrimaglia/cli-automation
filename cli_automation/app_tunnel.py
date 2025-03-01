@@ -7,10 +7,10 @@ sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), '..', ".
 
 import typer
 from typing_extensions import Annotated
-from .progress_bar import ProgressBar
-from .enums_srv import Logging
+from .svc_progress import ProgressBar
+from .svc_enums import Logging
 import asyncio
-from .tunnel_srv import SetSocks5Tunnel
+from .svc_tunnel import SetSocks5Tunnel
 from . import logger
 
 app = typer.Typer(no_args_is_help=True)
@@ -19,10 +19,10 @@ app = typer.Typer(no_args_is_help=True)
 def set_tunnel(
         bastion_user: Annotated[str, typer.Option("--user", "-u", help="bastion host username", rich_help_panel="Tunnel Parameters", case_sensitive=False)],
         bastion_host: Annotated[str, typer.Option("--bastion", "-b", help="bastion name or ip address", rich_help_panel="Tunnel Parameters", case_sensitive=False)],
-        local_port: Annotated[int, typer.Option("--port", "-p", help="local port", rich_help_panel="Tunnel Parameters", case_sensitive=False)] = 1080,
-        timeout: Annotated[int, typer.Option("--timeout", "-t", help="Timeout in seconds for the tunnel startup", rich_help_panel="Tunnel Parameters", min=0.2, max=5)] = 0.2,
-        verbose: Annotated[int, typer.Option("--verbose", "-v", count=True, help="Verbose level",rich_help_panel="Additional parameters", max=2)] = 1,
-        log: Annotated[Logging, typer.Option("--log", "-l", help="Log level", rich_help_panel="Additional parameters", case_sensitive=False)] = Logging.info.value,
+        local_port: Annotated[int, typer.Option("--port", "-p", help="local port", rich_help_panel="Tunnel Parameters")] = 1080,
+        timeout: Annotated[int, typer.Option("--timeout", "-t", help="timeout in seconds for the tunnel startup", rich_help_panel="Tunnel Parameters", min=0.2, max=5)] = 0.2,
+        verbose: Annotated[int, typer.Option("--verbose", "-v", count=True, help="verbose level",rich_help_panel="Additional parameters", min=0, max=2)] = 1,
+        log: Annotated[Logging, typer.Option("--log", "-l", help="log level", rich_help_panel="Additional parameters", case_sensitive=False)] = Logging.info.value,
     ):
 
     async def process():
@@ -36,8 +36,8 @@ def set_tunnel(
 
 @app.command("kill", short_help="Kill SOCKS5 tunnel to the bastion Host")
 def kill_tunnel(
-        verbose: Annotated[int, typer.Option("--verbose", "-v", count=True, help="Verbose level",rich_help_panel="Additional parameters", max=2)] = 1,
-        log: Annotated[Logging, typer.Option("--log", "-l", help="Log level", rich_help_panel="Additional parameters", case_sensitive=False)] = Logging.info.value,
+        verbose: Annotated[int, typer.Option("--verbose", "-v", count=True, help="verbose level",rich_help_panel="Additional parameters", min=0, max=2)] = 1,
+        log: Annotated[Logging, typer.Option("--log", "-l", help="log level", rich_help_panel="Additional parameters", case_sensitive=False)] = Logging.info.value,
     ):
    
     async def process():
@@ -50,17 +50,19 @@ def kill_tunnel(
 
 @app.command("status", short_help="Check SOCKS5 tunnel status")
 def check_tunnel(
-        local_port: Annotated[int, typer.Option("--port", "-p", help="local port", rich_help_panel="Tunnel Parameters", case_sensitive=False)] = 1080,
-        verbose: Annotated[int, typer.Option("--verbose", "-v", count=True, help="Verbose level",rich_help_panel="Additional parameters", max=2)] = 1,
-        log: Annotated[Logging, typer.Option("--log", "-l", help="Log level", rich_help_panel="Additional parameters", case_sensitive=False)] = Logging.info.value,
+        local_port: Annotated[int, typer.Option("--port", "-p", help="local port", rich_help_panel="Tunnel Parameters")] = 1080,
+        verbose: Annotated[int, typer.Option("--verbose", "-v", count=True, help="verbose level",rich_help_panel="Additional parameters", min=0, max=2)] = 1,
+        log: Annotated[Logging, typer.Option("--log", "-l", help="log level", rich_help_panel="Additional parameters", case_sensitive=False)] = Logging.info.value,
     ):
     
     async def process():
         set_verbose = {"verbose": verbose, "logging": log.value if log != None else None, "logger": logger, "local_port": local_port}
         tunnel = SetSocks5Tunnel(set_verbose)
-        status = await tunnel.async_check_pid()
+        status = tunnel.is_tunnel_active()
         if not status:
-            print (f"\n** Tunnel is not running at local-port {local_port}. Check in the log file the user and bastion host parameters")
+            print (f"** Tunnel is not running at local-port {local_port}. Check the log file if you suspect inconsistencies")
+        else:
+            print (f"** Tunnel is running at local-port {local_port}")
       
     progress = ProgressBar()
     asyncio.run(progress.run_with_spinner(process))

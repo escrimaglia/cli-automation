@@ -1,6 +1,9 @@
-import json
-from .files_srv import ManageFiles
 import sys
+import os
+sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), '..', '.')))
+
+import json
+from .svc_files import ManageFiles
 
 class Templates():
     def __init__(self, set_verbose: dict):

@@ -7,13 +7,13 @@ sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), '..', '.
 
 from netmiko import ConnectHandler, NetmikoAuthenticationException, NetMikoTimeoutException
 from pydantic import ValidationError
-from .model_srv import ModelTelnetPull, ModelTelnetPush
-from .proxy_srv import TunnelProxy
+from .svc_model import ModelTelnetPull, ModelTelnetPush
+from .svc_proxy import TunnelProxy
 import asyncio
 import paramiko
 from typing import List
 import json
-from .files_srv import ManageFiles
+from .svc_files import ManageFiles
 from . import config_data
 
 class AsyncNetmikoTelnetPull():

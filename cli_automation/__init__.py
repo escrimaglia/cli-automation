@@ -3,6 +3,14 @@ from pathlib import Path
 import logging
 import logging.handlers
 
+
+DATA = {
+    "tunnel": False,
+    "version": "1.1.0 - XXI - By Ed Scrimaglia",
+    "app": "cla",
+    "log_file": "cla.log",
+    "telnet_prompts": [">", "#", "(config)#", "(config-if)#", "$", "%", "> (doble)","# (doble)", "?", ")", "!", "*", "~", ":]", "]", ">", "##"]
+}
 class ClaConfig():
     def __init__(self):
         self.data = {
@@ -21,14 +29,14 @@ class ClaConfig():
                 return json.load(read_file)
         except FileNotFoundError:
             with open(self.config_path, "w") as write_file:
-                json.dump(self.data, write_file, indent=3)
+                json.dump(DATA, write_file, indent=3)
                 return self.data
 
 class Logger:
     def __init__(self):
         self.logger = logging.getLogger("ClaLogger")
         self.logger.setLevel(logging.DEBUG)
-        self.log_file = "cla.log"
+        self.log_file = DATA.get("log_file")
         formatter = logging.Formatter('%(asctime)s - %(name)s - %(levelname)s - %(message)s')
         file_handler = logging.handlers.RotatingFileHandler(self.log_file, maxBytes=5*1024*1024, backupCount=5)
         file_handler.setFormatter(formatter)

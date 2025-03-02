@@ -222,7 +222,7 @@ def callback(ctx: typer.Context):
     """
     The cla ssh command allows access to devices via the SSH protocol. The command can be used to pull or push configurations to devices.
     To structure the output data when retrieving configurations, the `cla ssh pullconfig` command uses TextFSM templates. If the query 
-    command is included in the templates, the output will be in JSON format; otherwise, the output will be in TXT format
+    command is included in the templates, the output will be in JSON format; otherwise, the output will be in TXT format.
     """
     
     typer.echo(f"-> About to execute {ctx.invoked_subcommand} sub-command")

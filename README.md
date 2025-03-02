@@ -2,12 +2,23 @@
 
 CLA `Command Line interface Automation` is a Typer Python-based application designed to automate infrastructure directly from the command line.
 With CLA, there is no need to write a single line of code, users simply follow the options presented in the help menu. When I thought about building CLA, I considered those network engineers who have not yet acquired the necessary software knowledge, so `CLA was specifically designed to enable engineers who have not yet acquired software knowledge to progress in the practice of automation`.
-CLA lets you both extract configurations and set up networking devices, doing it all asynchronously. You can enter connection and configuration
-parameters either via the command line or using JSON files.
+CLA is a fully asynchronous application that allows both querying or extracting data from devices and applying configurations to them. You can enter connection and configuration parameters either via the command line or using JSON files.
 Another reason I decided to develop CLA is to enable its commands to be invoked from any programming language, once again, without requiring a single line of code for automation.
 CLA version 1 focuses exclusively on Network Automation, while version 2 will introduce Cloud Automation capabilities.  
 
 `Ed Scrimaglia`
+
+**Instalation**:
+
+Since CLA generates working files, it is recommended to create a virtual environment (to avoid potential conflicts between Python libraries) and install it there. Alternatively, if you prefer a global installation, you only need to create a working directory. Once installed, it is advisable to run the `cla --auto-completion` command so that the TAB key helps navigate the options menu.
+
+```
+From PyPY:
+
+$ pip install cli_automation
+```
+
+[Project Repository](https://github.com/escrimaglia/cli-automation.git)
 
 **Usage**:
 

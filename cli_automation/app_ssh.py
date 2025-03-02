@@ -70,7 +70,7 @@ def pull_single_host(
     asyncio.run(progress.run_with_spinner(process))
 
 
-@app.command("pullconfig", help="Pull config from hosts in host file", no_args_is_help=True)
+@app.command("pullconfig", help="Pull config from multiple hosts", no_args_is_help=True)
 def pull_multiple_host(
         devices: Annotated[typer.FileText, typer.Option("--hosts", "-h", help="group of hosts", metavar="FILENAME Json file", rich_help_panel="Hosts File Parameter", case_sensitive=False)],
         commands: Annotated[List[str], typer.Option("--cmd", "-c", help="commands to execute on the device", rich_help_panel="Device Commands Parameter", case_sensitive=False)],
@@ -170,7 +170,7 @@ def push_single_host(
     asyncio.run(progress.run_with_spinner(process))
 
 
-@app.command("pushconfig", help="Push config file to hosts in hosts file", no_args_is_help=True)
+@app.command("pushconfig", help="Push config file to multiple hosts", no_args_is_help=True)
 def push_multiple_host(
         devices: Annotated[typer.FileText, typer.Option("--hosts", "-h", help="group of hosts", metavar="FILENAME Json file", rich_help_panel="Hosts File Parameters", case_sensitive=False)],
         cmd_file: Annotated[typer.FileText, typer.Option("--cmd", "-c", help="commands to configure on the device", metavar="FILENAME Json file",rich_help_panel="Configuration File Parameters", case_sensitive=False)],
@@ -221,7 +221,10 @@ def push_multiple_host(
 def callback(ctx: typer.Context):
     """
     The cla ssh command allows access to devices via the SSH protocol. The command can be used to pull or push configurations to devices.
+    To structure the output data when retrieving configurations, the `cla ssh pullconfig` command uses TextFSM templates. If the query 
+    command is included in the templates, the output will be in JSON format; otherwise, the output will be in TXT format
     """
+    
     typer.echo(f"-> About to execute {ctx.invoked_subcommand} sub-command")
     
 # if __name__ == "__main__":

@@ -7,7 +7,7 @@ class ClaConfig():
     def __init__(self):
         self.data = {
             "tunnel": False,
-            "version": "1.0.5 - XXI - By Ed Scrimaglia",
+            "version": "1.1.0 - XXI - By Ed Scrimaglia",
             "app": "cla",
             "log_file": "cla.log",
             "telnet_prompts": [">", "#", "(config)#", "(config-if)#", "$", "%", "> (doble)","# (doble)", "?", ")", "!", "*", "~", ":]", "]", ">", "##"]

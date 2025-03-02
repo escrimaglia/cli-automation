@@ -31,8 +31,9 @@ class AsyncNetmikoPull():
             connection = await asyncio.to_thread(ConnectHandler, **device)
             output = []
             for command in commands:
-                self.logger.info(f"Executing command {command} on device {device['host']}")
+                self.logger.debug(f"Executing command {command} on device {device['host']}")
                 result = await asyncio.to_thread(connection.send_command, command, use_textfsm=True)
+                self.logger.debug(f"Output: {result}")
                 output.append({command: result})
             await asyncio.to_thread(connection.disconnect)
             return output
@@ -68,6 +69,7 @@ class AsyncNetmikoPull():
             tasks.append(self.netmiko_connection(device, commands=data.get('commands')))
             if self.verbose in [1,2]:
                 print (f"-> Connecting to device {device['host']}, executing commands {data.get('commands')}")
+            self.logger.info(f"Connecting to device {device['host']}, executing commands {data.get('commands')}")
         results = await asyncio.gather(*tasks)
         output_data = []
         for device, output in zip(data.get('devices'), results):
@@ -93,8 +95,9 @@ class AsyncNetmikoPush():
         try:
             connection = await asyncio.to_thread(ConnectHandler, **device)
             output = []
-            self.logger.info(f"Configuring the following commands {commands} on device {device['host']}")
+            self.logger.debug(f"Configuring the following commands {commands} on device {device['host']}")
             result = await asyncio.to_thread(connection.send_config_set, commands)
+            self.logger.debug(f"Output: {result}")
             result += await asyncio.to_thread(connection.save_config)
             output.append(result)
             await asyncio.to_thread(connection.disconnect)
@@ -129,11 +132,10 @@ class AsyncNetmikoPush():
         tasks = []
         commands = data.get('commands')
         for device in data.get('devices'):
-            #device = dev_dict.get('devices')
-            #commands = dev_dict.get('commands')
             tasks.append(self.netmiko_connection(device, commands=commands))
             if self.verbose in [1,2]:
                 print (f"-> Connecting to device {device['host']}, configuring commands {commands}")
+            self.logger.info(f"Connecting to device {device['host']}, executing commands {commands}")
         results = await asyncio.gather(*tasks)
         output_data = []
         for device, output in zip(data.get('devices'), results):

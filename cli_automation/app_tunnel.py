@@ -15,7 +15,7 @@ from . import logger
 
 app = typer.Typer(no_args_is_help=True)
 
-@app.command("setup", short_help="Setup tunnel to the Bastion Host", no_args_is_help=True)
+@app.command("setup", short_help="Setup a tunnel to the Bastion Host", no_args_is_help=True)
 def set_tunnel(
         bastion_user: Annotated[str, typer.Option("--user", "-u", help="bastion host username", rich_help_panel="Tunnel Parameters", case_sensitive=False)],
         bastion_host: Annotated[str, typer.Option("--bastion", "-b", help="bastion name or ip address", rich_help_panel="Tunnel Parameters", case_sensitive=False)],
@@ -34,7 +34,7 @@ def set_tunnel(
     asyncio.run(progress.run_with_spinner(process))
 
 
-@app.command("kill", short_help="Kill tunnel to the bastion Host")
+@app.command("kill", short_help="Kill the tunnel to the bastion Host")
 def kill_tunnel(
         verbose: Annotated[int, typer.Option("--verbose", "-v", count=True, help="verbose level",rich_help_panel="Additional parameters", min=0, max=2)] = 1,
         log: Annotated[Logging, typer.Option("--log", "-l", help="log level", rich_help_panel="Additional parameters", case_sensitive=False)] = Logging.info.value,
@@ -48,7 +48,7 @@ def kill_tunnel(
     progress = ProgressBar()
     asyncio.run(progress.run_with_spinner(process))
 
-@app.command("status", short_help="Check tunnel status")
+@app.command("status", short_help="Check the tunnel status")
 def check_tunnel(
         local_port: Annotated[int, typer.Option("--port", "-p", help="local port", rich_help_panel="Tunnel Parameters")] = 1080,
         verbose: Annotated[int, typer.Option("--verbose", "-v", count=True, help="verbose level",rich_help_panel="Additional parameters", min=0, max=2)] = 1,
@@ -73,8 +73,8 @@ def callback(ctx: typer.Context):
     """
     Sometimes, the machine running CLA doesn’t have direct access to the devices and must go through a Bastion Host or Jump Host. To connect via a Bastion Host, 
     you can either configure SSH specifically or set up a tunnel. Personally, I think creating a tunnel is more efficient since it avoids SSH configuration, 
-    specially when using `cla telnet` commands. 
-    Using `cla tunnel`, you can create or remove a SOCKS5 tunnel. For cla tunnel to function properly, the host running CLA must have easy access to the 
+    specially when using `Telnet` commands. 
+    Using `cla tunnel`, you can create or remove a SOCKS5 tunnel. For `cla tunnel` to function properly, the host running CLA must have easy access to the 
     Bastion Host (it should be listed in the Bastion Host's known_hosts file). CLA constantly monitors the tunnel’s status, but you can also manually check it using 
     the Linux command `lsof -i:{local_port}`.
     """

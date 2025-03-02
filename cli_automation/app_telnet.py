@@ -17,7 +17,7 @@ from . import logger
 
 app = typer.Typer(no_args_is_help=True)
 
-@app.command("pullconfig", help="Pull configuration from Hosts", no_args_is_help=True)
+@app.command("pullconfig", help="Pull config from multiple hosts", no_args_is_help=True)
 def pull_multiple_host(
         devices: Annotated[typer.FileText, typer.Option("--hosts", "-h", help="group of hosts", metavar="FILENAME Json file", rich_help_panel="Hosts File Parameter", case_sensitive=False)],
         command: Annotated[str, typer.Option("--cmd", "-c", help="commands to execute on the device", rich_help_panel="Device Commands Parameter", case_sensitive=False)],
@@ -49,7 +49,7 @@ def pull_multiple_host(
     progress = ProgressBar()
     asyncio.run(progress.run_with_spinner(process))
 
-@app.command("pushconfig", help="Push configuration file to Hosts", no_args_is_help=True)
+@app.command("pushconfig", help="Push config file to multiple hosts", no_args_is_help=True)
 def push_multiple_host(
         devices: Annotated[typer.FileText, typer.Option("--hosts", "-h", help="group of hosts", metavar="FILENAME Json file", rich_help_panel="Hosts File Parameters", case_sensitive=False)],
         cmd_file: Annotated[typer.FileText, typer.Option("--cmd", "-c", help="commands to configure on the device", metavar="FILENAME Json file",rich_help_panel="Configuration File Parameters", case_sensitive=False)],

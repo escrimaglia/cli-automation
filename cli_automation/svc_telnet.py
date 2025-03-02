@@ -36,10 +36,13 @@ class AsyncNetmikoTelnetPull():
             connection = ConnectHandler(**device)
             connection.send_command_timing(device.get('username'))
             connection.send_command_timing(device.get('password'))
+            self.logger.debug(f"Sending user {device.get('username')} and password {device.get('password')} to device")
             if device.get('secret'):
                 connection.enable()
             connection.clear_buffer()
+            self.logger.debug(f"Executing command {command} on device {device['host']}")
             output = connection.send_command_timing(command)
+            self.logger.debug(f"Output: {output}")
             connection.disconnect()
             return f"\nDevice: {device['host']}\n{output.strip()}"
         except NetmikoAuthenticationException:
@@ -75,6 +78,7 @@ class AsyncNetmikoTelnetPull():
             tasks.append(self.device_connect(device, data.get('command')))
             if self.verbose in [1,2]:
                 print(f"-> Connecting to device {device['host']}, executing command {data.get('command')}")
+            self.logger.debug(f"Connecting to device {device['host']}, executing command {data.get('command')}")
         results = await asyncio.gather(*tasks)
         output.extend(results)
         return "\n".join(output)
@@ -105,23 +109,30 @@ class AsyncNetmikoTelnetPush():
             connection = ConnectHandler(**device)
             connection.send_command_timing(device.get('username'))
             connection.send_command_timing(device.get('password'))
+            self.logger.debug(f"Sending user {device.get('username')} and password {device.get('password')} to device")
             aut = False
             output = ""
             for prompt in prompts:
                 if prompt in connection.find_prompt():
                     aut = True
+                    output = (f"Login valid")
+                    self.logger.debug(f"Login: {output}")
                     break
             if not aut:
                 output = (f"Login invalid")
                 connection.disconnect()
+                self.logger.debug(f"Login: {output}")
                 return f"Output, {output.strip()}"
             if device.get('secret'):
                 connection.enable()
             output = ""
             for cmd in commands:
+                self.logger.debug(f"Executing command {cmd} on device {device['host']}")
                 result = connection.send_command_timing(cmd)
+                self.logger.debug(f"Output: {result}")
                 if "Invalid input" in result or "Error" in result:
                     output = (f"Invalid input, {cmd}")
+                    self.logger.debug(f"Output: {output}")
                     break
             connection.disconnect()
             return f"Output {output.strip()}"
@@ -161,6 +172,7 @@ class AsyncNetmikoTelnetPush():
             tasks.append(self.device_connect(device=dev, command=cmd, prompts=prompts))
             if self.verbose in [1,2]:
                 print (f"-> Connecting to device {dev.get('host')}, configuring commands {cmd}")
+            self.logger.info(f"Connecting to device {device['host']}, executing command {data.get('command')}")
         results = await asyncio.gather(*tasks)
         output_data = []
         for device, output in zip(data, results):

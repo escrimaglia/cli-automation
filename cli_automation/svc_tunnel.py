@@ -42,9 +42,11 @@ class SetSocks5Tunnel():
             ip = requests.get("https://api64.ipify.org", proxies=proxies, timeout=5).text
             if self.verbose in [2]:
                 print(f"** The public IP through the tunnel is: {ip}")
+            self.logger.debug(f"The public IP through the tunnel is: {ip}")
         except requests.RequestException:
             if self.verbose in [2]:
                 print("** Failed to obtain the IP through the tunnel")
+            self.logger.error("Failed to obtain the IP through the tunnel")
 
 
     def get_pid(self):
@@ -52,8 +54,8 @@ class SetSocks5Tunnel():
         try:
             result = self.subprocess.run(command_pre, capture_output=True, text=True)
             pid = result.stdout.strip() if result.stdout.strip() else None
-            self.logger.info(f"Getting tunnel process PID, command: {result.args}")
-            self.logger.info(f"Tunnel process PID found: {pid}")
+            self.logger.debug(f"Getting tunnel process PID, command: {result.args}")
+            self.logger.debug(f"Tunnel process PID found: {pid}")
             return pid
         except self.subprocess.CalledProcessError as error:
             print (f"\n** Error checking the PID: {error.stderr}")
@@ -71,9 +73,11 @@ class SetSocks5Tunnel():
             pid = self.get_pid()
             if self.verbose in [1,2]:
                 print(f"-> Tunnel process PID {pid}")
+            self.logger.debug(f"Tunnel process PID {pid}")
             return pid
         except self.subprocess.CalledProcessError as error:
             print(f"Error starting the tunnel: {error}")
+            self.logger.error(f"Error starting the tunnel: {error}")
 
     
     async def start_tunnel(self, wait_time: int = 1):
@@ -90,9 +94,9 @@ class SetSocks5Tunnel():
                     config_data['bastion_user'] = self.bastion_user
                     config_data['local_port'] = self.local_port
                     config_data['tunnel'] = True
-                    self.logger.info(f"Tunnel status updated to True")
+                    self.logger.debug(f"Tunnel status updated to True")
                     await self.file.create_file("config.json", json.dumps(config_data, indent=2))
-                    self.logger.info(f"Tunnel started successfully for user: {self.bastion_user}, bastion host: {self.bastion_host}, local-port: {self.local_port}, PID: {pid}")
+                    self.logger.debug(f"Tunnel started successfully for user: {self.bastion_user}, bastion host: {self.bastion_host}, local-port: {self.local_port}, PID: {pid}")
                     if self.verbose in [1,2]:    
                         print (f"\n** Tunnel started successfully for user: {self.bastion_user}, bastion host: {self.bastion_host}, local-port: {self.local_port}, PID: {pid}")
                     await self.check_remote_ip()
@@ -119,7 +123,7 @@ class SetSocks5Tunnel():
                     await self.file.create_file("config.json", json.dumps(config_data, indent=2))
                     self.logger.info(f"Tunnel status updated to False")
                     print (f"\n** Tunnel (PID {pid}) killed successfully")
-                    self.logger.info(f"Tunnel (PID {pid}) killed successfully")
+                    self.logger.debug(f"Tunnel (PID {pid}) killed successfully")
                 else:
                     print (f"** Error executing the command: {stderr.decode().strip()}")
                     self.logger.error(f"Error executing the command: {stderr.decode().strip()}")

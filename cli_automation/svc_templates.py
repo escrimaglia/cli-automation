@@ -60,19 +60,19 @@ class Templates():
         }
 
         files = [example_hosts_file, example_ssh_commands_file, example_telnet_commands_structure, example_telnet_commands_example]
+        self.logger.debug(f"Creating templates")
         if file_name is None:
             for template in files:
                 var_name = [name for name, value in locals().items() if value is template][0]
                 await self.file.create_file(var_name+".json", json.dumps(template, indent=3))
-               
+                self.logger.debug(f"Template {var_name} created")
         else:
             file_name = file_name.split(".")[0] if "." in file_name else file_name
             if file_name in files:
                 var_name = [name for name, value in locals().items() if value is template][0]
                 await self.file.create_file(var_name+".json", json.dumps(file_name, indent=3))
+                self.logger.debug(f"Template {var_name} created")
             else:
                 print (f"** Error creating the template {var_name}. The template does not exist")
                 self.logger.error(f"Error creating the template {var_name}. The template does not exist")
                 sys.exit(1)
-
-        self.logger.info("All the templates have been successfully created")

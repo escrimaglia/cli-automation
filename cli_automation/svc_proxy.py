@@ -35,8 +35,7 @@ class TunnelProxy():
             tunnel = SetSocks5Tunnel(set_verbose=set_verbose)
             status = tunnel.is_tunnel_active()
             if self.verbose in [2]:
-                tunnel_status = "active" if status else status
-                print (f"-> tunnel status: {tunnel_status}")
+                print (f"-> tunnel status: {status}")
             if status:
                 self.test_proxy(22)
             else:

@@ -12,5 +12,7 @@ class DeviceType(Enum):
     cisco_xr = "cisco_xr"
     juniper_junos = "juniper_junos"
     arista_eos = "arista_eos"
-    huawei = "huawei"
+    huawei_vrp = "huawei_vrp"
     nokia_sros = "alcatel_sros"
+    extreme_exos = "extreme_exos"
+

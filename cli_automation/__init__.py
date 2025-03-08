@@ -21,7 +21,6 @@ class ClaConfig():
             "telnet_prompts": [">", "#", "(config)#", "(config-if)#", "$", "%", "> (doble)","# (doble)", "?", ")", "!", "*", "~", ":]", "]", ">", "##"]
         }
         self.config_path = Path(__file__).parent / "config.json"
-        self.config_data = self.load_config()
 
     def load_config(self):
         try:
@@ -46,5 +45,5 @@ class Logger:
     def get_logger(self):
         return self.logger
 
-config_data = ClaConfig().config_data
+config_data = ClaConfig().load_config()
 logger = Logger().get_logger()

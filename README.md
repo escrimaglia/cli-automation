@@ -1,8 +1,11 @@
 # `cla`
 
 CLA `Command Line interface Automation` is a Typer Python-based application designed to automate infrastructure directly from the command line.
-With CLA, there is no need to write a single line of code, users simply follow the options presented in the help menu. When I thought about building CLA, I considered those network engineers who have not yet acquired the necessary software knowledge, so `CLA was specifically designed to enable engineers who have not yet acquired software knowledge to progress in the practice of automation`.
-CLA is a fully asynchronous application that allows both querying or extracting data from devices and applying configurations to them. You can enter connection and configuration parameters either via the command line or using JSON files.
+With CLA, there is no need to write a single line of code, users simply follow the options presented in the help menu. When I thought about building CLA, 
+I considered those network engineers who have not yet acquired the necessary software knowledge, so `CLA was specifically designed to enable engineers who 
+have not yet acquired software knowledge to progress in the practice of automation`.
+CLA lets you both extract configurations and set up networking devices, doing it all asynchronously. You can enter connection and configuration
+parameters either via the command line or using JSON files.
 Another reason I decided to develop CLA is to enable its commands to be invoked from any programming language, once again, without requiring a single line of code for automation.
 CLA version 1 focuses exclusively on Network Automation, while version 2 will introduce Cloud Automation capabilities.  
 
@@ -15,10 +18,10 @@ Since CLA generates working files, it is recommended to create a virtual environ
 ```
 From PyPY:
 
-$ pip install cli_automation
+$ pip install cli-automation
 ```
 
-[Project Repository](https://github.com/escrimaglia/cli-automation.git)
+[Project Repository](https://github.com/escrimaglia/cli-automation)
 
 **Usage**:
 
@@ -38,11 +41,12 @@ $ cla [OPTIONS] COMMAND [ARGS]...
 * `templates`: Create working files
 * `ssh`: Accesses devices via the SSH protocol
 * `telnet`: Accesses devices via the Telnet protocol
-* `tunnel`: Manage SOCKS5 tunnel with Bastion Host
+* `tunnel`: Manage tunnel with Bastion Host
 
 ## `cla templates`
 
-The `cla templates` command generates example files, which can be used to create working files, both for connection parameters and for device configuration commands
+The cla templates command generates example files, which can be used to create working files, both 
+for connection parameters and for device configuration commands
 
 **Usage**:
 
@@ -52,13 +56,15 @@ $ cla templates [OPTIONS]
 
 **Options**:
 
-* `-v, --verbose`: Verbose level  [default: 0; x&lt;=2]
+* `-v, --verbose`: Verbose level  [default: 1; 0&lt;=x&lt;=2]
 * `-l, --log [INFO|DEBUG|ERROR|WARNING|CRITICAL]`: Log level  [default: INFO]
 * `--help`: Show this message and exit.
 
 ## `cla ssh`
 
-The `cla ssh` command allows access to devices via the SSH protocol. The command can be used to pull or push configurations to devices.
+The cla ssh command allows access to devices via the SSH protocol. The command can be used to pull or push configurations to devices.
+To structure the output data when retrieving configurations, the `cla ssh pullconfig` command uses TextFSM templates. If the query 
+command is included in the templates, the output will be in JSON format; otherwise, the output will be in TXT format.
 
 **Usage**:
 
@@ -72,14 +78,14 @@ $ cla ssh [OPTIONS] COMMAND [ARGS]...
 
 **Commands**:
 
-* `onepull`: Pull config from a single Host
-* `pullconfig`: Pull config from hosts in host file
+* `onepull`: Pull config from a single host
+* `pullconfig`: Pull config from multiple hosts
 * `onepush`: Push config to a single host
-* `pushconfig`: Push config file to hosts in hosts file
+* `pushconfig`: Push config file to multiple hosts
 
 ### `cla ssh onepull`
 
-Pull config from a single Host
+Pull config from a single host
 
 **Usage**:
 
@@ -89,21 +95,21 @@ $ cla ssh onepull [OPTIONS]
 
 **Options**:
 
-* `-h, --host TEXT`: host ip address  [required]
+* `-h, --host TEXT`: host name or ip address  [required]
 * `-u, --user TEXT`: username  [required]
-* `-c, --cmd TEXT`: commands to execute on device  [required]
-* `-t, --type [cisco_ios|cisco_xr|juniper_junos|arista_eos|huawei|alcatel_sros]`: device type  [required]
+* `-c, --cmd TEXT`: commands to execute on the device  [required]
+* `-t, --type [cisco_ios|cisco_xr|cisco_xe|cisco_nxos|juniper|juniper_junos|arista_eos|huawei|huawei_vrp|alcatel_sros|extreme_exos|vyos|vyatta_vyos|a10]`: device type  [required]
 * `-p, --port INTEGER`: port  [default: 22]
-* `-v, --verbose`: Verbose level  [default: 0; x&lt;=2]
-* `-l, --log [INFO|DEBUG|ERROR|WARNING|CRITICAL]`: Log level  [default: INFO]
+* `-v, --verbose`: verbose level  [default: 0; 0&lt;=x&lt;=2]
+* `-l, --log [INFO|DEBUG|ERROR|WARNING|CRITICAL]`: log level  [default: INFO]
 * `-o, --output FILENAME`: output file  [default: output.json]
-* `-d, --delay FLOAT`: port  [default: 0.1]
+* `-d, --delay FLOAT RANGE`: global delay  [default: 0.1; 0.1&lt;=x&lt;=4]
 * `-s, --cfg TEXT`: ssh config file
 * `--help`: Show this message and exit.
 
 ### `cla ssh pullconfig`
 
-Pull config from hosts in host file
+Pull config from multiple hosts
 
 **Usage**:
 
@@ -114,9 +120,9 @@ $ cla ssh pullconfig [OPTIONS]
 **Options**:
 
 * `-h, --hosts FILENAME Json file`: group of hosts  [required]
-* `-c, --cmd TEXT`: commands to execute on device  [required]
-* `-v, --verbose`: Verbose level  [default: 0; x&lt;=2]
-* `-l, --log [INFO|DEBUG|ERROR|WARNING|CRITICAL]`: Log level  [default: INFO]
+* `-c, --cmd TEXT`: commands to execute on the device  [required]
+* `-v, --verbose`: verbose level  [default: 0; 0&lt;=x&lt;=2]
+* `-l, --log [INFO|DEBUG|ERROR|WARNING|CRITICAL]`: log level  [default: INFO]
 * `-o, --output FILENAME Json file`: output file  [default: output.json]
 * `--help`: Show this message and exit.
 
@@ -132,22 +138,22 @@ $ cla ssh onepush [OPTIONS]
 
 **Options**:
 
-* `-h, --host TEXT`: host ip address  [required]
+* `-h, --host TEXT`: host name or ip address  [required]
 * `-u, --user TEXT`: username  [required]
-* `-t, --type [cisco_ios|cisco_xr|juniper_junos|arista_eos|huawei|alcatel_sros]`: device type  [required]
-* `-c, --cmd TEXT`: commands to configure on device
-* `-f, --cmdf FILENAME Json file`: commands to configure on device
+* `-t, --type [cisco_ios|cisco_xr|cisco_xe|cisco_nxos|juniper|juniper_junos|arista_eos|huawei|huawei_vrp|alcatel_sros|extreme_exos|vyos|vyatta_vyos|a10]`: device type  [required]
+* `-c, --cmd TEXT`: commands to configure on the device
+* `-f, --cmdf FILENAME Json file`: commands to configure on the device
 * `-p, --port INTEGER`: port  [default: 22]
-* `-v, --verbose`: Verbose level  [default: 0; x&lt;=2]
-* `-l, --llog [INFO|DEBUG|ERROR|WARNING|CRITICAL]`: Log level  [default: INFO]
+* `-v, --verbose`: verbose level  [default: 0; 0&lt;=x&lt;=2]
+* `-l, --llog [INFO|DEBUG|ERROR|WARNING|CRITICAL]`: log level  [default: INFO]
 * `-o, --output FILENAME`: output file  [default: output.json]
-* `-d, --delay FLOAT`: global delay factor  [default: 0.1]
+* `-d, --delay FLOAT RANGE`: global delay factor  [default: 0.1; 0.1&lt;=x&lt;=4]
 * `-s, --cfg TEXT`: ssh config file
 * `--help`: Show this message and exit.
 
 ### `cla ssh pushconfig`
 
-Push config file to hosts in hosts file
+Push config file to multiple hosts
 
 **Usage**:
 
@@ -158,16 +164,17 @@ $ cla ssh pushconfig [OPTIONS]
 **Options**:
 
 * `-h, --hosts FILENAME Json file`: group of hosts  [required]
-* `-c, --cmd FILENAME Json file`: commands to configure on device  [required]
-* `-v, --verbose`: Verbose level  [default: 0; x&lt;=2]
-* `-l, --log [INFO|DEBUG|ERROR|WARNING|CRITICAL]`: Log level  [default: INFO]
+* `-c, --cmd FILENAME Json file`: commands to configure on the device  [required]
+* `-v, --verbose`: verbose level  [default: 0; 0&lt;=x&lt;=2]
+* `-l, --log [INFO|DEBUG|ERROR|WARNING|CRITICAL]`: log level  [default: INFO]
 * `-o, --output FILENAME Json file`: output file  [default: output.json]
 * `--help`: Show this message and exit.
 
 ## `cla telnet`
 
 Telnet was added to CLA to access older devices that, for some reason, do not support SSH. Telnet operates in a generic way,
- and configuration commands must follow the structure explained in the `example_telnet_commands_structure.json file`, file generated by the `cla templates` command. However, whenever possible, SSH remains the preferred protocol.
+ and configuration commands must follow the structure explained in the `example_telnet_commands_structure.json file`, file generated by the `cla templates` command. 
+However, whenever possible, SSH remains the preferred protocol.
 
 **Usage**:
 
@@ -181,12 +188,12 @@ $ cla telnet [OPTIONS] COMMAND [ARGS]...
 
 **Commands**:
 
-* `pullconfig`: Pull configuration from Hosts
-* `pushconfig`: Push configuration file to Hosts
+* `pullconfig`: Pull config from multiple hosts
+* `pushconfig`: Push config file to multiple hosts
 
 ### `cla telnet pullconfig`
 
-Pull configuration from Hosts
+Pull config from multiple hosts
 
 **Usage**:
 
@@ -197,15 +204,15 @@ $ cla telnet pullconfig [OPTIONS]
 **Options**:
 
 * `-h, --hosts FILENAME Json file`: group of hosts  [required]
-* `-c, --cmd TEXT`: commands to execute on device  [required]
-* `-v, --verbose`: Verbose level  [default: 0; x&lt;=2]
-* `-l, --log [INFO|DEBUG|ERROR|WARNING|CRITICAL]`: Log level  [default: INFO]
+* `-c, --cmd TEXT`: commands to execute on the device  [required]
+* `-v, --verbose`: verbose level  [default: 0; 0&lt;=x&lt;=2]
+* `-l, --log [INFO|DEBUG|ERROR|WARNING|CRITICAL]`: log level  [default: INFO]
 * `-o, --output FILENAME text file`: output file  [default: output.txt]
 * `--help`: Show this message and exit.
 
 ### `cla telnet pushconfig`
 
-Push configuration file to Hosts
+Push config file to multiple hosts
 
 **Usage**:
 
@@ -216,15 +223,20 @@ $ cla telnet pushconfig [OPTIONS]
 **Options**:
 
 * `-h, --hosts FILENAME Json file`: group of hosts  [required]
-* `-c, --cmd FILENAME Json file`: commands to configure on device  [required]
-* `-v, --verbose`: Verbose level  [default: 0; x&lt;=2]
-* `-l, --log [INFO|DEBUG|ERROR|WARNING|CRITICAL]`: Log level  [default: INFO]
+* `-c, --cmd FILENAME Json file`: commands to configure on the device  [required]
+* `-v, --verbose`: verbose level  [default: 0; 0&lt;=x&lt;=2]
+* `-l, --log [INFO|DEBUG|ERROR|WARNING|CRITICAL]`: log level  [default: INFO]
 * `-o, --output FILENAME text file`: output file  [default: output.json]
 * `--help`: Show this message and exit.
 
 ## `cla tunnel`
 
-Sometimes, the machine running CLA doesn’t have direct access to the devices and must go through a Bastion Host or Jump Host. To connect via a Bastion Host, you can either configure SSH specifically or set up a tunnel. Personally, I think creating a tunnel is more efficient since it avoids SSH configuration, specially when using `cla telnet` commands. Using `cla tunnel`, you can create or remove a SOCKS5 tunnel. For `cla tunnel` to function properly, the host running CLA must have easy access to the Bastion Host (it should be listed in the Bastion Host's known_hosts file). CLA constantly monitors the tunnel’s status, but you can also manually check it using the Linux command `lsof -i:{local_port}`.
+Sometimes, the machine running CLA doesn’t have direct access to the devices and must go through a Bastion Host or Jump Host. To connect via a Bastion Host, 
+you can either configure SSH specifically or set up a tunnel. Personally, I think creating a tunnel is more efficient since it avoids SSH configuration, 
+specially when using `Telnet` commands. 
+Using `cla tunnel`, you can create or remove a SOCKS5 tunnel. For `cla tunnel` to function properly, the host running CLA must have easy access to the 
+Bastion Host (it should be listed in the Bastion Host&#x27;s known_hosts file). CLA constantly monitors the tunnel’s status, but you can also manually check it using 
+the Linux command `lsof -i:{local_port}`.
 
 **Usage**:
 
@@ -238,8 +250,9 @@ $ cla tunnel [OPTIONS] COMMAND [ARGS]...
 
 **Commands**:
 
-* `setup`: Setup SOCKS5 tunnel to the Bastion Host
-* `kill`: Kill SOCKS5 tunnel to the bastion Host
+* `setup`: Setup a tunnel to the Bastion Host
+* `kill`: Kill the tunnel to the bastion Host
+* `status`: Check the tunnel status
 
 ### `cla tunnel setup`
 
@@ -254,8 +267,9 @@ $ cla tunnel setup [OPTIONS]
 * `-u, --user TEXT`: bastion host username  [required]
 * `-b, --bastion TEXT`: bastion name or ip address  [required]
 * `-p, --port INTEGER`: local port  [default: 1080]
-* `-v, --verbose`: Verbose level  [default: 0; x&lt;=2]
-* `-l, --log [INFO|DEBUG|ERROR|WARNING|CRITICAL]`: Log level  [default: INFO]
+* `-t, --timeout INTEGER RANGE`: timeout in seconds for the tunnel startup  [default: 0.2; 0&lt;=x&lt;=5]
+* `-v, --verbose`: verbose level  [default: 1; 0&lt;=x&lt;=2]
+* `-l, --log [INFO|DEBUG|ERROR|WARNING|CRITICAL]`: log level  [default: INFO]
 * `--help`: Show this message and exit.
 
 ### `cla tunnel kill`
@@ -268,10 +282,25 @@ $ cla tunnel kill [OPTIONS]
 
 **Options**:
 
-* `-v, --verbose`: Verbose level  [default: 0]
-* `-l, --log [INFO|DEBUG|ERROR|WARNING|CRITICAL]`: Log level  [default: INFO]
+* `-v, --verbose`: verbose level  [default: 1; 0&lt;=x&lt;=2]
+* `-l, --log [INFO|DEBUG|ERROR|WARNING|CRITICAL]`: log level  [default: INFO]
+* `--help`: Show this message and exit.
+
+### `cla tunnel status`
+
+**Usage**:
+
+```console
+$ cla tunnel status [OPTIONS]
+```
+
+**Options**:
+
+* `-p, --port INTEGER`: local port  [default: 1080]
+* `-v, --verbose`: verbose level  [default: 1; 0&lt;=x&lt;=2]
+* `-l, --log [INFO|DEBUG|ERROR|WARNING|CRITICAL]`: log level  [default: INFO]
 * `--help`: Show this message and exit.
 
 ### `cla Logging`
 
-CLA includes an efficient Log System that allows you to view INFO, DEBUG, CRITICAL, and ERROR details for each operation performed by CLA. `cla-loging` includes a log file rotation based on file size. Each time the log file exceeds 5 MB, a new log file will be created.
+CLA includes an efficient Log System that allows you to view INFO, DEBUG, CRITICAL, and ERROR details for each operation performed by CLA. The Log System includes a log file rotation based on file size. Each time the log file exceeds 5 MB, a new log file will be created.

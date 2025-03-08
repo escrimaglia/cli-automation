@@ -29,13 +29,13 @@ app.add_typer(app_tunnel.app, name="tunnel", rich_help_panel="Main Commands")
 
 
 @app.command("templates", short_help="Create working files", 
-            help="""The cla templates command generates example files, which can be used to create working files—both 
+            help="""The cla templates command generates example files, which can be used to create working files, both 
             for connection parameters and for device configuration commands""", 
             rich_help_panel="Main Commands", 
             no_args_is_help=True
             )
 def download_templates(
-        verbose: Annotated[int, typer.Option("--verbose", "-v", count=True, help="Verbose level",rich_help_panel="Additional parameters", max=2)] = 1,
+        verbose: Annotated[int, typer.Option("--verbose", "-v", count=True, help="Verbose level",rich_help_panel="Additional parameters", min=0, max=2)] = 1,
         log: Annotated[Logging, typer.Option("--log", "-l", help="Log level", rich_help_panel="Additional parameters", case_sensitive=False)] = Logging.info.value,
     ):
    

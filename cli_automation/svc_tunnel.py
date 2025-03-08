@@ -151,6 +151,9 @@ class SetSocks5Tunnel():
                 return False
         else:
             self.logger.debug(f"Tunnel is not running at local-port {self.local_port}")
+            config_data['tunnel'] = False
+            self.logger.debug(f"Tunnel status updated to False")
+            await self.file.create_file("config.json", json.dumps(config_data, indent=2))
             return False
 
     def test_proxy(self, test_port=22):
@@ -162,5 +165,5 @@ class SetSocks5Tunnel():
             self.logger.debug(f"Application ready to use the tunnel. Tunnel tested at remote-port {test_port}")
             return True
         except (socks.ProxyConnectionError, socket.error):
-            self.logger.error(f"Application can not use the tunnel, tunnel is not Up and Running")
+            self.logger.error(f"Application can not use the tunnel, tunnel running")
             return False

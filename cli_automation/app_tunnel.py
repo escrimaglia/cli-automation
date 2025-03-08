@@ -56,13 +56,13 @@ def check_tunnel(
     ):
     
     async def process():
-        set_verbose = {"verbose": verbose, "logging": log.value if log != None else None, "logger": logger, "local_port": local_port}
+        set_verbose = {"verbose": verbose, "logging": log.value if log != None else None, "logger": logger, "local_port": local_port, "proxy_host": "localhost"}
         tunnel = SetSocks5Tunnel(set_verbose)
-        status = tunnel.is_tunnel_active()
-        if not status:
-            print (f"** Tunnel is not running at local-port {local_port}. Check the log file if you suspect inconsistencies")
+        tunnel_status = await tunnel.tunnel_status()
+        if tunnel_status:
+            print (f"\n** Tunnel is running at local-port {local_port}")
         else:
-            print (f"** Tunnel is running at local-port {local_port}")
+            print (f"\n** Tunnel is not running at local-port {local_port}. Check the log file if you suspect inconsistencies")
       
     progress = ProgressBar()
     asyncio.run(progress.run_with_spinner(process))

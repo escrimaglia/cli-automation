@@ -22,7 +22,7 @@ class Templates():
             self.logger.error(f"Error creating the directory {directory}")
             sys.exit(1)
 
-        example_hosts_file = {   
+        hosts_file = {   
             'devices': [
                 {
                     'host': 'X.X.X.X',
@@ -35,7 +35,7 @@ class Templates():
             ]
         }
         
-        example_ssh_cisco_commands_file = {
+        cisco_commands_file = {
             'X.X.X.X': {
                 'commands': [
                     'show version',
@@ -44,7 +44,19 @@ class Templates():
             }
         }
 
-        example_ssh_vyos_commands_file = {
+        cisco_xe_commands_file = {
+            'X.X.X.X': {
+                'commands': [
+                    'interface GigabitEthernet1',
+                    'description Conectado a la LAN',
+                    'ip address 192.168.1.1 255.255.255.0',
+                    'no shutdown',
+                    'exit'
+                ]
+            }
+        }
+
+        vyos_commands_file = {
             'X.X.X.X': {
                 'commands': [
                     'configure',
@@ -58,7 +70,7 @@ class Templates():
             }
         }
 
-        example_ssh_cisco_nxos_commands_file = {
+        cisco_nxos_commands_file = {
             'X.X.X.X': {
                 'commands': [
                     'interface Ethernet1/1',
@@ -70,7 +82,7 @@ class Templates():
             }
         }
 
-        example_ssh_cisco_xr_commands_file = {
+        cisco_xr_commands_file = {
             'X.X.X.X': {
                 'commands': [
                     'interface GigabitEthernet0/0/0/0',
@@ -81,7 +93,7 @@ class Templates():
             }
         }
 
-        example_ssh_huawei_commands_file = {
+        huawei_commands_file = {
             'X.X.X.X': {
                 'commands': [
                     'system-view',
@@ -93,7 +105,7 @@ class Templates():
             }
         }
 
-        example_ssh_huawei_vvrp_commands_file = {
+        huawei_vvrp_commands_file = {
             'X.X.X.X': {
                 'commands': [
                     'sysname Router-Huawei',
@@ -110,7 +122,7 @@ class Templates():
             }
         }
 
-        example_telnet_commands_structure = {
+        telnet_commands_structure = {
             'X.X.X.X': {
                 'commands': [
                     'enter privilege mode',
@@ -123,7 +135,7 @@ class Templates():
             }
         }
 
-        example_telnet_commands_example = {
+        telnet_commands_example = {
             "X.X.X.X": {
                 "commands": [
                     'config terminal',
@@ -137,15 +149,16 @@ class Templates():
         }
 
         files = [
-                    example_hosts_file, 
-                    example_ssh_cisco_commands_file,
-                    example_ssh_vyos_commands_file,
-                    example_ssh_cisco_nxos_commands_file,
-                    example_ssh_cisco_xr_commands_file,
-                    example_ssh_huawei_commands_file,
-                    example_ssh_huawei_vvrp_commands_file,
-                    example_telnet_commands_structure, 
-                    example_telnet_commands_example
+                    hosts_file, 
+                    cisco_commands_file,
+                    cisco_xe_commands_file,
+                    vyos_commands_file,
+                    cisco_nxos_commands_file,
+                    cisco_xr_commands_file,
+                    huawei_commands_file,
+                    huawei_vvrp_commands_file,
+                    telnet_commands_structure, 
+                    telnet_commands_example
                 ]
         
         self.logger.debug(f"Creating templates")

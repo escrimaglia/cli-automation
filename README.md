@@ -38,7 +38,7 @@ $ cla [OPTIONS] COMMAND [ARGS]...
 
 **Commands**:
 
-* `templates`: Create working files
+* `templates`: Create examples of working files
 * `ssh`: Accesses devices via the SSH protocol
 * `telnet`: Accesses devices via the Telnet protocol
 * `tunnel`: Manage tunnel with Bastion Host

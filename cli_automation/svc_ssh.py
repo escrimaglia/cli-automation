@@ -46,6 +46,9 @@ class AsyncNetmikoPull():
         except paramiko.ssh_exception.SSHException as ssh_error:
             self.logger.error(f"Error connecting to {device['host']}, Paramiko {ssh_error}")
             return (f"** Error connecting to {device['host']}, Paramiko {ssh_error}")
+        except paramiko.ssh_exception.IncompatiblePeer as peer_error:
+            self.logger.error(f"Error connecting to {device['host']}, Incompatible Peer {peer_error}")
+            return (f"** Error connecting to {device['host']}, Incompatible Peer {peer_error}")
         except Exception as error:
             self.logger.error(f"Error connecting to {device['host']}: unexpected {error}")
             return (f"** Error connecting to {device['host']}: unexpected {str(error).replace('\n', ' ')}")
@@ -111,6 +114,9 @@ class AsyncNetmikoPush():
         except paramiko.ssh_exception.SSHException as ssh_error:
             self.logger.error(f"Error connecting to {device['host']}, Paramiko {ssh_error}")
             return (f"** Error connecting to {device['host']}, Paramiko {ssh_error}")
+        except paramiko.ssh_exception.IncompatiblePeer as peer_error:
+            self.logger.error(f"Error connecting to {device['host']}, Incompatible Peer {peer_error}")
+            return (f"** Error connecting to {device['host']}, Incompatible Peer {peer_error}")
         except Exception as error:
             self.logger.error(f"Error connecting to {device['host']}: unexpected {error}")
             return (f"** Error connecting to {device['host']}: unexpected {str(error).replace('\n', ' ')}")

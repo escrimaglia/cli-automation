@@ -57,7 +57,6 @@ $ cla templates [OPTIONS]
 **Options**:
 
 * `-v, --verbose`: Verbose level  [default: 1; 0&lt;=x&lt;=2]
-* `-l, --log [INFO|DEBUG|ERROR|WARNING|CRITICAL]`: Log level  [default: INFO]
 * `--help`: Show this message and exit.
 
 ## `cla ssh`
@@ -101,7 +100,6 @@ $ cla ssh onepull [OPTIONS]
 * `-t, --type [cisco_ios|cisco_xr|cisco_xe|cisco_nxos|juniper|juniper_junos|arista_eos|huawei|huawei_vrp|alcatel_sros|extreme_exos|vyos|vyatta_vyos|a10]`: device type  [required]
 * `-p, --port INTEGER`: port  [default: 22]
 * `-v, --verbose`: verbose level  [default: 0; 0&lt;=x&lt;=2]
-* `-l, --log [INFO|DEBUG|ERROR|WARNING|CRITICAL]`: log level  [default: INFO]
 * `-o, --output FILENAME`: output file  [default: output.json]
 * `-d, --delay FLOAT RANGE`: global delay  [default: 0.1; 0.1&lt;=x&lt;=4]
 * `-s, --cfg TEXT`: ssh config file
@@ -122,7 +120,6 @@ $ cla ssh pullconfig [OPTIONS]
 * `-h, --hosts FILENAME Json file`: group of hosts  [required]
 * `-c, --cmd TEXT`: commands to execute on the device  [required]
 * `-v, --verbose`: verbose level  [default: 0; 0&lt;=x&lt;=2]
-* `-l, --log [INFO|DEBUG|ERROR|WARNING|CRITICAL]`: log level  [default: INFO]
 * `-o, --output FILENAME Json file`: output file  [default: output.json]
 * `--help`: Show this message and exit.
 
@@ -145,7 +142,6 @@ $ cla ssh onepush [OPTIONS]
 * `-f, --cmdf FILENAME Json file`: commands to configure on the device
 * `-p, --port INTEGER`: port  [default: 22]
 * `-v, --verbose`: verbose level  [default: 0; 0&lt;=x&lt;=2]
-* `-l, --llog [INFO|DEBUG|ERROR|WARNING|CRITICAL]`: log level  [default: INFO]
 * `-o, --output FILENAME`: output file  [default: output.json]
 * `-d, --delay FLOAT RANGE`: global delay factor  [default: 0.1; 0.1&lt;=x&lt;=4]
 * `-s, --cfg TEXT`: ssh config file
@@ -166,7 +162,6 @@ $ cla ssh pushconfig [OPTIONS]
 * `-h, --hosts FILENAME Json file`: group of hosts  [required]
 * `-c, --cmd FILENAME Json file`: commands to configure on the device  [required]
 * `-v, --verbose`: verbose level  [default: 0; 0&lt;=x&lt;=2]
-* `-l, --log [INFO|DEBUG|ERROR|WARNING|CRITICAL]`: log level  [default: INFO]
 * `-o, --output FILENAME Json file`: output file  [default: output.json]
 * `--help`: Show this message and exit.
 
@@ -206,7 +201,6 @@ $ cla telnet pullconfig [OPTIONS]
 * `-h, --hosts FILENAME Json file`: group of hosts  [required]
 * `-c, --cmd TEXT`: commands to execute on the device  [required]
 * `-v, --verbose`: verbose level  [default: 0; 0&lt;=x&lt;=2]
-* `-l, --log [INFO|DEBUG|ERROR|WARNING|CRITICAL]`: log level  [default: INFO]
 * `-o, --output FILENAME text file`: output file  [default: output.txt]
 * `--help`: Show this message and exit.
 
@@ -225,7 +219,6 @@ $ cla telnet pushconfig [OPTIONS]
 * `-h, --hosts FILENAME Json file`: group of hosts  [required]
 * `-c, --cmd FILENAME Json file`: commands to configure on the device  [required]
 * `-v, --verbose`: verbose level  [default: 0; 0&lt;=x&lt;=2]
-* `-l, --log [INFO|DEBUG|ERROR|WARNING|CRITICAL]`: log level  [default: INFO]
 * `-o, --output FILENAME text file`: output file  [default: output.json]
 * `--help`: Show this message and exit.
 
@@ -269,7 +262,6 @@ $ cla tunnel setup [OPTIONS]
 * `-p, --port INTEGER`: local port  [default: 1080]
 * `-t, --timeout INTEGER RANGE`: timeout in seconds for the tunnel startup  [default: 0.2; 0&lt;=x&lt;=5]
 * `-v, --verbose`: verbose level  [default: 1; 0&lt;=x&lt;=2]
-* `-l, --log [INFO|DEBUG|ERROR|WARNING|CRITICAL]`: log level  [default: INFO]
 * `--help`: Show this message and exit.
 
 ### `cla tunnel kill`
@@ -298,7 +290,6 @@ $ cla tunnel status [OPTIONS]
 
 * `-p, --port INTEGER`: local port  [default: 1080]
 * `-v, --verbose`: verbose level  [default: 1; 0&lt;=x&lt;=2]
-* `-l, --log [INFO|DEBUG|ERROR|WARNING|CRITICAL]`: log level  [default: INFO]
 * `--help`: Show this message and exit.
 
 ### `cla Logging`

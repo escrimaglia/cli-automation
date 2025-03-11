@@ -8,7 +8,6 @@ sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), '..', ".
 import typer
 from typing_extensions import Annotated
 from .svc_progress import ProgressBar
-from .svc_enums import Logging
 import asyncio
 from .svc_tunnel import SetSocks5Tunnel
 from . import logger
@@ -26,7 +25,7 @@ def set_tunnel(
     ):
 
     async def process():
-        set_verbose = {"verbose": verbose, "logging": log.value if log != None else None, "logger": logger, "bastion_host": bastion_host, "bastion_user":bastion_user ,"local_port": local_port}
+        set_verbose = {"verbose": verbose, "logger": logger, "bastion_host": bastion_host, "bastion_user":bastion_user ,"local_port": local_port}
         tunnel = SetSocks5Tunnel(set_verbose)
         await tunnel.start_tunnel(wait_time=timeout)
 
@@ -37,11 +36,11 @@ def set_tunnel(
 @app.command("kill", short_help="Kill the tunnel to the bastion Host")
 def kill_tunnel(
         verbose: Annotated[int, typer.Option("--verbose", "-v", count=True, help="verbose level",rich_help_panel="Additional parameters", min=0, max=2)] = 1,
-        log: Annotated[Logging, typer.Option("--log", "-l", help="log level", rich_help_panel="Additional parameters", case_sensitive=False)] = Logging.info.value,
+        #log: Annotated[Logging, typer.Option("--log", "-l", help="log level", rich_help_panel="Additional parameters", case_sensitive=False)] = Logging.info.value,
     ):
    
     async def process():
-        set_verbose = {"verbose": verbose, "logging": log.value if log != None else None, "logger": logger}
+        set_verbose = {"verbose": verbose, "logger": logger}
         tunnel = SetSocks5Tunnel(set_verbose)
         await tunnel.kill_tunnel()
         
@@ -56,7 +55,7 @@ def check_tunnel(
     ):
     
     async def process():
-        set_verbose = {"verbose": verbose, "logging": log.value if log != None else None, "logger": logger, "local_port": local_port, "proxy_host": "localhost"}
+        set_verbose = {"verbose": verbose, "logger": logger, "local_port": local_port, "proxy_host": "localhost"}
         tunnel = SetSocks5Tunnel(set_verbose)
         tunnel_status = await tunnel.tunnel_status()
         if tunnel_status:

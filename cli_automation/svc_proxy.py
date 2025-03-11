@@ -39,9 +39,9 @@ class TunnelProxy():
             if status:
                 self.test_proxy(22)
             else:
-                self.logger.error(f"Application can not use the tunnel, it is not Up, check tunnel status with 'cla tunnel status'")
+                self.logger.error(f"Application can not use the tunnel, it is not running, check tunnel status with 'cla tunnel status'")
                 if self.verbose in [1,2]:
-                    print (f"** Application can not use the tunnel, it is not Up, check tunnel status with 'cla tunnel status'")
+                    print (f"** Application can not use the tunnel, it is not running, check tunnel status with 'cla tunnel status'")
                 sys.exit(1)
         else:
             print (f"-> Tunnel to BastionHost is not configured, if needed please run 'cla tunnel setup'")

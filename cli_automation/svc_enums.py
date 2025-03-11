@@ -1,11 +1,11 @@
 from enum import Enum
 
-class Logging(Enum):
-    info = "INFO"
-    debug = "DEBUG"
-    error = "ERROR"
-    warning = "WARNING"
-    critical = "CRITICAL"
+# class Logging(Enum):
+#     info = "INFO"
+#     debug = "DEBUG"
+#     error = "ERROR"
+#     warning = "WARNING"
+#     critical = "CRITICAL"
 
 class DeviceType(Enum):
     cisco_ios = "cisco_ios"

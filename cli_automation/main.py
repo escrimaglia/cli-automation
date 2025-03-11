@@ -5,7 +5,6 @@ sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), ".", "..
 import typer
 from typing_extensions import Annotated
 from cli_automation import config_data
-from cli_automation.svc_enums import Logging
 from cli_automation.svc_progress import ProgressBar
 from cli_automation.svc_templates import Templates
 import asyncio
@@ -36,11 +35,11 @@ app.add_typer(app_tunnel.app, name="tunnel", rich_help_panel="Main Commands")
             )
 def download_templates(
         verbose: Annotated[int, typer.Option("--verbose", "-v", count=True, help="Verbose level",rich_help_panel="Additional parameters", min=0, max=2)] = 1,
-        log: Annotated[Logging, typer.Option("--log", "-l", help="Log level", rich_help_panel="Additional parameters", case_sensitive=False)] = Logging.info.value,
+        #log: Annotated[Logging, typer.Option("--log", "-l", help="Log level", rich_help_panel="Additional parameters", case_sensitive=False)] = Logging.info.value,
     ):
    
     async def process():
-        set_verbose = {"logging": log.value if log != None else None, "logger": logger, "verbose": verbose}
+        set_verbose = {"logger": logger, "verbose": verbose}
         template = Templates(set_verbose=set_verbose)
         await template.create_template(file_name=None)
         print ("\n** All the templates have been successfully created")

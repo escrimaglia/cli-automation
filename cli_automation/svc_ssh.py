@@ -6,7 +6,7 @@ import os
 sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), '..', '.')))
 
 import asyncio
-from netmiko import ConnectHandler, NetmikoAuthenticationException, NetMikoTimeoutException
+from netmiko import ConnectHandler, NetmikoAuthenticationException, NetMikoTimeoutException, ConnLogOnly
 import paramiko
 from pydantic import ValidationError
 from .svc_model import ModelSsh
@@ -53,7 +53,7 @@ class AsyncNetmikoPull():
             self.logger.error(f"Error connecting to {device['host']}: unexpected {error}")
             return (f"** Error connecting to {device['host']}: unexpected {str(error).replace('\n', ' ')}")
         
-
+       
     def data_validation(self, data: ModelSsh) -> None:
         if self.verbose in [1,2]:
             print ("->", f"About to execute Data Validation")

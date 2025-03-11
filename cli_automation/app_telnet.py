@@ -7,7 +7,6 @@ sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), '..', ".
 
 import typer
 from typing_extensions import Annotated
-from .svc_enums import Logging
 from .svc_progress import ProgressBar
 from datetime import datetime
 from .svc_telnet import AsyncNetmikoTelnetPull, AsyncNetmikoTelnetPush
@@ -33,7 +32,7 @@ def pull_multiple_host(
             raise typer.Exit(code=1)
         
         datos["command"] = command
-        set_verbose = {"verbose": verbose, "logging": log.value if log != None else None, "logger": logger}
+        set_verbose = {"verbose": verbose, "logger": logger}
         if verbose == 2:
             print (f"--> data: {json.dumps(datos, indent=3)}")
         start = datetime.now()
@@ -78,7 +77,7 @@ def push_multiple_host(
             }
             datos.append(dic)
 
-        set_verbose = {"verbose": verbose, "logging": log.value if log != None else None, "single_host": False, "logger": logger}
+        set_verbose = {"verbose": verbose, "single_host": False, "logger": logger}
         if verbose == 2:
             print (f"--> data: {json.dumps(datos, indent=3)}")
         start = datetime.now()

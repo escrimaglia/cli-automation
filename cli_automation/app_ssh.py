@@ -10,7 +10,7 @@ from typing_extensions import Annotated
 from .svc_ssh import AsyncNetmikoPull, AsyncNetmikoPush
 import asyncio
 from typing import List
-from .svc_enums import Logging, DeviceType
+from .svc_enums import DeviceType
 import json
 from .svc_progress import ProgressBar
 from datetime import datetime
@@ -54,7 +54,7 @@ def pull_single_host(
         }
 
         
-        set_verbose = {"verbose": verbose, "logging": log.value if log != None else None, "single_host": True, "logger": logger}
+        set_verbose = {"verbose": verbose, "single_host": True, "logger": logger}
         if verbose == 2:
             print (f"--> data: {json.dumps(datos, indent=3)}")
         start = datetime.now()
@@ -89,7 +89,7 @@ def pull_multiple_host(
         command = json.loads(commands.read())
         print (f"command: {command}")
         datos["commands"] = command
-        set_verbose = {"verbose": verbose, "logging": log.value if log != None else None, "single_host": False, "logger": logger}
+        set_verbose = {"verbose": verbose, "single_host": False, "logger": logger}
         if verbose == 2:
             print (f"--> data: {json.dumps(datos, indent=3)}")  
         start = datetime.now()
@@ -154,7 +154,7 @@ def push_single_host(
             "commands": datos_cmds
         }
 
-        set_verbose = {"verbose": verbose, "logging": log.value if log != None else None, "single_host": True, "logger": logger}
+        set_verbose = {"verbose": verbose, "single_host": True, "logger": logger}
         if verbose == 2:
             print (f"--> data: {json.dumps(datos, indent=3)}")
         start = datetime.now()
@@ -200,7 +200,7 @@ def push_multiple_host(
             }
             datos.append(dic)
 
-        set_verbose = {"verbose": verbose, "logging": log.value if log != None else None, "single_host": False, "logger": logger}
+        set_verbose = {"verbose": verbose, "single_host": False, "logger": logger}
         if verbose == 2:
             print (f"--> data: {json.dumps(datos, indent=3)}")
         start = datetime.now()

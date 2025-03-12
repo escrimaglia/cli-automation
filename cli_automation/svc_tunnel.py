@@ -60,32 +60,38 @@ class SetSocks5Tunnel():
             sys.exit(1)
 
 
-    async def start_socks5_tunnel(self):
+    async def start_socks5_tunnel(self, timeout: int = 15):
         command = f"ssh -N -D {self.local_port} -f {self.bastion_user}@{self.bastion_host}"
         if self.verbose in [1,2]:
             print(f"-> Setting up the tunnel to the Bastion Host {self.bastion_user}@{self.bastion_host}, local-port {self.local_port}")
         self.logger.info(f"Setting up the tunnel to the Bastion Host {self.bastion_host}, user: {self.bastion_user}, local-port: {self.local_port}")
         try:
-            subprocess.run(command, shell=True, check=True)
+            subprocess.run(command, shell=True, check=True, timeout=timeout)
             pid = self.get_pid()
             if self.verbose in [1,2]:
                 print(f"-> Tunnel process PID {pid}")
             self.logger.debug(f"Tunnel process PID {pid}")
             return pid
         except subprocess.CalledProcessError as error:
-            print(f"Error starting the tunnel: {error}")
+            print(f"** Error starting the tunnel: {error}")
+            self.logger.error(f"Error starting the tunnel: {error}")
+        except subprocess.TimeoutExpired:
+            print(f"** Error starting the tunnel: Timeout")
+            self.logger.error(f"Error starting the tunnel: Timeout")
+        except Exception as error:
+            print(f"** Error starting the tunnel: {error}")
             self.logger.error(f"Error starting the tunnel: {error}")
 
     
-    async def start_tunnel(self, wait_time: int = 1):
+    async def start_tunnel(self, timeout: int = 15):
             if self.is_tunnel_active():
                 pid = self.get_pid()
                 self.logger.info(f"Tunnel already running (PID {pid})")
                 if self.verbose in [1,2]:
                     print (f"-> Tunnel already running (PID {pid})")
             else:
-                pid = await self.start_socks5_tunnel()
-                time.sleep(wait_time)
+                pid = await self.start_socks5_tunnel(timeout=timeout)
+                time.sleep(.2)
                 if self.is_tunnel_active():
                     config_data['bastion_host'] = self.bastion_host
                     config_data['bastion_user'] = self.bastion_user
@@ -97,8 +103,6 @@ class SetSocks5Tunnel():
                     if self.verbose in [1,2]:    
                         print (f"\n** Tunnel started successfully for user: {self.bastion_user}, bastion host: {self.bastion_host}, local-port: {self.local_port}, PID: {pid}")
                     await self.check_remote_ip()
-                else:
-                    print(f"-> Error starting the tunnel")
 
 
     async def kill_tunnel(self, port: int = 1080):
@@ -132,12 +136,12 @@ class SetSocks5Tunnel():
             print (f"** No tunnel to kill")
             self.logger.info("No tunnel to kill")
 
-    async def tunnel_status(self):
+    async def tunnel_status(self, timeout: int = 10, test_port: int = 22):
         config_data['bastion_host'] = self.bastion_host
         config_data['bastion_user'] = self.bastion_user
         config_data['local_port'] = self.local_port
         if self.is_tunnel_active():
-            if self.test_proxy():
+            if self.test_proxy(test_port=test_port, timeout=timeout):
                 self.logger.debug(f"Tunnel is running at local-port {self.local_port}")
                 config_data['tunnel'] = True
                 self.logger.debug(f"Tunnel status updated to True")
@@ -156,11 +160,12 @@ class SetSocks5Tunnel():
             await self.file.create_file("config.json", json.dumps(config_data, indent=2))
             return False
 
-    def test_proxy(self, test_port=22):
+    def test_proxy(self, test_port, timeout):
         self.logger.info(f"Testing the tunnel at remote-port {test_port}")
         try:
             socks.set_default_proxy(socks.SOCKS5, self.proxy_host, self.local_port)
             socket.socket = socks.socksocket
+            socket.socket.settimeout(timeout=timeout)
             socket.socket().connect((self.bastion_host, test_port))
             self.logger.debug(f"Application ready to use the tunnel. Tunnel tested at remote-port {test_port}")
             return True

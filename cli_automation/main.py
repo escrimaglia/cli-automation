@@ -27,7 +27,8 @@ app.add_typer(app_telnet.app, name="telnet", rich_help_panel="Main Commands")
 app.add_typer(app_tunnel.app, name="tunnel", rich_help_panel="Main Commands")
 
 
-@app.command("templates", short_help="Create examples of working files", 
+@app.command("templates", 
+            short_help="Create examples of working files", 
             help="""The cla templates command generates example files, which can be used to create working files, both 
             for connection parameters and for device configuration commands""", 
             rich_help_panel="Main Commands", 

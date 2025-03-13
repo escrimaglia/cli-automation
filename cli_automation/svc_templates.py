@@ -17,7 +17,7 @@ class Templates():
         directory = Path(self.directory)
         try:
             directory.mkdir(parents=True, exist_ok=True)
-        except FileExistsError:
+        except Exception:
             print(f"** Error creating the directory {directory}")
             self.logger.error(f"Error creating the directory {directory}")
             sys.exit(1)

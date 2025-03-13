@@ -13,7 +13,7 @@ class Templates():
         self.file = ManageFiles(self.logger)
         self.directory = "examples"
 
-    async def create_template(self, file_name: str = None) -> None:
+    async def create_template(self) -> None:
         directory = Path(self.directory)
         try:
             directory.mkdir(parents=True, exist_ok=True)
@@ -22,158 +22,115 @@ class Templates():
             self.logger.error(f"Error creating the directory {directory}")
             sys.exit(1)
 
-        hosts_file = {   
-            'devices': [
-                {
-                    'host': 'X.X.X.X',
-                    'username': 'user',
-                    'password': 'password',
-                    'secret': 'secret',
-                    'device_type': 'type',
-                    'global_delay_factor': None
+        examples = {
+                'hosts_file': {   
+                    'devices': [
+                        {
+                            'host': 'X.X.X.X',
+                            'username': 'user',
+                            'password': 'password',
+                            'secret': 'secret',
+                            'device_type': 'type',
+                            'global_delay_factor': None
+                        }
+                    ]
+                },  
+                'cisco_commands_file': {
+                    'X.X.X.X': {
+                        'commands': [
+                            'show version',
+                            'show ip int brief'
+                        ]
+                    }
+                },
+                'vyos_commands_file': {
+                    'X.X.X.X': {
+                        'commands': [
+                            'configure',
+                            'set interfaces ethernet eth1 address',
+                            'set interfaces ethernet eth1 description "LAN Interface"',
+                            'set system host-name "VyOS-Router"',
+                            'commit',
+                            'save',
+                            'exit'
+                        ]
+                    }
+                },
+                'cisco_nxos_commands_file': {
+                    'X.X.X.X': {
+                        'commands': [
+                            'interface Ethernet1/1',
+                            'description Conectado a Servidor',
+                            'switchport mode access',
+                            'switchport access vlan 10',
+                            'no shutdown'
+                        ]
+                    }
+                },
+                'cisco_xr_commands_file':{
+                    'X.X.X.X': {
+                        'commands': [
+                            'interface GigabitEthernet0/0/0/0',
+                            'description Configurado desde Netmiko',
+                            'ipv4 address 192.168.1.1 255.255.255.0',
+                            'commit'
+                        ]
+                    }
+                },
+                'huawei_commands_file':{
+                    'X.X.X.X': {
+                        'commands': [
+                            'system-view',
+                            'interface GigabitEthernet0/0/1',
+                            'description Conexion a Servidor',
+                            'quit',
+                            'save'
+                        ]
+                    }
+                },
+                'huawei_vvrp_commands_file': {
+                    'X.X.X.X': {
+                        'commands': [
+                            'sysname Router-Huawei',
+                            'interface GigabitEthernet0/0/1',
+                            'ip address 192.168.10.1 255.255.255.0',
+                            'description Conexion_LAN',
+                            'quit',
+                            'firewall zone trust',
+                            'add interface GigabitEthernet0/0/1',
+                            'quit',
+                            'commit',
+                            'save'
+                        ]
+                    }
+                },
+                'telnet_commands_structure': {
+                    'X.X.X.X': {
+                        'commands': [
+                            'enter privilege mode',
+                            'enter configuration mode',
+                            'config comand 1',
+                            'config command 2',
+                            'exit configuration mode',
+                            'save configuration command'
+                        ]
+                    }
+                },
+                'telnet_commands_example': {
+                    "X.X.X.X": {
+                        "commands": [
+                            'config terminal',
+                            'interface loopback 3',
+                            'description loopback interface',
+                            'ip address 192.168.2.1 255.255.255.0',
+                            'end',
+                            'write mem'
+                        ]
+                    }
                 }
-            ]
-        }
-        
-        cisco_commands_file = {
-            'X.X.X.X': {
-                'commands': [
-                    'show version',
-                    'show ip int brief'
-                ]
             }
-        }
 
-        cisco_xe_commands_file = {
-            'X.X.X.X': {
-                'commands': [
-                    'interface GigabitEthernet1',
-                    'description Conectado a la LAN',
-                    'ip address 192.168.1.1 255.255.255.0',
-                    'no shutdown',
-                    'exit'
-                ]
-            }
-        }
-
-        vyos_commands_file = {
-            'X.X.X.X': {
-                'commands': [
-                    'configure',
-                    'set interfaces ethernet eth1 address',
-                    'set interfaces ethernet eth1 description "LAN Interface"',
-                    'set system host-name "VyOS-Router"',
-                    'commit',
-                    'save',
-                    'exit'
-                ]
-            }
-        }
-
-        cisco_nxos_commands_file = {
-            'X.X.X.X': {
-                'commands': [
-                    'interface Ethernet1/1',
-                    'description Conectado a Servidor',
-                    'switchport mode access',
-                    'switchport access vlan 10',
-                    'no shutdown'
-                ]
-            }
-        }
-
-        cisco_xr_commands_file = {
-            'X.X.X.X': {
-                'commands': [
-                    'interface GigabitEthernet0/0/0/0',
-                    'description Configurado desde Netmiko',
-                    'ipv4 address 192.168.1.1 255.255.255.0',
-                    'commit'
-                ]
-            }
-        }
-
-        huawei_commands_file = {
-            'X.X.X.X': {
-                'commands': [
-                    'system-view',
-                    'interface GigabitEthernet0/0/1',
-                    'description Conexion a Servidor',
-                    'quit',
-                    'save'
-                ]
-            }
-        }
-
-        huawei_vvrp_commands_file = {
-            'X.X.X.X': {
-                'commands': [
-                    'sysname Router-Huawei',
-                     'interface GigabitEthernet0/0/1',
-                     'ip address 192.168.10.1 255.255.255.0',
-                     'description Conexion_LAN',
-                     'quit',
-                    'firewall zone trust',
-                     'add interface GigabitEthernet0/0/1',
-                     'quit',
-                    'commit',
-                    'save'
-                ]
-            }
-        }
-
-        telnet_commands_structure = {
-            'X.X.X.X': {
-                'commands': [
-                    'enter privilege mode',
-                    'enter configuration mode',
-                    'config comand 1',
-                    'config command 2',
-                    'exit configuration mode',
-                    'save configuration command'
-                ]
-            }
-        }
-
-        telnet_commands_example = {
-            "X.X.X.X": {
-                "commands": [
-                    'config terminal',
-                    'interface loopback 3',
-                    'description loopback interface',
-                    'ip address 192.168.2.1 255.255.255.0',
-                    'end',
-                    'write mem'
-                ]
-            }
-        }
-
-        files = [
-                    hosts_file, 
-                    cisco_commands_file,
-                    cisco_xe_commands_file,
-                    vyos_commands_file,
-                    cisco_nxos_commands_file,
-                    cisco_xr_commands_file,
-                    huawei_commands_file,
-                    huawei_vvrp_commands_file,
-                    telnet_commands_structure, 
-                    telnet_commands_example
-                ]
-        
-        self.logger.debug(f"Creating templates")
-        if file_name is None:
-            for template in files:
-                var_name = [name for name, value in locals().items() if value is template][0]
-                await self.file.create_file(f"{directory}/{var_name}.json", json.dumps(template, indent=3))
-                self.logger.debug(f"Template {var_name} created")
-        else:
-            file_name = file_name.split(".")[0] if "." in file_name else file_name
-            if file_name in files:
-                var_name = [name for name, value in locals().items() if value is template][0]
-                await self.file.create_file(f"{directory}/{var_name}.json", json.dumps(file_name, indent=3))
-                self.logger.debug(f"Template {var_name} created")
-            else:
-                print (f"** Error creating the template {var_name}. The template does not exist")
-                self.logger.error(f"Error creating the template {var_name}. The template does not exist")
-                sys.exit(1)
+        self.logger.info(f"Creating templates")
+        for name, value in examples.items():
+            await self.file.create_file(f"{directory}/{name}.json", json.dumps(value, indent=3))
+       

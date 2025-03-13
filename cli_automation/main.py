@@ -42,7 +42,7 @@ def download_templates(
     async def process():
         set_verbose = {"logger": logger, "verbose": verbose}
         template = Templates(set_verbose=set_verbose)
-        await template.create_template(file_name=None)
+        await template.create_template()
         print ("\n** All the templates have been successfully created")
 
     progress = ProgressBar()

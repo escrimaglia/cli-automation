@@ -18,14 +18,19 @@ app = typer.Typer(no_args_is_help=True)
 
 @app.command("pullconfig", help="Pull config from multiple hosts", no_args_is_help=True)
 def pull_multiple_host(
-        devices: Annotated[typer.FileText, typer.Option("--hosts", "-h", help="group of hosts", metavar="FILENAME Json file", rich_help_panel="Hosts File Parameter", case_sensitive=False)],
-        command: Annotated[str, typer.Option("--cmd", "-c", help="commands to execute on the device", rich_help_panel="Device Commands Parameter", case_sensitive=False)],
-        verbose: Annotated[int, typer.Option("--verbose", "-v", count=True, help="verbose level",rich_help_panel="Additional parameters", min=0, max=2)] = 0,
-        output: Annotated[typer.FileTextWrite, typer.Option("--output", "-o", help="output file", metavar="FILENAME text file",rich_help_panel="Additional parameters", case_sensitive=False)] = "output.txt",
+        devices: Annotated[typer.FileText, typer.Option("--hosts", "-h", help="group of hosts", metavar="FILENAME Json file", rich_help_panel="Connection Parameters", case_sensitive=False)],
+        command: Annotated[str, typer.Option("--cmd", "-c", help="command to execute on the device", metavar="Single -c parameter", rich_help_panel="Connection Parameters", case_sensitive=False)],
+        verbose: Annotated[int, typer.Option("--verbose", "-v", count=True, help="verbose level",rich_help_panel="Additional Parameters", min=0, max=2)] = 0,
+        output: Annotated[typer.FileTextWrite, typer.Option("--output", "-o", help="output file", metavar="FILENAME text file",rich_help_panel="Additional Parameters", case_sensitive=False)] = "output.txt",
     ):
 
     async def process():
-        datos = json.loads(devices.read())
+        try:
+            datos = json.loads(devices.read())
+        except Exception:
+            typer.echo(f"** Error reading json file, check the Json syntax")
+            raise typer.Exit(code=1)
+        
         if "devices" not in datos:
             typer.echo("Error reading json file: devices key not found or reading an incorrect json file")
             raise typer.Exit(code=1)
@@ -49,21 +54,31 @@ def pull_multiple_host(
 
 @app.command("pushconfig", help="Push config file to multiple hosts", no_args_is_help=True)
 def push_multiple_host(
-        devices: Annotated[typer.FileText, typer.Option("--hosts", "-h", help="group of hosts", metavar="FILENAME Json file", rich_help_panel="Hosts File Parameters", case_sensitive=False)],
-        cmd_file: Annotated[typer.FileText, typer.Option("--cmd", "-c", help="commands to configure on the device", metavar="FILENAME Json file",rich_help_panel="Configuration File Parameters", case_sensitive=False)],
-        verbose: Annotated[int, typer.Option("--verbose", "-v", count=True, help="verbose level",rich_help_panel="Additional parameters", min=0, max=2)] = 0,
-        output: Annotated[typer.FileTextWrite, typer.Option("--output", "-o", help="output file", metavar="FILENAME text file", rich_help_panel="Additional parameters", case_sensitive=False)] = "output.json",
+        devices: Annotated[typer.FileText, typer.Option("--hosts", "-h", help="group of hosts", metavar="FILENAME Json file", rich_help_panel="Connection Parameters", case_sensitive=False)],
+        cmd_file: Annotated[typer.FileText, typer.Option("--cmd", "-c", help="commands to configure on the device", metavar="FILENAME Json file",rich_help_panel="Connection Parameters", case_sensitive=False)],
+        verbose: Annotated[int, typer.Option("--verbose", "-v", count=True, help="verbose level",rich_help_panel="Additional Parameters", min=0, max=2)] = 0,
+        output: Annotated[typer.FileTextWrite, typer.Option("--output", "-o", help="output file", metavar="FILENAME text file", rich_help_panel="Additional Parameters", case_sensitive=False)] = "output.text",
     ):
 
     async def process():
         datos = []
-        datos_devices = json.loads(devices.read())
+        try:
+            datos_devices = json.loads(devices.read())
+        except Exception:
+            typer.echo(f"** Error reading json file, check the Json syntax")
+            raise typer.Exit(code=1)
+        
         if "devices" not in datos_devices:
             typer.echo(f"Error reading json file: devices key not found or reading an incorrect json file {devices.name}")
             raise typer.Exit(code=1)
         list_devices = datos_devices.get("devices")
     
-        datos_cmds = json.loads(cmd_file.read())
+        try:
+            datos_cmds = json.loads(cmd_file.read())
+        except Exception:
+            typer.echo(f"** Error reading json file, check the Json syntax")
+            raise typer.Exit(code=1)
+        
         for device in list_devices:
             if device.get("host") not in datos_cmds:
                 typer.echo(f"Error reading json file: commands not found for host {device.get("host")} or reading an incorrect json file {cmd_file.name}")

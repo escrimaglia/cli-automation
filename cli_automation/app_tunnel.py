@@ -20,7 +20,7 @@ def set_tunnel(
         bastion_host: Annotated[str, typer.Option("--bastion", "-b", help="bastion name or ip address", rich_help_panel="Tunnel Parameters", case_sensitive=False)],
         local_port: Annotated[int, typer.Option("--port", "-p", help="local port", rich_help_panel="Tunnel Parameters")] = 1080,
         timeout: Annotated[int, typer.Option("--timeout", "-t", help="timeout in seconds for the tunnel startup", rich_help_panel="Tunnel Parameters", min=3, max=25)] = 15,
-        verbose: Annotated[int, typer.Option("--verbose", "-v", count=True, help="verbose level",rich_help_panel="Additional parameters", min=0, max=2)] = 1,
+        verbose: Annotated[int, typer.Option("--verbose", "-v", count=True, help="verbose level",rich_help_panel="Additional Parameters", min=0, max=2)] = 1,
     ):
 
     async def process():
@@ -34,7 +34,7 @@ def set_tunnel(
 
 @app.command("kill", short_help="Kill the tunnel to the bastion Host")
 def kill_tunnel(
-        verbose: Annotated[int, typer.Option("--verbose", "-v", count=True, help="verbose level",rich_help_panel="Additional parameters", min=0, max=2)] = 1,
+        verbose: Annotated[int, typer.Option("--verbose", "-v", count=True, help="verbose level",rich_help_panel="Additional Parameters", min=0, max=2)] = 1,
     ):
    
     async def process():
@@ -50,7 +50,7 @@ def check_tunnel(
         local_port: Annotated[int, typer.Option("--port", "-p", help="local port", rich_help_panel="Tunnel Parameters")] = 1080,
         timeout: Annotated[int, typer.Option("--timeout", "-t", help="timeout in seconds for the tunnel startup", rich_help_panel="Tunnel Parameters", min=3, max=20)] = 10,
         test_port: Annotated[int, typer.Option("--test", "-r", help="remote port for testing the tunnel", rich_help_panel="Tunnel Parameters")] = 22,
-        verbose: Annotated[int, typer.Option("--verbose", "-v", count=True, help="verbose level",rich_help_panel="Additional parameters", min=0, max=2)] = 1,
+        verbose: Annotated[int, typer.Option("--verbose", "-v", count=True, help="verbose level",rich_help_panel="Additional Parameters", min=0, max=2)] = 1,
     ):
     
     async def process():

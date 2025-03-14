@@ -165,7 +165,7 @@ class SetSocks5Tunnel():
         try:
             socks.set_default_proxy(socks.SOCKS5, self.proxy_host, self.local_port)
             socket.socket = socks.socksocket
-            socket.socket.settimeout(timeout=timeout)
+            socket.setdefaulttimeout(timeout)
             socket.socket().connect((self.bastion_host, test_port))
             self.logger.debug(f"Application ready to use the tunnel. Tunnel tested at remote-port {test_port}")
             return True

@@ -31,7 +31,7 @@ class Templates():
                             'password': 'password',
                             'secret': 'secret',
                             'device_type': 'type',
-                            'global_delay_factor': None
+                            'global_delay_factor': null
                         }
                     ]
                 },  
@@ -134,3 +134,4 @@ class Templates():
         for name, value in examples.items():
             await self.file.create_file(f"{directory}/{name}.json", json.dumps(value, indent=3))
        
+    

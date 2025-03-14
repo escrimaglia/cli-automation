@@ -28,7 +28,7 @@ app.add_typer(app_tunnel.app, name="tunnel", rich_help_panel="Main Commands")
 
 
 @app.command("templates", 
-            short_help="Create examples of working files", 
+            short_help="Create examples of configuration files", 
             help="""The cla templates command generates example files, which can be used to create working files, both 
             for connection parameters and for device configuration commands""", 
             rich_help_panel="Main Commands", 
@@ -58,8 +58,6 @@ def download_templates(
         connection and configuration parameters either via the command line or using JSON files. Another reason I decided to develop CLA is to enable its commands to be invoked 
         from any programming language, once again, without requiring a single line of code for automation. CLA version 1 focuses exclusively on Network Automation, while version 
         2 will introduce Cloud Automation capabilities.
-
-        `Ed Scrimaglia`
         """
     )
 def main(ctx: typer.Context,

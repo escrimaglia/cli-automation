@@ -5,7 +5,7 @@ class Device(BaseModel):
     host: str
     username: str
     password: str
-    secret: str
+    secret: str | None = None
     device_type: str
     global_delay_factor: float = Field(default=.1)
     port: int | None = Field(default=22)

@@ -31,15 +31,26 @@ class Templates():
                             'password': 'password',
                             'secret': 'secret',
                             'device_type': 'type',
-                            'global_delay_factor': null
+                            'global_delay_factor': 'null'
                         }
                     ]
                 },  
-                'cisco_commands_file': {
+                'cisco_ios_commands_file': {
                     'X.X.X.X': {
                         'commands': [
                             'show version',
                             'show ip int brief'
+                        ]
+                    }
+                },
+                'cisco_xe_commands_file': {
+                    'X.X.X.X': {
+                        'commands': [
+                            "interface Serial0/0/1",
+                            "ip address 192.168.10.1 255.255.255.252",
+                            "encapsulation ppp",
+                            "no shutdown",
+                            "exit",
                         ]
                     }
                 },
@@ -101,6 +112,25 @@ class Templates():
                             'quit',
                             'commit',
                             'save'
+                        ]
+                    }
+                },
+                'juniper_junos_commands_file': {
+                    'X.X.X.X': {
+                        'commands': [
+                            "set interfaces ge-0/0/1 description 'Conexión a core'",
+                            "set interfaces ge-0/0/1 unit 0 family inet address 192.168.2.1/24",
+                            "commit"
+                        ]
+                    }
+                },
+                'arista_eos_commands_file': {
+                    'X.X.X.X': {
+                        'commands': [
+                            'interface Ethernet1',
+                            'description Conexion a Servidor',
+                            'no shutdown',
+                            'exit',
                         ]
                     }
                 },

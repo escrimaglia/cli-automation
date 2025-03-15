@@ -42,7 +42,12 @@ def download_templates(
     async def process():
         set_verbose = {"logger": logger, "verbose": verbose}
         template = Templates(set_verbose=set_verbose)
-        await template.create_template()
+        try:
+            await template.create_template()
+        except Exception as error:
+            print (f"** Error creating templates, check the log file and json syntax")
+            logger.error(f"Error creating the templates: {error}")
+            sys.exit(1)
         print ("\n** All the templates have been successfully created")
 
     progress = ProgressBar()
@@ -56,8 +61,8 @@ def download_templates(
         network engineers who have not yet acquired the necessary software knowledge, so `CLA was specifically designed to enable engineers who have not yet acquired software 
         knowledge to progress in the practice of automation`. CLA lets you both extract configurations and set up networking devices, doing it all asynchronously. You can enter 
         connection and configuration parameters either via the command line or using JSON files. Another reason I decided to develop CLA is to enable its commands to be invoked 
-        from any programming language, once again, without requiring a single line of code for automation. CLA version 1 focuses exclusively on Network Automation, while version 
-        2 will introduce Cloud Automation capabilities.
+        from any programming language, once again, without requiring a single line of code for automation. CLA version 1.X.X focuses exclusively on Network Automation, while version 
+        2.X.X will introduce Cloud Automation capabilities.
         """
     )
 def main(ctx: typer.Context,

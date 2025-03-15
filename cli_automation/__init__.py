@@ -9,7 +9,9 @@ DATA = {
     "version": "1.1.0 - XXI - By Ed Scrimaglia",
     "app": "cla",
     "log_file": "cla.log",
-    "telnet_prompts": [">", "#", "(config)#", "(config-if)#", "$", "%", "> (doble)","# (doble)", "?", ")", "!", "*", "~", ":]", "]", ">", "##"]
+    "telnet_prompts": [">", "#", "(config)#", "(config-if)#", "$", "%", "> (doble)","# (doble)", "?", ")", "!", "*", "~", ":]", "]", ">", "##"],
+    "proxy_port_test": 22,
+    "proxy_timeout_test": 10
 }
 class ClaConfig():
     def __init__(self):
@@ -31,7 +33,7 @@ class ClaConfig():
                 json.dump(DATA, write_file, indent=3)
                 return self.data
 
-class Logger:
+class Logger():
     def __init__(self):
         self.logger = logging.getLogger("ClaLogger")
         self.logger.setLevel(logging.DEBUG)
@@ -44,6 +46,18 @@ class Logger:
 
     def get_logger(self):
         return self.logger
+    
+class Html():
+    def __init__(self):
+        self.index = Path("navigate.html")
+        self.cla = Path("cla.html")
+
+    def create_index(self):
+        if not self.index.exists():
+            if self.cla.exists():
+                data = self.cla.read_text()
+                self.index.write_text(data)
 
 config_data = ClaConfig().load_config()
 logger = Logger().get_logger()
+html = Html().create_index()

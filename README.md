@@ -5,12 +5,28 @@ there is no need to write a single line of code, users simply follow the options
 network engineers who have not yet acquired the necessary software knowledge, so `CLA was specifically designed to enable engineers who have not yet acquired software 
 knowledge to progress in the practice of automation`. CLA lets you both extract configurations and set up networking devices, doing it all asynchronously. You can enter 
 connection and configuration parameters either via the command line or using JSON files. Another reason I decided to develop CLA is to enable its commands to be invoked 
-from any programming language, once again, without requiring a single line of code for automation. CLA version 1 focuses exclusively on Network Automation, while version 
-2 will introduce Cloud Automation capabilities.
+from any programming language, once again, without requiring a single line of code for automation. CLA version 1.X.X focuses exclusively on Network Automation, while version 
+2.X.X will introduce Cloud Automation capabilities.
+
+**Devices supported (initially)**:
+
+- cisco_ios
+- cisco_xr
+- cisco_xe
+- cisco_nxos
+- juniper
+- juniper_juno
+- arista_eos
+- huawei
+- huawei_vrp
+- nokia_sros
+- vyos
+- vyatta_vyos
 
 **Instalation**:
 
 Since CLA generates working files, it is recommended to create a virtual environment (to avoid potential conflicts between Python libraries) and install it there. Alternatively, if you prefer a global installation, you only need to create a working directory. Once installed, it is advisable to run the `cla --auto-completion` command so that the TAB key helps navigate the options menu.
+Additionally, while typing a command, the --help parameter can be used anywhere to obtain context-based assistance.
 
 ```
 From PyPY:
@@ -290,6 +306,6 @@ $ cla tunnel status [OPTIONS]
 * `-v, --verbose`: verbose level  [default: 1; 0&lt;=x&lt;=2]
 * `--help`: Show this message and exit.
 
-### `cla Logging`
+**Logging**:
 
 CLA includes an efficient Log System that allows you to view INFO, DEBUG, CRITICAL, and ERROR details for each operation performed by CLA. The Log System includes a log file rotation based on file size. Each time the log file exceeds 5 MB, a new log file will be created.

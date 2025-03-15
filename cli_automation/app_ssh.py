@@ -79,10 +79,11 @@ def pull_multiple_host(
     ):
     
     async def process():
+        file_name = devices.name
         try:
             datos = json.loads(devices.read())
         except Exception:
-            typer.echo(f"** Error reading json file, check the Json syntax")
+            typer.echo(f"** Error reading the json file {file_name}, check the syntax")
             raise typer.Exit(code=1)
         
         if "devices" not in datos:
@@ -129,10 +130,11 @@ def push_single_host(
 
     async def process():
         if commands == None:
+            file_name = cmd_file.name
             try:
                 datos_cmds = json.loads(cmd_file.read()) 
             except Exception:
-                typer.echo(f"** Error reading json file, check the Json syntax")
+                typer.echo(f"** Error reading the json file {file_name}, check the syntax")
                 raise typer.Exit(code=1)
             
             if datos_cmds.get(host) is None:
@@ -186,21 +188,23 @@ def push_multiple_host(
 
     async def process():
         datos = []
+        file_name = devices.name
         try:
             datos_devices = json.loads(devices.read())
         except Exception:
-            typer.echo(f"** Error reading json file, check the Json syntax")
+            typer.echo(f"** Error reading the json file {file_name}, check the syntax")
             raise typer.Exit(code=1)
         
         if "devices" not in datos_devices:
             typer.echo(f"Error reading json file: devices key not found or reading an incorrect json file {devices.name}")
             raise typer.Exit(code=1)
         list_devices = datos_devices.get("devices")
-    
+
+        file_name = cmd_file.name
         try:
             datos_cmds = json.loads(cmd_file.read())
         except Exception:
-            typer.echo(f"** Error reading json file, check the Json syntax")
+            typer.echo(f"** Error reading the json file {file_name}, check the syntax")
             raise typer.Exit(code=1)
         
         for device in list_devices:

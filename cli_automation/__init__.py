@@ -15,13 +15,7 @@ DATA = {
 }
 class ClaConfig():
     def __init__(self):
-        self.data = {
-            "tunnel": False,
-            "version": "1.1.0 - XXI - By Ed Scrimaglia",
-            "app": "cla",
-            "log_file": "cla.log",
-            "telnet_prompts": [">", "#", "(config)#", "(config-if)#", "$", "%", "> (doble)","# (doble)", "?", ")", "!", "*", "~", ":]", "]", ">", "##"]
-        }
+        self.data = DATA
         self.config_path = Path(__file__).parent / "config.json"
 
     def load_config(self):
@@ -52,7 +46,7 @@ class Html():
         self.index = Path("navigate.html")
         self.cla = Path("cla.html")
 
-    def create_index(self):
+    def create_html(self):
         if not self.index.exists():
             if self.cla.exists():
                 data = self.cla.read_text()
@@ -60,4 +54,4 @@ class Html():
 
 config_data = ClaConfig().load_config()
 logger = Logger().get_logger()
-html = Html().create_index()
+html = Html().create_html()

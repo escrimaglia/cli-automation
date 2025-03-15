@@ -48,7 +48,7 @@ def kill_tunnel(
 @app.command("status", short_help="Check the tunnel status", no_args_is_help=True)
 def check_tunnel(
         local_port: Annotated[int, typer.Option("--port", "-p", help="local port", rich_help_panel="Tunnel Parameters")] = 1080,
-        timeout: Annotated[int, typer.Option("--timeout", "-t", help="timeout in seconds for the tunnel startup", rich_help_panel="Tunnel Parameters", min=3, max=20)] = 10,
+        timeout: Annotated[int, typer.Option("--timeout", "-t", help="timeout in seconds for the tunnel return its status", rich_help_panel="Tunnel Parameters", min=3, max=20)] = 10,
         test_port: Annotated[int, typer.Option("--test", "-r", help="remote port for testing the tunnel", rich_help_panel="Tunnel Parameters")] = 22,
         verbose: Annotated[int, typer.Option("--verbose", "-v", count=True, help="verbose level",rich_help_panel="Additional Parameters", min=0, max=2)] = 1,
     ):

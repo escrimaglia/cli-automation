@@ -1,9 +1,9 @@
 # `cla`
 
-The CLA `Command Line interface Automation` is a Typer Python-based application designed to automate infrastructure directly from the command line. With CLA,
+The CLA `Command Line interface Automation` is an Async Typer Python-based application designed to automate infrastructure directly from the command line. With CLA,
 there is no need to write a single line of code, users simply follow the options presented in the help menu. When I thought about building CLA, I considered those
 network engineers who have not yet acquired the necessary software knowledge, so `CLA was specifically designed to enable engineers who have not yet acquired software 
-knowledge to progress in the practice of automation`. CLA lets you both extract configurations and set up networking devices, doing it all asynchronously. You can enter 
+knowledge to progress in the practice of automation`. CLA lets you both extract configurations and set up networking devices. You can enter 
 connection and configuration parameters either via the command line or using JSON files. Another reason I decided to develop CLA is to enable its commands to be invoked 
 from any programming language, once again, without requiring a single line of code for automation. CLA version 1.X.X focuses exclusively on Network Automation, while version 
 2.X.X will introduce Cloud Automation capabilities.
@@ -22,6 +22,7 @@ from any programming language, once again, without requiring a single line of co
 - nokia_sros
 - vyos
 - vyatta_vyos
+- generic telnet
 
 **Instalation**:
 

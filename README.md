@@ -110,7 +110,7 @@ $ cla ssh onepull [OPTIONS]
 * `-h, --host TEXT`: host name or ip address  [required]
 * `-u, --user TEXT`: username  [required]
 * `-c, --cmd Multiple -c parameter`: commands to execute on the device  [required]
-* `-t, --type [cisco_ios|cisco_xr|cisco_xe|cisco_nxos|juniper|juniper_junos|arista_eos|huawei|huawei_vrp|alcatel_sros|extreme_exos|vyos|vyatta_vyos|a10]`: device type  [required]
+* `-t, --type [cisco_ios|cisco_xr|cisco_xe|cisco_nxos|juniper|juniper_junos|arista_eos|huawei|huawei_vrp|alcatel_sros|vyos|vyatta_vyos]`: device type  [required]
 * `-p, --port INTEGER`: port  [default: 22]
 * `-v, --verbose`: verbose level  [default: 0; 0&lt;=x&lt;=2]
 * `-o, --output FILENAME Json file`: output file  [default: output.json]
@@ -150,7 +150,7 @@ $ cla ssh onepush [OPTIONS]
 
 * `-h, --host TEXT`: host name or ip address  [required]
 * `-u, --user TEXT`: username  [required]
-* `-t, --type [cisco_ios|cisco_xr|cisco_xe|cisco_nxos|juniper|juniper_junos|arista_eos|huawei|huawei_vrp|alcatel_sros|extreme_exos|vyos|vyatta_vyos|a10]`: device type  [required]
+* `-t, --type [cisco_ios|cisco_xr|cisco_xe|cisco_nxos|juniper|juniper_junos|arista_eos|huawei|huawei_vrp|alcatel_sros|vyos|vyatta_vyos]`: device type  [required]
 * `-c, --cmd Multiple -c parameter`: commands to configure on the device
 * `-f, --cmdf FILENAME Json file`: commands to configure on the device
 * `-p, --port INTEGER`: port  [default: 22]

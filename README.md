@@ -8,21 +8,18 @@ connection and configuration parameters either via the command line or using JSO
 from any programming language, once again, without requiring a single line of code for automation. CLA version 1.X.X focuses exclusively on Network Automation, while version 
 2.X.X will introduce Cloud Automation capabilities.
 
-**Devices supported**:
+**Supported devices**:
 
-- cisco_ios
-- cisco_xr
-- cisco_xe
-- cisco_nxos
-- juniper
-- juniper_juno
-- arista_eos
-- huawei
-- huawei_vrp
-- nokia_sros
-- vyos
-- vyatta_vyos
-- generic telnet
+- Cisco IOS
+- Cisco XR
+- Cisco XE
+- Cisco NXOS
+- Juniper
+- Arista
+- Huawei
+- Alcatel
+- Vyos
+- Generic Telnet
 
 **Instalation**:
 

@@ -6,7 +6,7 @@ import os
 sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), '..', '.')))
 
 import asyncio
-from netmiko import ConnectHandler, NetmikoAuthenticationException, NetMikoTimeoutException, ConnLogOnly
+from netmiko import ConnectHandler, NetmikoAuthenticationException, NetMikoTimeoutException
 import paramiko
 from pydantic import ValidationError
 from .svc_model import ModelSsh
@@ -14,6 +14,7 @@ from typing import List
 import json
 from .svc_proxy import TunnelProxy
 from .svc_tunnel import SetSocks5Tunnel
+from . import config_data
 
 
 class AsyncNetmikoPull():
@@ -22,7 +23,7 @@ class AsyncNetmikoPull():
         self.logging = set_verbose.get('logging')
         self.single_host = set_verbose.get('single_host')
         self.logger = set_verbose.get('logger')
-        proxy = TunnelProxy(logger=self.logger, verbose=self.verbose, proxy_host="localhost", proxy_port=1080)
+        proxy = TunnelProxy(logger=self.logger, verbose=self.verbose)
         proxy.set_proxy()
         
 

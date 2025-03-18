@@ -18,10 +18,12 @@ class SetSocks5Tunnel():
         self.verbose = set_verbose.get('verbose')
         self.logging = set_verbose.get('logging')
         self.logger = set_verbose.get('logger')
-        self.proxy_host = set_verbose.get('proxy_host')
+        self.proxy_host = set_verbose.get('proxy_host', config_data.get('proxy_host'))
         self.bastion_host = set_verbose.get('bastion_host', config_data.get('bastion_host'))
         self.local_port = set_verbose.get('local_port', config_data.get('local_port'))
         self.bastion_user = set_verbose.get('bastion_user', config_data.get('bastion_user'))
+        self.test_port = set_verbose.get('test_port', config_data.get('test_port'))
+        self.tunnel_timeout = set_verbose.get('tunnel_timeout', config_data.get('tunnel_timeout'))
         self.file = ManageFiles(self.logger)
 
     
@@ -105,14 +107,14 @@ class SetSocks5Tunnel():
                     await self.check_remote_ip()
 
 
-    async def kill_tunnel(self, port: int = 1080):
-        pid_result = subprocess.run(["lsof", "-t", "-i:1080"], capture_output=True, text=True)
+    async def kill_tunnel(self):
+        pid_result = subprocess.run(["lsof", "-t", f"-i:{self.local_port}"], capture_output=True, text=True)
         pid = pid_result.stdout.strip()
         if pid:
             try:
                 command = ["kill", "-9", pid]
-                print (f"-> Killing the tunnel to the Bastion Host, local port {port}, process {pid}")
-                self.logger.info(f"Killing the tunnel to the Bastion Host, local port {port}, process {pid}")
+                print (f"-> Killing the tunnel to the Bastion Host, local port {self.local_port}, process {pid}")
+                self.logger.info(f"Killing the tunnel to the Bastion Host, local port {self.local_port}, process {pid}")
                 process = await asyncio.create_subprocess_exec(
                     *command,
                     stdout=asyncio.subprocess.PIPE,
@@ -121,7 +123,9 @@ class SetSocks5Tunnel():
                 stdout, stderr = await process.communicate()
                 if process.returncode == 0:
                     config_data['tunnel'] = False
-                    await self.file.create_file("config.json", json.dumps(config_data, indent=2))
+                    config_data_file = config_data.copy()
+                    del config_data_file["version"]
+                    await self.file.create_file("config.json", json.dumps(config_data_file, indent=2))
                     self.logger.info(f"Tunnel status updated to False")
                     print (f"\n** Tunnel (PID {pid}) killed successfully")
                     self.logger.debug(f"Tunnel (PID {pid}) killed successfully")
@@ -136,28 +140,33 @@ class SetSocks5Tunnel():
             print (f"** No tunnel to kill")
             self.logger.info("No tunnel to kill")
 
-    async def tunnel_status(self, timeout: int = 10, test_port: int = 22):
+    async def tunnel_status(self, timeout, test_port):
         config_data['bastion_host'] = self.bastion_host
         config_data['bastion_user'] = self.bastion_user
-        config_data['local_port'] = self.local_port
         if self.is_tunnel_active():
             if self.test_proxy(test_port=test_port, timeout=timeout):
                 self.logger.debug(f"Tunnel is running at local-port {self.local_port}")
                 config_data['tunnel'] = True
+                config_data_file = config_data.copy()
+                del config_data_file["version"]
                 self.logger.debug(f"Tunnel status updated to True")
-                await self.file.create_file("config.json", json.dumps(config_data, indent=2))
+                await self.file.create_file("config.json", json.dumps(config_data_file, indent=2))
                 return True
             else:
                 self.logger.error(f"Application can not use the tunnel, tunnel is not running")
                 config_data['tunnel'] = False
+                config_data_file = config_data.copy()
+                del config_data_file["version"]
                 self.logger.debug(f"Tunnel status updated to False")
-                await self.file.create_file("config.json", json.dumps(config_data, indent=2))
+                await self.file.create_file("config.json", json.dumps(config_data_file, indent=2))
                 return False
         else:
             self.logger.debug(f"Tunnel is not running at local-port {self.local_port}")
             config_data['tunnel'] = False
+            config_data_file = config_data.copy()
+            del config_data_file["version"]
             self.logger.debug(f"Tunnel status updated to False")
-            await self.file.create_file("config.json", json.dumps(config_data, indent=2))
+            await self.file.create_file("config.json", json.dumps(config_data_file, indent=2))
             return False
 
     def test_proxy(self, test_port, timeout):

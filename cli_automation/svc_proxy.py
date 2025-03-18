@@ -10,17 +10,17 @@ from .svc_tunnel import SetSocks5Tunnel
 
 
 class TunnelProxy():
-    def __init__(self, logger, verbose, proxy_host: str = "localhost", proxy_port: int = 1080):
-        self.proxy_host = proxy_host
-        self.proxy_port = proxy_port
+    def __init__(self, logger, verbose):
         self.logger = logger
         self.verbose = verbose
-        self.bastion_host = config_data.get('bastion_host')
+        self.proxy_host = config_data.get('proxy_host')
+        self.proxy_port = config_data.get('tunnel_local_port')
+        self.bastion_host = config_data.get('bastion_host', None)
         self.local_port = config_data.get('local_port')
-        self.bastion_user = config_data.get('bastion_user')
-        self.tunnel = config_data.get('tunnel')
-        self.proxy_port_test = config_data.get('proxy_port_test', 22)
-        self.proxy_timeout_test = config_data.get('proxy_timeout_test', 10)
+        self.bastion_user = config_data.get('bastion_user', None)
+        self.tunnel = config_data.get('tunnel', False)
+        self.proxy_port_test = config_data.get('tunnel_port_test')
+        self.proxy_timeout_test = config_data.get('tunnel_timeout')
 
         
     def set_proxy(self):

@@ -10,7 +10,7 @@ from typing_extensions import Annotated
 from .svc_progress import ProgressBar
 import asyncio
 from .svc_tunnel import SetSocks5Tunnel
-from . import logger
+from . import logger, config_data
 
 app = typer.Typer(no_args_is_help=True)
 
@@ -18,8 +18,8 @@ app = typer.Typer(no_args_is_help=True)
 def set_tunnel(
         bastion_user: Annotated[str, typer.Option("--user", "-u", help="bastion host username", rich_help_panel="Tunnel Parameters", case_sensitive=False)],
         bastion_host: Annotated[str, typer.Option("--bastion", "-b", help="bastion name or ip address", rich_help_panel="Tunnel Parameters", case_sensitive=False)],
-        local_port: Annotated[int, typer.Option("--port", "-p", help="local port", rich_help_panel="Tunnel Parameters")] = 1080,
-        timeout: Annotated[int, typer.Option("--timeout", "-t", help="timeout in seconds for the tunnel startup", rich_help_panel="Tunnel Parameters", min=3, max=25)] = 15,
+        local_port: Annotated[int, typer.Option("--port", "-p", help="local port", rich_help_panel="Tunnel Parameters", min=1000, max=1100)] = 1080,
+        timeout: Annotated[int, typer.Option("--timeout", "-t", help="timeout in seconds for the tunnel startup", rich_help_panel="Tunnel Parameters", min=3, max=25)] = config_data.get("tunnel_timeout", 10),
         verbose: Annotated[int, typer.Option("--verbose", "-v", count=True, help="verbose level",rich_help_panel="Additional Parameters", min=0, max=2)] = 1,
     ):
 
@@ -47,14 +47,14 @@ def kill_tunnel(
 
 @app.command("status", short_help="Check the tunnel status", no_args_is_help=True)
 def check_tunnel(
-        local_port: Annotated[int, typer.Option("--port", "-p", help="local port", rich_help_panel="Tunnel Parameters")] = 1080,
-        timeout: Annotated[int, typer.Option("--timeout", "-t", help="timeout in seconds for the tunnel return its status", rich_help_panel="Tunnel Parameters", min=3, max=20)] = 10,
-        test_port: Annotated[int, typer.Option("--test", "-r", help="remote port for testing the tunnel", rich_help_panel="Tunnel Parameters")] = 22,
+        local_port: Annotated[int, typer.Option("--port", "-p", help="local port", rich_help_panel="Tunnel Parameters", min=1000, max=1100)] = 1080,
+        timeout: Annotated[int, typer.Option("--timeout", "-t", help="timeout in seconds for the tunnel return its status", rich_help_panel="Tunnel Parameters", min=3, max=20)] = config_data.get("tunnel_timeout", 10),
+        test_port: Annotated[int, typer.Option("--test", "-r", help="remote port for testing the tunnel", rich_help_panel="Tunnel Parameters")] = config_data.get("tunnel_port_test", 22),
         verbose: Annotated[int, typer.Option("--verbose", "-v", count=True, help="verbose level",rich_help_panel="Additional Parameters", min=0, max=2)] = 1,
     ):
     
     async def process():
-        set_verbose = {"verbose": verbose, "logger": logger, "local_port": local_port, "proxy_host": "localhost"}
+        set_verbose = {"verbose": verbose, "logger": logger, "local_port": local_port}
         tunnel = SetSocks5Tunnel(set_verbose)
         tunnel_status = await tunnel.tunnel_status(timeout=timeout,test_port=test_port)
         if tunnel_status:

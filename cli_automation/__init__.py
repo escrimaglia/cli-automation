@@ -2,29 +2,33 @@ import json
 from pathlib import Path
 import logging
 import logging.handlers
-
+from cli_automation.config_srv import *
 
 DATA = {
     "tunnel": False,
-    "version": "1.1.0 - XXI - By Ed Scrimaglia",
     "app": "cla",
-    "log_file": "cla.log",
-    "telnet_prompts": [">", "#", "(config)#", "(config-if)#", "$", "%", "> (doble)","# (doble)", "?", ")", "!", "*", "~", ":]", "]", ">", "##"],
-    "proxy_port_test": 22,
-    "proxy_timeout_test": 10
+    # "log_file": "cla.log",
+    # "telnet_prompts": [">", "#", "(config)#", "(config-if)#", "$", "%", "> (doble)","# (doble)", "?", ")", "!", "*", "~", ":]", "]", ">", "##"],
+    # "proxy_port_test": 22,
+    # "proxy_timeout_test": 10
 }
 class ClaConfig():
     def __init__(self):
         self.data = DATA
         self.config_path = Path(__file__).parent / "config.json"
+        self.config = CONFIG_PARAMS
+        self.version = "1.1.0 - XXI - By Ed Scrimaglia"
 
     def load_config(self):
         try:
+            self.data.update(self.config)
             with open(self.config_path, "r") as read_file:
-                return json.load(read_file)
+                file_read = json.load(read_file)
+                file_read["version"] = self.version
+                return file_read
         except FileNotFoundError:
             with open(self.config_path, "w") as write_file:
-                json.dump(DATA, write_file, indent=3)
+                json.dump(self.data, write_file, indent=3)
                 return self.data
 
 class Logger():

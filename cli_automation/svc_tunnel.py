@@ -143,8 +143,6 @@ class SetSocks5Tunnel():
             self.logger.info("No tunnel to kill")
 
     async def tunnel_status(self, timeout, test_port, local_port):
-        # self.cfg['bastion_host'] = self.bastion_host
-        # self.cfg['bastion_user'] = self.bastion_user
         if self.is_tunnel_active(local_port=local_port):
             if self.test_proxy(test_port=test_port, timeout=timeout, local_port=local_port):
                 self.logger.debug(f"Tunnel is running at local-port {local_port}")

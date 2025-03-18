@@ -7,9 +7,9 @@ from .svc_files import ManageFiles
 from pathlib import Path
 
 class Templates():
-    def __init__(self, set_verbose: dict):
-        self.verbose = set_verbose.get('verbose')
-        self.logger = set_verbose.get('logger')
+    def __init__(self, inst_dict: dict):
+        self.verbose = inst_dict.get('verbose')
+        self.logger = inst_dict.get('logger')
         self.file = ManageFiles(self.logger)
         self.directory = "examples"
 

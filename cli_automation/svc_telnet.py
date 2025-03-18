@@ -17,9 +17,9 @@ from .svc_files import ManageFiles
 from . import config_data
 
 class AsyncNetmikoTelnetPull():
-    def __init__(self, set_verbose: dict):
-        self.verbose = set_verbose.get('verbose')
-        self.logger = set_verbose.get('logger')
+    def __init__(self, inst_dict: dict):
+        self.verbose = inst_dict.get('verbose')
+        self.logger = inst_dict.get('logger')
         proxy = TunnelProxy(logger=self.logger, verbose=self.verbose)
         proxy.set_proxy()
 
@@ -85,9 +85,9 @@ class AsyncNetmikoTelnetPull():
     
 
 class AsyncNetmikoTelnetPush():
-    def __init__(self, set_verbose: dict):
-        self.verbose = set_verbose.get('verbose')
-        self.logger = set_verbose.get('logger')
+    def __init__(self, inst_dict: dict):
+        self.verbose = inst_dict.get('verbose')
+        self.logger = inst_dict.get('logger')
         proxy = TunnelProxy(logger=self.logger, verbose=self.verbose, proxy_host="localhost", proxy_port=1080)
         proxy.set_proxy()
 

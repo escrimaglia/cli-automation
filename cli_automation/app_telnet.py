@@ -37,11 +37,11 @@ def pull_multiple_host(
             raise typer.Exit(code=1)
         
         datos["command"] = command
-        set_verbose = {"verbose": verbose, "logger": logger}
+        inst_dict = {"verbose": verbose, "logger": logger}
         if verbose == 2:
             print (f"--> data: {json.dumps(datos, indent=3)}")
         start = datetime.now()
-        device = AsyncNetmikoTelnetPull(set_verbose)
+        device = AsyncNetmikoTelnetPull(inst_dict)
         result = await device.run(datos)
         end = datetime.now()
         output.write(result)
@@ -93,11 +93,11 @@ def push_multiple_host(
             }
             datos.append(dic)
 
-        set_verbose = {"verbose": verbose, "single_host": False, "logger": logger}
+        inst_dict = {"verbose": verbose, "single_host": False, "logger": logger}
         if verbose == 2:
             print (f"--> data: {json.dumps(datos, indent=3)}")
         start = datetime.now()
-        netm = AsyncNetmikoTelnetPush(set_verbose=set_verbose)
+        netm = AsyncNetmikoTelnetPush(inst_dict=inst_dict)
         result = await netm.run(datos)
         end = datetime.now()
         output.write(result)

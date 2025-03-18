@@ -40,8 +40,8 @@ def download_templates(
     ):
    
     async def process():
-        set_verbose = {"logger": logger, "verbose": verbose}
-        template = Templates(set_verbose=set_verbose)
+        inst_dict = {"logger": logger, "verbose": verbose}
+        template = Templates(inst_dict=inst_dict)
         try:
             await template.create_template()
         except Exception as error:

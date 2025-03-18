@@ -18,11 +18,11 @@ from . import config_data
 
 
 class AsyncNetmikoPull():
-    def __init__(self, set_verbose: dict):
-        self.verbose = set_verbose.get('verbose')
-        self.logging = set_verbose.get('logging')
-        self.single_host = set_verbose.get('single_host')
-        self.logger = set_verbose.get('logger')
+    def __init__(self, inst_dict: dict):
+        self.verbose = inst_dict.get('verbose')
+        self.logging = inst_dict.get('logging')
+        self.single_host = inst_dict.get('single_host')
+        self.logger = inst_dict.get('logger')
         proxy = TunnelProxy(logger=self.logger, verbose=self.verbose)
         proxy.set_proxy()
         
@@ -83,12 +83,12 @@ class AsyncNetmikoPull():
     
     
 class AsyncNetmikoPush():
-    def __init__(self, set_verbose: dict):
-        self.verbose = set_verbose.get('verbose')
-        self.logging = set_verbose.get('logging')
-        self.single_host = set_verbose.get('single_host')
-        self.logger = set_verbose.get('logger')
-        tunnel = SetSocks5Tunnel(set_verbose=set_verbose)
+    def __init__(self, inst_dict: dict):
+        self.verbose = inst_dict.get('verbose')
+        self.logging = inst_dict.get('logging')
+        self.single_host = inst_dict.get('single_host')
+        self.logger = inst_dict.get('logger')
+        tunnel = SetSocks5Tunnel(inst_dict=inst_dict)
         tunnel_id = tunnel.check_pid()
         if tunnel_id:
             proxy = TunnelProxy(logger=self.logger, verbose=self.verbose, proxy_host="localhost", proxy_port=1080)

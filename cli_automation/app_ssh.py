@@ -53,11 +53,11 @@ def pull_single_host(
         }
 
         
-        set_verbose = {"verbose": verbose, "single_host": True, "logger": logger}
+        inst_dict = {"verbose": verbose, "single_host": True, "logger": logger}
         if verbose == 2:
             print (f"--> data: {json.dumps(datos, indent=3)}")
         start = datetime.now()
-        netm = AsyncNetmikoPull(set_verbose=set_verbose)
+        netm = AsyncNetmikoPull(inst_dict=inst_dict)
         result = await netm.run(datos)
         end = datetime.now()
         output.write(result)
@@ -91,11 +91,11 @@ def pull_multiple_host(
             raise typer.Exit(code=1)
         
         datos["commands"] = commands
-        set_verbose = {"verbose": verbose, "single_host": False, "logger": logger}
+        inst_dict = {"verbose": verbose, "single_host": False, "logger": logger}
         if verbose == 2:
             print (f"--> data: {json.dumps(datos, indent=3)}")  
         start = datetime.now()
-        netm = AsyncNetmikoPull(set_verbose=set_verbose)
+        netm = AsyncNetmikoPull(inst_dict=inst_dict)
         result = await netm.run(datos)
         end = datetime.now()
         if verbose in [1,2]:
@@ -161,11 +161,11 @@ def push_single_host(
             "commands": datos_cmds
         }
 
-        set_verbose = {"verbose": verbose, "single_host": True, "logger": logger}
+        inst_dict = {"verbose": verbose, "single_host": True, "logger": logger}
         if verbose == 2:
             print (f"--> data: {json.dumps(datos, indent=3)}")
         start = datetime.now()
-        netm = AsyncNetmikoPush(set_verbose=set_verbose)
+        netm = AsyncNetmikoPush(inst_dict=inst_dict)
         result = await netm.run(datos)
         end = datetime.now()
         output.write(result)
@@ -218,11 +218,11 @@ def push_multiple_host(
             }
             datos.append(dic)
 
-        set_verbose = {"verbose": verbose, "single_host": False, "logger": logger}
+        inst_dict = {"verbose": verbose, "single_host": False, "logger": logger}
         if verbose == 2:
             print (f"--> data: {json.dumps(datos, indent=3)}")
         start = datetime.now()
-        netm = AsyncNetmikoPush(set_verbose=set_verbose)
+        netm = AsyncNetmikoPush(inst_dict=inst_dict)
         result = await netm.run(datos)
         end = datetime.now()
         output.write(result)

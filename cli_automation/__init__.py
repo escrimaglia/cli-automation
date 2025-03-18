@@ -30,6 +30,9 @@ class ClaConfig():
             with open(self.config_path, "w") as write_file:
                 json.dump(self.data, write_file, indent=3)
                 return self.data
+        except Exception:
+            print ("** Error creating the configuration file")
+            SystemExit(1)
 
 class Logger():
     def __init__(self):

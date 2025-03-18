@@ -17,7 +17,7 @@ class TunnelProxy():
 
         
     def set_proxy(self):
-        if self.tunnel:
+        if self.cfg.get("tunnel"):
             self.logger.info(f"Setting up the application to use the tunnel at local-port {self.cfg.get('tunnel_local_port')}")
             inst_dict = {'verbose': self.verbose, 'logger': self.logger}
             tunnel = SetSocks5Tunnel(inst_dict=inst_dict)

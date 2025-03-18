@@ -32,10 +32,10 @@ class SetSocks5Tunnel():
             return s.connect_ex(("localhost", local_port)) == 0
         
         
-    async def check_remote_ip(self):
+    async def check_remote_ip(self, local_port):
         proxies = {
-            "http": f"socks5h://localhost:{self.local_port}",
-            "https": f"socks5h://localhost:{self.local_port}"
+            "http": f"socks5h://localhost:{local_port}",
+            "https": f"socks5h://localhost:{local_port}"
         }
         try:
             ip = requests.get("https://api64.ipify.org", proxies=proxies, timeout=5).text
@@ -49,7 +49,7 @@ class SetSocks5Tunnel():
 
 
     def get_pid(self):
-        command_pre = ["lsof", "-t", f"-i:{self.local_port}"]
+        command_pre = ["lsof", "-t", f"-i:{self.cfg.get("tunnel_local_port")}"]
         try:
             result = subprocess.run(command_pre, capture_output=True, text=True)
             pid = result.stdout.strip() if result.stdout.strip() else None
@@ -63,7 +63,7 @@ class SetSocks5Tunnel():
 
 
     async def start_socks5_tunnel(self, timeout, bastion_user, bastion_host, local_port):
-        command = f"ssh -N -D {self.local_port} -f {self.bastion_user}@{self.bastion_host}"
+        command = f"ssh -N -D {local_port} -f {bastion_user}@{bastion_host}"
         if self.verbose in [1,2]:
             print(f"-> Setting up the tunnel to the Bastion Host {bastion_user}@{bastion_host}, local-port {local_port}")
         self.logger.info(f"Setting up the tunnel to the Bastion Host {bastion_host}, user: {bastion_user}, local-port: {local_port}")
@@ -86,7 +86,7 @@ class SetSocks5Tunnel():
 
     
     async def start_tunnel(self, timeout, bastion_user, bastion_host, local_port):
-            if self.is_tunnel_active():
+            if self.is_tunnel_active(local_port=local_port):
                 pid = self.get_pid()
                 self.logger.info(f"Tunnel already running (PID {pid})")
                 if self.verbose in [1,2]:
@@ -106,7 +106,7 @@ class SetSocks5Tunnel():
                     self.logger.debug(f"Tunnel started successfully for user: {bastion_user}, bastion host: {bastion_host}, local-port: {local_port}, PID: {pid}")
                     if self.verbose in [1,2]:    
                         print (f"\n** Tunnel started successfully for user: {bastion_user}, bastion host: {bastion_host}, local-port: {local_port}, PID: {pid}")
-                    await self.check_remote_ip()
+                    await self.check_remote_ip(local_port=local_port)
 
 
     async def kill_tunnel(self):

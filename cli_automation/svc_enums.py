@@ -10,9 +10,7 @@ class DeviceType(Enum):
     arista_eos = "arista_eos"
     huawei = "huawei"
     huawei_vrp = "huawei_vrp"
-    nokia_sros = "alcatel_sros"
+    alcatel_sros = "alcatel_sros"
     vyos = "vyos"
     vyatta_vyos = "vyatta_vyos"
    
-    
-

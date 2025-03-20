@@ -7,10 +7,6 @@ from cli_automation.config_srv import *
 DATA = {
     "tunnel": False,
     "app": "cla",
-    # "log_file": "cla.log",
-    # "telnet_prompts": [">", "#", "(config)#", "(config-if)#", "$", "%", "> (doble)","# (doble)", "?", ")", "!", "*", "~", ":]", "]", ">", "##"],
-    # "proxy_port_test": 22,
-    # "proxy_timeout_test": 10
 }
 class ClaConfig():
     def __init__(self):

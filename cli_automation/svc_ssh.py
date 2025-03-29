@@ -7,6 +7,7 @@ import os
 import paramiko.ssh_exception
 sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), '..', '.')))
 
+import traceback
 import asyncio
 from netmiko import ConnectHandler, NetmikoAuthenticationException, NetMikoTimeoutException
 import paramiko
@@ -39,19 +40,16 @@ class AsyncNetmikoPull():
             return output
         except NetmikoAuthenticationException:
             self.logger.error(f"Error connecting to {device['host']}, authentication error")
-            return (f"** Error connecting to {device['host']}, authentication error")
+            return f"** Error connecting to {device['host']}, authentication error"
         except NetMikoTimeoutException:
             self.logger.error(f"Error connecting to {device['host']}, Timeout error")
-            return (f"** Error connecting to {device['host']}, Timeout error")
-        except paramiko.ssh_exception.SSHException as ssh_error:
-            self.logger.error(f"Error connecting to {device['host']}, Paramiko {ssh_error}")
-            return (f"** Error connecting to {device['host']}, Paramiko {ssh_error}")
-        except paramiko.SSHException as peer_error:
-            self.logger.error(f"Error connecting to {device['host']}, Paramiko {ssh_error}")
-            return (f"** Error connecting to {device['host']}, Paramiko {ssh_error}")
+            return f"** Error connecting to {device['host']}, Timeout error"
+        except (paramiko.ssh_exception.SSHException, paramiko.SSHException) as ssh_error:
+            self.logger.error(f"Error connecting to {device['host']}, Paramiko error: {ssh_error}")
+            return f"** Error connecting to {device['host']}, Paramiko error: {ssh_error}"
         except Exception as error:
-            self.logger.error(f"Error connecting to {device['host']}: unexpected {error}")
-            return (f"** Error connecting to {device['host']}: unexpected {str(error).replace('\n', ' ')}")
+            self.logger.error(f"Error connecting to {device['host']}: unexpected {error}\n{traceback.format_exc()}")
+            return f"** Error connecting to {device['host']}: unexpected {str(error).replace('\n', ' ')}"
         
        
     def data_validation(self, data: ModelSsh) -> None:
@@ -103,19 +101,16 @@ class AsyncNetmikoPush():
             return output
         except NetmikoAuthenticationException:
             self.logger.error(f"Error connecting to {device['host']}, authentication error")
-            return (f"** Error connecting to {device['host']}, authentication error")
+            return f"** Error connecting to {device['host']}, authentication error"
         except NetMikoTimeoutException:
             self.logger.error(f"Error connecting to {device['host']}, Timeout error")
-            return (f"** Error connecting to {device['host']}, Timeout error")
-        except paramiko.ssh_exception.SSHException as ssh_error:
-            self.logger.error(f"Error connecting to {device['host']}, Paramiko {ssh_error}")
-            return (f"** Error connecting to {device['host']}, Paramiko {ssh_error}")
-        except paramiko.SSHException as peer_error:
-            self.logger.error(f"Error connecting to {device['host']}, Paramiko {ssh_error}")
-            return (f"** Error connecting to {device['host']}, Paramiko {ssh_error}")
+            return f"** Error connecting to {device['host']}, Timeout error"
+        except (paramiko.ssh_exception.SSHException, paramiko.SSHException) as ssh_error:
+            self.logger.error(f"Error connecting to {device['host']}, Paramiko error: {ssh_error}")
+            return f"** Error connecting to {device['host']}, Paramiko error: {ssh_error}"
         except Exception as error:
-            self.logger.error(f"Error connecting to {device['host']}: unexpected {error}")
-            return (f"** Error connecting to {device['host']}: unexpected {str(error).replace('\n', ' ')}")
+            self.logger.error(f"Error connecting to {device['host']}: unexpected {error}\n{traceback.format_exc()}")
+            return f"** Error connecting to {device['host']}: unexpected {str(error).replace('\n', ' ')}"
         
         
     def data_validation(self, data: ModelSsh) -> None:

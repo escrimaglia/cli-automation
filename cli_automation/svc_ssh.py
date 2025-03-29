@@ -3,6 +3,8 @@
 
 import sys
 import os
+
+import paramiko.ssh_exception
 sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), '..', '.')))
 
 import asyncio
@@ -13,14 +15,11 @@ from .svc_model import ModelSsh
 from typing import List
 import json
 from .svc_proxy import TunnelProxy
-from .svc_tunnel import SetSocks5Tunnel
-from . import config_data
 
 
 class AsyncNetmikoPull():
     def __init__(self, inst_dict: dict):
         self.verbose = inst_dict.get('verbose')
-        self.logging = inst_dict.get('logging')
         self.single_host = inst_dict.get('single_host')
         self.logger = inst_dict.get('logger')
         proxy = TunnelProxy(logger=self.logger, verbose=self.verbose)
@@ -47,9 +46,9 @@ class AsyncNetmikoPull():
         except paramiko.ssh_exception.SSHException as ssh_error:
             self.logger.error(f"Error connecting to {device['host']}, Paramiko {ssh_error}")
             return (f"** Error connecting to {device['host']}, Paramiko {ssh_error}")
-        except paramiko.ssh_exception.IncompatiblePeer as peer_error:
-            self.logger.error(f"Error connecting to {device['host']}, Incompatible Peer {peer_error}")
-            return (f"** Error connecting to {device['host']}, Incompatible Peer {peer_error}")
+        except paramiko.SSHException as peer_error:
+            self.logger.error(f"Error connecting to {device['host']}, Paramiko {ssh_error}")
+            return (f"** Error connecting to {device['host']}, Paramiko {ssh_error}")
         except Exception as error:
             self.logger.error(f"Error connecting to {device['host']}: unexpected {error}")
             return (f"** Error connecting to {device['host']}: unexpected {str(error).replace('\n', ' ')}")
@@ -85,14 +84,10 @@ class AsyncNetmikoPull():
 class AsyncNetmikoPush():
     def __init__(self, inst_dict: dict):
         self.verbose = inst_dict.get('verbose')
-        self.logging = inst_dict.get('logging')
         self.single_host = inst_dict.get('single_host')
         self.logger = inst_dict.get('logger')
-        tunnel = SetSocks5Tunnel(inst_dict=inst_dict)
-        tunnel_id = tunnel.check_pid()
-        if tunnel_id:
-            proxy = TunnelProxy(logger=self.logger, verbose=self.verbose, proxy_host="localhost", proxy_port=1080)
-            proxy.set_proxy()
+        proxy = TunnelProxy(logger=self.logger, verbose=self.verbose)
+        proxy.set_proxy()
       
 
     async def netmiko_connection(self, device: dict, commands: List[str]) -> str:
@@ -115,9 +110,9 @@ class AsyncNetmikoPush():
         except paramiko.ssh_exception.SSHException as ssh_error:
             self.logger.error(f"Error connecting to {device['host']}, Paramiko {ssh_error}")
             return (f"** Error connecting to {device['host']}, Paramiko {ssh_error}")
-        except paramiko.ssh_exception.IncompatiblePeer as peer_error:
-            self.logger.error(f"Error connecting to {device['host']}, Incompatible Peer {peer_error}")
-            return (f"** Error connecting to {device['host']}, Incompatible Peer {peer_error}")
+        except paramiko.SSHException as peer_error:
+            self.logger.error(f"Error connecting to {device['host']}, Paramiko {ssh_error}")
+            return (f"** Error connecting to {device['host']}, Paramiko {ssh_error}")
         except Exception as error:
             self.logger.error(f"Error connecting to {device['host']}: unexpected {error}")
             return (f"** Error connecting to {device['host']}: unexpected {str(error).replace('\n', ' ')}")

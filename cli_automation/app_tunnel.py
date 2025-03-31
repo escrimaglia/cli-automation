@@ -1,4 +1,4 @@
-# Manage SOCK5 Tunnel with Bastion Host
+# Managing SOCK5 Tunnel with Bastion Host Typer Application
 # Ed Scrimaglia
 
 import sys

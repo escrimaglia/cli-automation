@@ -1,4 +1,4 @@
-# SSH classes for the CLI Automation project
+# SSH Service Classes
 # Ed Scrimaglia
 
 import sys

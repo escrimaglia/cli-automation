@@ -1,4 +1,4 @@
-# Telnet classes for the CLI Automation project
+# Telnet Service Classes
 # Ed Scrimaglia
 
 import sys

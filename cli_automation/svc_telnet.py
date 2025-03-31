@@ -6,6 +6,7 @@ import os
 sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), '..', '.')))
 
 import traceback
+import paramiko.ssh_exception
 from netmiko import ConnectHandler, NetmikoAuthenticationException, NetMikoTimeoutException
 from pydantic import ValidationError
 from .svc_model import ModelTelnetPull, ModelTelnetPush

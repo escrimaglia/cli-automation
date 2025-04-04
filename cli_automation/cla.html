@@ -1,0 +1,44 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta http-equiv="X-UA-Compatible" content="ie=edge">
+<title>Markmap</title>
+<style>
+* {
+  margin: 0;
+  padding: 0;
+}
+#mindmap {
+  display: block;
+  width: 100vw;
+  height: 100vh;
+}
+</style>
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/markmap-toolbar@0.18.10/dist/style.css"><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@highlightjs/cdn-assets@11.11.1/styles/default.min.css">
+</head>
+<body>
+<svg id="mindmap"></svg>
+<script src="https://cdn.jsdelivr.net/npm/d3@7.9.0/dist/d3.min.js"></script><script src="https://cdn.jsdelivr.net/npm/markmap-view@0.18.10/dist/browser/index.js"></script><script src="https://cdn.jsdelivr.net/npm/markmap-toolbar@0.18.10/dist/index.js"></script><script>(r => {
+              setTimeout(r);
+            })(function renderToolbar() {
+  const {
+    markmap,
+    mm
+  } = window;
+  const {
+    el
+  } = markmap.Toolbar.create(mm);
+  el.setAttribute('style', 'position:absolute;bottom:20px;right:20px');
+  document.body.append(el);
+})</script><script>((getMarkmap, getOptions, root2, jsonOptions) => {
+              const markmap = getMarkmap();
+              window.mm = markmap.Markmap.create(
+                "svg#mindmap",
+                (getOptions || markmap.deriveOptions)(jsonOptions),
+                root2
+              );
+            })(() => window.markmap,null,{"content":"<code>cla</code>","children":[{"content":"<code>cla templates</code>","children":[{"content":"<pre data-lines=\"64,67\"><code class=\"language-console\"><span class=\"hljs-meta prompt_\">&#x24; </span><span class=\"language-bash\">cla templates [OPTIONS]</span>\n</code></pre>","children":[],"payload":{"tag":"pre","lines":"64,67"}}],"payload":{"tag":"h2","lines":"57,58"}},{"content":"<code>cla ssh</code>","children":[{"content":"<code>cla ssh onepull</code>","children":[{"content":"<pre data-lines=\"102,105\"><code class=\"language-console\"><span class=\"hljs-meta prompt_\">&#x24; </span><span class=\"language-bash\">cla ssh onepull [OPTIONS]</span>\n</code></pre>","children":[],"payload":{"tag":"pre","lines":"102,105"}}],"payload":{"tag":"h3","lines":"96,97"}},{"content":"<code>cla ssh pullconfig</code>","children":[{"content":"<pre data-lines=\"125,128\"><code class=\"language-console\"><span class=\"hljs-meta prompt_\">&#x24; </span><span class=\"language-bash\">cla ssh pullconfig [OPTIONS]</span>\n</code></pre>","children":[],"payload":{"tag":"pre","lines":"125,128"}}],"payload":{"tag":"h3","lines":"119,120"}},{"content":"<code>cla ssh onepush</code>","children":[{"content":"<pre data-lines=\"144,147\"><code class=\"language-console\"><span class=\"hljs-meta prompt_\">&#x24; </span><span class=\"language-bash\">cla ssh onepush [OPTIONS]</span>\n</code></pre>","children":[],"payload":{"tag":"pre","lines":"144,147"}}],"payload":{"tag":"h3","lines":"138,139"}},{"content":"<code>cla ssh pushconfig</code>","children":[{"content":"<pre data-lines=\"168,171\"><code class=\"language-console\"><span class=\"hljs-meta prompt_\">&#x24; </span><span class=\"language-bash\">cla ssh pushconfig [OPTIONS]</span>\n</code></pre>","children":[],"payload":{"tag":"pre","lines":"168,171"}}],"payload":{"tag":"h3","lines":"162,163"}}],"payload":{"tag":"h2","lines":"73,74"}},{"content":"<code>cla telnet</code>","children":[{"content":"<code>cla telnet pullconfig</code>","children":[{"content":"<pre data-lines=\"207,210\"><code class=\"language-console\"><span class=\"hljs-meta prompt_\">&#x24; </span><span class=\"language-bash\">cla telnet pullconfig [OPTIONS]</span>\n</code></pre>","children":[],"payload":{"tag":"pre","lines":"207,210"}}],"payload":{"tag":"h3","lines":"201,202"}},{"content":"<code>cla telnet pushconfig</code>","children":[{"content":"<pre data-lines=\"225,228\"><code class=\"language-console\"><span class=\"hljs-meta prompt_\">&#x24; </span><span class=\"language-bash\">cla telnet pushconfig [OPTIONS]</span>\n</code></pre>","children":[],"payload":{"tag":"pre","lines":"225,228"}}],"payload":{"tag":"h3","lines":"219,220"}}],"payload":{"tag":"h2","lines":"180,181"}},{"content":"<code>cla tunnel</code>","children":[{"content":"<code>cla tunnel setup</code>","children":[{"content":"<pre data-lines=\"266,269\"><code class=\"language-console\"><span class=\"hljs-meta prompt_\">&#x24; </span><span class=\"language-bash\">cla tunnel setup [OPTIONS]</span>\n</code></pre>","children":[],"payload":{"tag":"pre","lines":"266,269"}}],"payload":{"tag":"h3","lines":"262,263"}},{"content":"<code>cla tunnel kill</code>","children":[{"content":"<pre data-lines=\"283,286\"><code class=\"language-console\"><span class=\"hljs-meta prompt_\">&#x24; </span><span class=\"language-bash\">cla tunnel <span class=\"hljs-built_in\">kill</span> [OPTIONS]</span>\n</code></pre>","children":[],"payload":{"tag":"pre","lines":"283,286"}}],"payload":{"tag":"h3","lines":"279,280"}},{"content":"<code>cla tunnel status</code>","children":[{"content":"<pre data-lines=\"296,299\"><code class=\"language-console\"><span class=\"hljs-meta prompt_\">&#x24; </span><span class=\"language-bash\">cla tunnel status [OPTIONS]</span>\n</code></pre>","children":[],"payload":{"tag":"pre","lines":"296,299"}}],"payload":{"tag":"h3","lines":"292,293"}}],"payload":{"tag":"h2","lines":"237,238"}}],"payload":{"tag":"h1","lines":"0,1"}},{})</script>
+</body>
+</html>

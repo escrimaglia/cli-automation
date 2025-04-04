@@ -90,7 +90,7 @@ class AsyncNetmikoTelnetPush():
     def __init__(self, inst_dict: dict):
         self.verbose = inst_dict.get('verbose')
         self.logger = inst_dict.get('logger')
-        proxy = TunnelProxy(logger=self.logger, verbose=self.verbose, proxy_host="localhost", proxy_port=1080)
+        proxy = TunnelProxy(logger=self.logger, verbose=self.verbose)
         proxy.set_proxy()
 
     async def handle_read_file(self):
@@ -156,14 +156,14 @@ class AsyncNetmikoTelnetPush():
         if self.verbose in [1,2]:
                 print(f"-> About to execute Data Validation")
         try:
-            ModelTelnetPush(devices=data.get('device'), commands=data.get('commands'))
+            ModelTelnetPush(device=data)
         except ValidationError as error:
             self.logger.error(f"Data validation error: {error}")
             print (f" ->, {error}")
             sys.exit(1)
 
     
-    async def run(self, data: dict) -> dict:
+    async def run(self, data: List[dict]) -> dict:
         self.data_validation(data=data)
         prompts = config_data.get("telnet_prompts")
         tasks = []
@@ -174,7 +174,7 @@ class AsyncNetmikoTelnetPush():
             tasks.append(self.device_connect(device=dev, command=cmd, prompts=prompts))
             if self.verbose in [1,2]:
                 print (f"-> Connecting to device {dev.get('host')}, configuring commands {cmd}")
-            self.logger.info(f"Connecting to device {device['host']}, executing command {data.get('command')}")
+            self.logger.info(f"Connecting to device {dev.get('host')}, executing command {cmd}")
         results = await asyncio.gather(*tasks)
         output_data = []
         for device, output in zip(data, results):

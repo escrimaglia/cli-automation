@@ -13,4 +13,5 @@ class DeviceType(Enum):
     alcatel_sros = "alcatel_sros"
     vyos = "vyos"
     vyatta_vyos = "vyatta_vyos"
-   
+    extreme_exos = "extreme_exos"
+    extreme = "extreme"

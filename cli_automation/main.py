@@ -15,7 +15,7 @@ from cli_automation import app_tunnel
 from cli_automation import app_ssh
 
 
-app = typer.Typer(no_args_is_help=True)
+app = typer.Typer(no_args_is_help=True, pretty_exceptions_short=True)
 
 def check_version(value: bool):
     if value:

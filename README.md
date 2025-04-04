@@ -17,6 +17,7 @@ from any programming language, once again, without requiring a single line of co
 - Juniper
 - Arista
 - Huawei
+- Extreme
 - Alcatel
 - Vyos
 - Generic Telnet
@@ -91,7 +92,7 @@ $ cla ssh [OPTIONS] COMMAND [ARGS]...
 * `onepull`: Pull config from a single host
 * `pullconfig`: Pull config from multiple hosts
 * `onepush`: Push config to a single host
-* `pushconfig`: Push config file to multiple hosts
+* `pushconfig`: Push config to multiple hosts
 
 ### `cla ssh onepull`
 
@@ -108,7 +109,7 @@ $ cla ssh onepull [OPTIONS]
 * `-h, --host TEXT`: host name or ip address  [required]
 * `-u, --user TEXT`: username  [required]
 * `-c, --cmd Multiple -c parameter`: commands to execute on the device  [required]
-* `-t, --type [cisco_ios|cisco_xr|cisco_xe|cisco_nxos|juniper|juniper_junos|arista_eos|huawei|huawei_vrp|alcatel_sros|vyos|vyatta_vyos]`: device type  [required]
+* `-t, --type [cisco_ios|cisco_xr|cisco_xe|cisco_nxos|juniper|juniper_junos|arista_eos|huawei|huawei_vrp|alcatel_sros|vyos|vyatta_vyos|extreme_exos|extreme]`: device type  [required]
 * `-p, --port INTEGER`: port  [default: 22]
 * `-v, --verbose`: verbose level  [default: 0; 0&lt;=x&lt;=2]
 * `-o, --output FILENAME Json file`: output file  [default: output.json]
@@ -118,7 +119,7 @@ $ cla ssh onepull [OPTIONS]
 
 ### `cla ssh pullconfig`
 
-Pull config from multiple hosts
+the commands can be entered via the command line or through a JSON file
 
 **Usage**:
 
@@ -129,14 +130,15 @@ $ cla ssh pullconfig [OPTIONS]
 **Options**:
 
 * `-h, --hosts FILENAME Json file`: group of hosts  [required]
-* `-c, --cmd Multiple -c parameter`: commands to execute on the device  [required]
+* `-c, --cmd Multiple -c parameter`: commands to execute on the device
+* `-f, --cmdf FILENAME Json file`: commands to configure on the device
 * `-v, --verbose`: verbose level  [default: 0; 0&lt;=x&lt;=2]
 * `-o, --output FILENAME Json file`: output file  [default: output.json]
 * `--help`: Show this message and exit.
 
 ### `cla ssh onepush`
 
-Push config to a single host
+the commands can be entered via the command line or through a JSON file
 
 **Usage**:
 
@@ -148,9 +150,9 @@ $ cla ssh onepush [OPTIONS]
 
 * `-h, --host TEXT`: host name or ip address  [required]
 * `-u, --user TEXT`: username  [required]
-* `-t, --type [cisco_ios|cisco_xr|cisco_xe|cisco_nxos|juniper|juniper_junos|arista_eos|huawei|huawei_vrp|alcatel_sros|vyos|vyatta_vyos]`: device type  [required]
-* `-c, --cmd Multiple -c parameter`: commands to configure on the device
-* `-f, --cmdf FILENAME Json file`: commands to configure on the device
+* `-t, --type [cisco_ios|cisco_xr|cisco_xe|cisco_nxos|juniper|juniper_junos|arista_eos|huawei|huawei_vrp|alcatel_sros|vyos|vyatta_vyos|extreme_exos|extreme]`: device type  [required]
+* `-c, --cmd Multiple -c parameter`: commands to configure the device
+* `-f, --cmdf FILENAME Json file`: commands to configure the device
 * `-p, --port INTEGER`: port  [default: 22]
 * `-v, --verbose`: verbose level  [default: 0; 0&lt;=x&lt;=2]
 * `-o, --output FILENAME Json file`: output file  [default: output.json]
@@ -160,7 +162,7 @@ $ cla ssh onepush [OPTIONS]
 
 ### `cla ssh pushconfig`
 
-Push config file to multiple hosts
+the commands must be provided through a JSON file
 
 **Usage**:
 
@@ -171,7 +173,7 @@ $ cla ssh pushconfig [OPTIONS]
 **Options**:
 
 * `-h, --hosts FILENAME Json file`: group of hosts  [required]
-* `-c, --cmd FILENAME Json file`: commands to configure on the device  [required]
+* `-f, --cmd FILENAME Json file`: commands to configure the device  [required]
 * `-v, --verbose`: verbose level  [default: 0; 0&lt;=x&lt;=2]
 * `-o, --output FILENAME Json file`: output file  [default: output.json]
 * `--help`: Show this message and exit.
@@ -228,9 +230,9 @@ $ cla telnet pushconfig [OPTIONS]
 **Options**:
 
 * `-h, --hosts FILENAME Json file`: group of hosts  [required]
-* `-c, --cmd FILENAME Json file`: commands to configure on the device  [required]
+* `-f, --cmdf FILENAME Json file`: commands to configure on the device  [required]
 * `-v, --verbose`: verbose level  [default: 0; 0&lt;=x&lt;=2]
-* `-o, --output FILENAME text file`: output file  [default: output.text]
+* `-o, --output FILENAME text file`: output file  [default: output.txt]
 * `--help`: Show this message and exit.
 
 ## `cla tunnel`
@@ -270,8 +272,8 @@ $ cla tunnel setup [OPTIONS]
 
 * `-u, --user TEXT`: bastion host username  [required]
 * `-b, --bastion TEXT`: bastion name or ip address  [required]
-* `-p, --port INTEGER`: local port  [default: 1080]
-* `-t, --timeout INTEGER RANGE`: timeout in seconds for the tunnel startup  [default: 15; 3&lt;=x&lt;=25]
+* `-p, --port INTEGER RANGE`: local port  [default: 1080; 1000&lt;=x&lt;=1100]
+* `-t, --timeout INTEGER RANGE`: timeout in seconds for the tunnel startup  [default: 10; 3&lt;=x&lt;=25]
 * `-v, --verbose`: verbose level  [default: 1; 0&lt;=x&lt;=2]
 * `--help`: Show this message and exit.
 
@@ -298,7 +300,7 @@ $ cla tunnel status [OPTIONS]
 
 **Options**:
 
-* `-p, --port INTEGER`: local port  [default: 1080]
+* `-p, --port INTEGER RANGE`: local port  [default: 1080; 1000&lt;=x&lt;=1100]
 * `-t, --timeout INTEGER RANGE`: timeout in seconds for the tunnel return its status  [default: 10; 3&lt;=x&lt;=20]
 * `-r, --test INTEGER`: remote port for testing the tunnel  [default: 22]
 * `-v, --verbose`: verbose level  [default: 1; 0&lt;=x&lt;=2]

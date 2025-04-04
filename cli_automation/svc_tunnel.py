@@ -37,11 +37,11 @@ class SetSocks5Tunnel():
         try:
             ip = requests.get("https://api64.ipify.org", proxies=proxies, timeout=5).text
             if self.verbose in [2]:
-                print(f"** The public IP through the tunnel is: {ip}")
+                print(f"\n** The public IP through the tunnel is: {ip}")
             self.logger.debug(f"The public IP through the tunnel is: {ip}")
         except requests.RequestException:
             if self.verbose in [2]:
-                print("** Failed to obtain the IP through the tunnel")
+                print("\n** Failed to obtain the IP through the tunnel")
             self.logger.error("Failed to obtain the IP through the tunnel")
 
 

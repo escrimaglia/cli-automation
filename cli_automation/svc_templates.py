@@ -37,7 +37,17 @@ class Templates():
                             'global_delay_factor': 'null'
                         }
                     ]
-                },  
+                },
+                'extreme_exos_commands_file': {
+                    'X.X.X.X': {
+                        'commands': [
+                            'create vlan Loopback0',
+                            'configure vlan Loopback0 add ports 1',
+                            'configure vlan Loopback0 ipaddress 192.168.10.1/32',
+                            'enable loopback0',
+                        ]
+                    }
+                },
                 'cisco_ios_commands_file': {
                     'X.X.X.X': {
                         'commands': [
@@ -102,7 +112,7 @@ class Templates():
                         ]
                     }
                 },
-                'huawei_vvrp_commands_file': {
+                'huawei_vrp_commands_file': {
                     'X.X.X.X': {
                         'commands': [
                             'sysname Router-Huawei',

@@ -14,18 +14,24 @@ class Device(BaseModel):
     port: int | None = Field(default=22)
     ssh_config_file: str | None = None
 
-class Model(BaseModel):
-    devices: List[Device]
+class ModelSingleSsh(BaseModel):
+    device: Device
     commands: List[str]
 
-class ModelSsh(BaseModel):
-    devices: List[Device]
+class TelnetPush(BaseModel):
+    device: Device
     commands: List[str]
 
 class ModelTelnetPush(BaseModel):
-    devices: List[Device]
-    commands: List[str]
+    device: List[TelnetPush]
 
 class ModelTelnetPull(BaseModel):
     devices: List[Device]
     command: str
+
+class MultipleSsh(BaseModel):
+    device: Device
+    commands: List[str]
+
+class ModelMultipleSsh(BaseModel):
+    device: List[MultipleSsh]

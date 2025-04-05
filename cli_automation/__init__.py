@@ -47,7 +47,7 @@ class Logger():
 class Html():
     def __init__(self):
         self.nav = Path("navigate.html")
-        self.cla = Path("cla.html")
+        self.cla = Path("./datos/cla.html")
 
     def create_html(self):
         if not self.nav.exists():

@@ -1,4 +1,4 @@
-# `cla`
+# `CLA`
 
 [![PyPI](https://img.shields.io/pypi/v/cli-automation.svg)](https://pypi.org/project/cli-automation/)
 [![Python Version](https://img.shields.io/pypi/pyversions/cli-automation.svg)](https://pypi.org/project/cli-automation/)

@@ -13,7 +13,7 @@ class ClaConfig():
         self.data = DATA
         self.config_path = Path("config.json")
         self.config = CONFIG_PARAMS
-        self.version = "1.4.1 - XXI - By Ed Scrimaglia"
+        self.version = "1.4.2 - XXI - By Ed Scrimaglia"
 
     def load_config(self):
         try:
@@ -53,7 +53,7 @@ class Html():
         if not self.nav.exists():
             if self.cla.exists():
                 data = self.cla.read_text()
-                self.index.write_text(data)
+                self.nav.write_text(data)
 
 config_data = ClaConfig().load_config()
 logger = Logger().get_logger()

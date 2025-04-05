@@ -13,7 +13,7 @@ class ClaConfig():
         self.data = DATA
         self.config_path = Path("config.json")
         self.config = CONFIG_PARAMS
-        self.version = "1.4.2 - XXI - By Ed Scrimaglia"
+        self.version = "1.5.0 - XXI - By Ed Scrimaglia"
 
     def load_config(self):
         try:
@@ -44,6 +44,6 @@ class Logger():
     def get_logger(self):
         return self.logger
     
-    
+
 config_data = ClaConfig().load_config()
 logger = Logger().get_logger()

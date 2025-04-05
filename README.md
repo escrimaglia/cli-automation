@@ -41,7 +41,7 @@ $ pip install cli-automation
 $ cla [OPTIONS] COMMAND [ARGS]...
 ```
 
-![navigation map](./datos/cla.svg)
+![navigation map](./cli_automation/datos/cla.svg)
 
 **Options**:
 

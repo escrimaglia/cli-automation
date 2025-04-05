@@ -37,11 +37,11 @@ $ pip install cli-automation
 
 **Usage**:
 
+![navigation map](./cli_automation/datos/cla.png)
+
 ```console
 $ cla [OPTIONS] COMMAND [ARGS]...
 ```
-
-[navigation map](./cli_automation/datos/cla.png)
 
 **Options**:
 

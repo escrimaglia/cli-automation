@@ -10,7 +10,7 @@ from typing_extensions import Annotated
 from .svc_progress import ProgressBar
 import asyncio
 from .svc_tunnel import SetSocks5Tunnel
-from . import logger, config_data
+from cli_automation import logger, config_data
 
 app = typer.Typer(no_args_is_help=True)
 

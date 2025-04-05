@@ -7,7 +7,7 @@ sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), '..', ".
 
 import socks
 import socket
-from . import config_data
+from cli_automation import config_data
 from .svc_tunnel import SetSocks5Tunnel
 
 
@@ -20,7 +20,7 @@ class TunnelProxy():
         
     def set_proxy(self):
         if self.cfg.get("tunnel"):
-            self.logger.info(f"Setting up the application to use the tunnel at local-port {self.cfg.get('tunnel_local_port')}")
+            self.logger.debug(f"Setting up the application to use the tunnel at local-port {self.cfg.get('tunnel_local_port')}")
             inst_dict = {'verbose': self.verbose, 'logger': self.logger}
             tunnel = SetSocks5Tunnel(inst_dict=inst_dict)
             status = tunnel.is_tunnel_active(local_port=self.cfg.get('tunnel_local_port'))
@@ -39,7 +39,7 @@ class TunnelProxy():
 
     
     def test_proxy(self, test_port, timeout):
-        self.logger.info(f"Testing the tunnel at remote-port {test_port}")
+        self.logger.debug(f"Testing the tunnel at remote-port {test_port}")
         try:
             socks.set_default_proxy(socks.SOCKS5, self.cfg.get("proxy_host"), self.cfg.get("tunnel_local_port"))
             socket.socket = socks.socksocket

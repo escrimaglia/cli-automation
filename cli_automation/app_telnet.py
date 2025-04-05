@@ -12,7 +12,7 @@ from datetime import datetime
 from .svc_telnet import AsyncNetmikoTelnetPull, AsyncNetmikoTelnetPush
 import asyncio
 import json
-from . import logger
+from cli_automation import logger
 
 app = typer.Typer(no_args_is_help=True)
 
@@ -41,6 +41,7 @@ def pull_multiple_host(
         if verbose == 2:
             print (f"--> data: {json.dumps(datos, indent=3)}")
         start = datetime.now()
+        logger.info(f"Running Telnet command pullconfig on devices {devices.name}")
         device = AsyncNetmikoTelnetPull(inst_dict)
         result = await device.run(datos)
         end = datetime.now()
@@ -101,6 +102,7 @@ def push_multiple_host(
         if verbose == 2:
             print (f"--> data: {json.dumps(datos, indent=3)}")
         start = datetime.now()
+        logger.info(f"Running Telnet command pushconfig on devices {devices.name}")
         netm = AsyncNetmikoTelnetPush(inst_dict=inst_dict)
         result = await netm.run(datos)
         end = datetime.now()

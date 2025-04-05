@@ -14,7 +14,7 @@ from .svc_enums import DeviceType
 import json
 from .svc_progress import ProgressBar
 from datetime import datetime
-from . import logger
+from cli_automation import logger
 
 
 app = typer.Typer(no_args_is_help=True)
@@ -55,6 +55,7 @@ def pull_single_host(
         if verbose == 2:
             print (f"--> data: {json.dumps(datos, indent=3)}")
         start = datetime.now()
+        logger.info(f"Running SSH command onepull on device {host}")
         netm = AsyncNetmikoPull(inst_dict=inst_dict)
         result = await netm.run(data=datos)
         end = datetime.now()
@@ -126,6 +127,7 @@ def pull_multiple_host(
         if verbose == 2:
             print (f"--> data: {json.dumps(datos, indent=3)}")  
         start = datetime.now()
+        logger.info(f"Running SSH command pullconfig on devices {devices.name}")
         netm = AsyncNetmikoPull(inst_dict=inst_dict)
         result = await netm.run(data=datos)
         end = datetime.now()
@@ -198,6 +200,7 @@ def push_single_host(
         if verbose == 2:
             print (f"--> data: {json.dumps(datos, indent=3)}")
         start = datetime.now()
+        logger.info(f"Running SSH command onepush on device {host}")
         netm = AsyncNetmikoPush(inst_dict=inst_dict)
         result = await netm.run(data=datos)
         end = datetime.now()
@@ -259,6 +262,7 @@ def push_multiple_host(
         if verbose == 2:
             print (f"--> data: {json.dumps(datos, indent=3)}")
         start = datetime.now()
+        logger.info(f"Running SSH command pushconfig on devices {devices.name}")
         netm = AsyncNetmikoPush(inst_dict=inst_dict)
         result = await netm.run(data=datos)
         end = datetime.now()

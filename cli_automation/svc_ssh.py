@@ -4,7 +4,6 @@
 import sys
 import os
 
-import paramiko.ssh_exception
 import textfsm
 sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), '..', '.')))
 
@@ -12,11 +11,13 @@ import traceback
 import asyncio
 from netmiko import ConnectHandler, NetmikoAuthenticationException, NetMikoTimeoutException
 import paramiko
+from paramiko.ssh_exception import SSHException
 from pydantic import ValidationError
 from .svc_model import ModelMultipleSsh, ModelSingleSsh
 from typing import List
 import json
 from .svc_proxy import TunnelProxy
+import socket
 
 
 class AsyncNetmikoPull():
@@ -46,9 +47,12 @@ class AsyncNetmikoPull():
         except NetMikoTimeoutException:
             self.logger.error(f"Error connecting to {device['host']}, Timeout error")
             return f"** Error connecting to {device['host']}, Timeout error"
-        except (paramiko.ssh_exception.SSHException, paramiko.SSHException) as ssh_error:
-            self.logger.error(f"Error connecting to {device['host']}, Paramiko error: {ssh_error}")
-            return f"** Error connecting to {device['host']}, Paramiko error: {ssh_error}"
+        except (paramiko.SSHException) as error:
+            self.logger.error(f"Error connecting to {device['host']}, Paramiko error: {error}")
+            return f"** Error connecting to {device['host']}, Paramiko error: {error}"
+        except (SSHException, socket.timeout, socket.error) as error:
+            self.logger.error(f"Error connecting to {device['host']}, SSH error: {error}")
+            return f"** Error connecting to {device['host']}, SSH error: {error}"
         except textfsm.TextFSMError:
             self.logger.error(f"Error connecting to {device['host']}, TextFSM error")
             return f"** Error connecting to {device['host']}, TextFSM error"
@@ -133,9 +137,12 @@ class AsyncNetmikoPush():
         except NetMikoTimeoutException:
             self.logger.error(f"Error connecting to {device['host']}, Timeout error")
             return f"** Error connecting to {device['host']}, Timeout error"
-        except (paramiko.ssh_exception.SSHException, paramiko.SSHException) as ssh_error:
-            self.logger.error(f"Error connecting to {device['host']}, Paramiko error: {ssh_error}")
-            return f"** Error connecting to {device['host']}, Paramiko error: {ssh_error}"
+        except (paramiko.SSHException) as error:
+            self.logger.error(f"Error connecting to {device['host']}, Paramiko error: {error}")
+            return f"** Error connecting to {device['host']}, Paramiko error: {error}"
+        except (SSHException, socket.timeout, socket.error) as error:
+            self.logger.error(f"Error connecting to {device['host']}, SSH error: {error}")
+            return f"** Error connecting to {device['host']}, SSH error: {error}"
         except Exception as error:
             self.logger.error(f"Error connecting to {device['host']}: unexpected {error}\n{traceback.format_exc()}")
             return f"** Error connecting to {device['host']}: unexpected {str(error).replace('\n', ' ')}"

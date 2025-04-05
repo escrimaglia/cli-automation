@@ -11,9 +11,9 @@ DATA = {
 class ClaConfig():
     def __init__(self):
         self.data = DATA
-        self.config_path = Path(__file__).parent / "config.json"
+        self.config_path = Path("config.json")
         self.config = CONFIG_PARAMS
-        self.version = "1.1.0 - XXI - By Ed Scrimaglia"
+        self.version = "1.4.1 - XXI - By Ed Scrimaglia"
 
     def load_config(self):
         try:
@@ -46,15 +46,15 @@ class Logger():
     
 class Html():
     def __init__(self):
-        self.index = Path("navigate.html")
+        self.nav = Path("navigate.html")
         self.cla = Path("cla.html")
 
     def create_html(self):
-        if not self.index.exists():
+        if not self.nav.exists():
             if self.cla.exists():
                 data = self.cla.read_text()
                 self.index.write_text(data)
 
 config_data = ClaConfig().load_config()
 logger = Logger().get_logger()
-html = Html().create_html()
+Html().create_html()

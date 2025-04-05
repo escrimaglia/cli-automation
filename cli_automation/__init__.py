@@ -44,17 +44,6 @@ class Logger():
     def get_logger(self):
         return self.logger
     
-class Html():
-    def __init__(self):
-        self.nav = Path("navigate.html")
-        self.cla = Path("./datos/cla.html")
-
-    def create_html(self):
-        if not self.nav.exists():
-            if self.cla.exists():
-                data = self.cla.read_text()
-                self.nav.write_text(data)
-
+    
 config_data = ClaConfig().load_config()
 logger = Logger().get_logger()
-Html().create_html()

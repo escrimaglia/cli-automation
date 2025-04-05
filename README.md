@@ -1,5 +1,8 @@
 # `cla`
 
+[![PyPI](https://img.shields.io/pypi/v/cli-automation.svg)](https://pypi.org/project/cli-automation/)
+[![Python Version](https://img.shields.io/pypi/pyversions/cli-automation.svg)](https://pypi.org/project/cli-automation/)
+
 The CLA `Command Line interface Automation` is an Async Typer Python-based application designed to automate infrastructure directly from the command line. With CLA,
 there is no need to write a single line of code, users simply follow the options presented in the help menu. When I thought about building CLA, I considered those
 network engineers who have not yet acquired the necessary software knowledge, so `CLA was specifically designed to enable engineers who have not yet acquired software 
@@ -37,7 +40,7 @@ $ pip install cli-automation
 
 **Usage**:
 
-![navigation map](./cli_automation/datos/cla.png)
+![Navigation Map](https://raw.githubusercontent.com/escrimaglia/cli-automation/main/cli_automation/datos/cla.png)
 
 ```console
 $ cla [OPTIONS] COMMAND [ARGS]...

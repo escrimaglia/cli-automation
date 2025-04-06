@@ -75,7 +75,3 @@ def main(ctx: typer.Context,
         typer.echo("Please specify a command, try --help")
         raise typer.Exit(1)
     typer.echo (f"-> About to execute command: {ctx.invoked_subcommand}")
-
-
-# if __name__ == "__main__":  
-#     app()

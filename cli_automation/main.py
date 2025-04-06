@@ -8,8 +8,7 @@ from cli_automation import config_data
 from cli_automation.svc_progress import ProgressBar
 from cli_automation.svc_templates import Templates
 import asyncio
-from cli_automation import logger
-
+from cli_automation import logger, __version__
 from cli_automation import app_telnet
 from cli_automation import app_tunnel
 from cli_automation import app_ssh
@@ -19,7 +18,7 @@ app = typer.Typer(no_args_is_help=True, pretty_exceptions_short=True)
 
 def check_version(value: bool):
     if value:
-        typer.echo (f"version: {config_data.get("version")}")
+        typer.echo (f"version: {__version__}")
         raise typer.Exit()
 
 app.add_typer(app_ssh.app, name="ssh", rich_help_panel="Main Commands")

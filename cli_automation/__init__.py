@@ -8,19 +8,19 @@ DATA = {
     "tunnel": False,
     "app": "cla",
 }
+__version__ = "1.5.2 - XXI - By Ed Scrimaglia"
+
 class ClaConfig():
     def __init__(self):
         self.data = DATA
         self.config_path = Path("config.json")
         self.config = CONFIG_PARAMS
-        self.version = "1.5.0 - XXI - By Ed Scrimaglia"
 
     def load_config(self):
         try:
             self.data.update(self.config)
             with open(self.config_path, "r") as read_file:
                 file_read = json.load(read_file)
-                file_read["version"] = self.version
                 return file_read
         except FileNotFoundError:
             with open(self.config_path, "w") as write_file:

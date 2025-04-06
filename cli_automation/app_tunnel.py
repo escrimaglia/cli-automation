@@ -74,7 +74,7 @@ def check_tunnel(
 def callback(ctx: typer.Context):
     """
     Sometimes, the machine running CLA doesn’t have direct access to the devices and must go through a Bastion Host or Jump Host. To connect via a Bastion Host, 
-    you can either configure SSH specifically or set up a tunnel. Personally, I think creating a tunnel is more efficient since it avoids SSH configuration, 
+    you can either configure SSH specifically or set up a tunnel (CLA supports both modes of operation). Personally, I think creating a tunnel is more efficient since it avoids SSH configuration, 
     specially when using `Telnet` commands. 
     Using `cla tunnel`, you can create or remove a SOCKS5 tunnel. For `cla tunnel` to function properly, the host running CLA must have easy access to the 
     Bastion Host (it should be listed in the Bastion Host's known_hosts file). CLA constantly monitors the tunnel’s status, but you can also manually check it using 

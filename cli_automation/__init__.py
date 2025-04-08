@@ -8,7 +8,7 @@ DATA = {
     "tunnel": False,
     "app": "cla",
 }
-__version__ = "1.5.3 - XXI - By Ed Scrimaglia"
+__version__ = "1.6.1 - XXI - By Ed Scrimaglia"
 
 class ClaConfig():
     def __init__(self):

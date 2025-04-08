@@ -40,7 +40,7 @@ $ pip install cli-automation
 
 **Usage**:
 
-![[Watch the video](https://raw.githubusercontent.com/escrimaglia/cli-automation/main/cli_automation/datos/video-cla.png)](https://youtu.be/a51ng5ZVLD4?si=V2otTcLzNRwabBxj)
+[CLA Video](https://youtu.be/a51ng5ZVLD4?si=V2otTcLzNRwabBxj)
 
 ![Navigation Map](https://raw.githubusercontent.com/escrimaglia/cli-automation/main/cli_automation/datos/cla.png)
 

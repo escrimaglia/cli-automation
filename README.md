@@ -1,7 +1,7 @@
 # `CLA`
 
-[![PyPI Downloads](https://static.pepy.tech/badge/cli-automation)](https://pepy.tech/projects/cli-automation)
 [![PyPI](https://img.shields.io/pypi/v/cli-automation.svg)](https://pypi.org/project/cli-automation/)
+[![PyPI Downloads](https://static.pepy.tech/badge/cli-automation)](https://pepy.tech/projects/cli-automation)
 [![Python Version](https://img.shields.io/pypi/pyversions/cli-automation.svg)](https://pypi.org/project/cli-automation/)
 
 The CLA `Command Line interface Automation` is an Async Typer Python-based application designed to automate infrastructure directly from the command line. With CLA,

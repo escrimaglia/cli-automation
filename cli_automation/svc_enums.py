@@ -15,3 +15,7 @@ class DeviceType(Enum):
     vyatta_vyos = "vyatta_vyos"
     extreme_exos = "extreme_exos"
     extreme = "extreme"
+
+class LogFileName(Enum):
+    cla_log = "cla.log"
+   

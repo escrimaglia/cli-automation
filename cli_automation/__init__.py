@@ -3,12 +3,13 @@ from pathlib import Path
 import logging
 import logging.handlers
 from cli_automation.config_srv import *
+import os
 
 DATA = {
     "tunnel": False,
     "app": "cla",
 }
-__version__ = "1.6.2 - XXI - By Ed Scrimaglia"
+__version__ = "1.6.3 - XXI - By Ed Scrimaglia"
 
 class ClaConfig():
     def __init__(self):
@@ -32,11 +33,21 @@ class ClaConfig():
 
 class Logger():
     def __init__(self):
+        self.log_dir = Path(__file__).parent / "logs"
+        os.makedirs(self.log_dir, exist_ok=True)
+        os.environ["PATH_LOG"] = str(self.log_dir)
         self.logger = logging.getLogger("ClaLogger")
         self.logger.setLevel(logging.DEBUG)
-        self.log_file = DATA.get("log_file")
+        self.log_file = self.log_dir / DATA.get("log_file")
         formatter = logging.Formatter('%(asctime)s - %(name)s - %(levelname)s - %(message)s')
-        file_handler = logging.handlers.RotatingFileHandler(self.log_file, maxBytes=5*1024*1024, backupCount=5)
+        file_handler = logging.handlers.TimedRotatingFileHandler(
+                filename=self.log_file,
+                when='midnight',
+                interval=1,
+                backupCount=7,
+                encoding='utf-8',
+                utc=False
+            )
         file_handler.setFormatter(formatter)
         file_handler.setLevel(logging.DEBUG)
         self.logger.addHandler(file_handler)

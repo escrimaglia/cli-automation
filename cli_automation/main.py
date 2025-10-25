@@ -12,13 +12,15 @@ from cli_automation import logger, __version__
 from cli_automation import app_telnet
 from cli_automation import app_tunnel
 from cli_automation import app_ssh
-
+from cli_automation.svc_logs import ReadLogs
+from cli_automation.svc_enums import LogFileName
 
 app = typer.Typer(no_args_is_help=True, pretty_exceptions_short=True)
 
 def check_version(value: bool):
     if value:
         typer.echo (f"version: {__version__}")
+        logger.info(f"Checked version: {__version__}")
         raise typer.Exit()
 
 app.add_typer(app_ssh.app, name="ssh", rich_help_panel="Main Commands")
@@ -45,9 +47,27 @@ def download_templates(
             await template.create_template()
         except Exception as error:
             print (f"** Error creating templates, check the log file and json syntax")
-            logger.error(f"Error creating the templates: {error}")
+            logger.error(f"Error creating the templates: '{error}'")
             sys.exit(1)
         print ("\n** All the templates have been successfully created")
+
+    progress = ProgressBar()
+    asyncio.run(progress.run_with_spinner(process))
+
+@app.command("logs", short_help="Read logs file", help="Read service logs from the specified log file. By default, it reads from 'cla.log'", rich_help_panel="Main Commands", no_args_is_help=True)
+def read_logs(
+        verbose: Annotated[int, typer.Option("--verbose", "-v", count=True, help="Verbose level", rich_help_panel="Additional parameters", min=0, max=2)] = 1,
+        log_file: Annotated[LogFileName, typer.Option("--log-file", "-l", help="Path to the log file", rich_help_panel="Additional parameters")] = "cla.log",
+    ):
+    async def process():
+        inst_dict = {"logger": logger, "verbose": verbose}
+        log_reader = ReadLogs(inst_dict=inst_dict)
+        log_content = log_reader.read_log_file(file_path="logs/" + log_file.value)
+        if log_content:
+            print(log_content)
+        else:
+            logger.error("No log content to display")
+            print("** No log content to display")
 
     progress = ProgressBar()
     asyncio.run(progress.run_with_spinner(process))

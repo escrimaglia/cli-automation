@@ -28,9 +28,9 @@ def set_tunnel(
         tunnel = SetSocks5Tunnel(inst_dict)
         tunnel_pid, msg = await tunnel.start_tunnel(timeout=timeout, bastion_user=bastion_user, bastion_host=bastion_host, local_port=local_port)
         if tunnel_pid:    
-            print (f"\n** Tunnel started successfully for user: {bastion_user}, bastion host: {bastion_host}, local-port: {local_port}, PID: {tunnel_pid}")
+            print (f"\n** Tunnel started successfully for user: '{bastion_user}', bastion host: '{bastion_host}', local-port: '{local_port}', PID: '{tunnel_pid}'")
         else:
-            print (f"\n** Tunnel failed to start for user: {bastion_user}, bastion host: {bastion_host}, local-port: {local_port}. \n{msg}")
+            print (f"\n** Tunnel failed to start for user: '{bastion_user}', bastion host: '{bastion_host}', local-port: '{local_port}'. \n{msg}")
 
     progress = ProgressBar()
     asyncio.run(progress.run_with_spinner(process))
@@ -62,10 +62,10 @@ def check_tunnel(
         tunnel = SetSocks5Tunnel(inst_dict)
         tunnel_status = await tunnel.tunnel_status(timeout=timeout,test_port=test_port, local_port=local_port)
         if tunnel_status:
-            typer.echo (f"\n** Tunnel is running at local-port {local_port}")
+            typer.echo (f"\n** Tunnel is running at local-port '{local_port}'")
         else:
-            typer.echo (f"\n** Tunnel is not running at local-port {local_port}. Check the log file if you suspect inconsistencies")
-      
+            typer.echo (f"\n** Tunnel is not running at local-port '{local_port}'. Check the log file if you suspect inconsistencies")
+
     progress = ProgressBar()
     asyncio.run(progress.run_with_spinner(process))
 

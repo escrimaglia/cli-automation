@@ -84,7 +84,8 @@ $ cla templates [OPTIONS]
 
 The cla ssh command allows access to devices via the SSH protocol. The command can be used to pull or push configurations to devices.
 To structure the output data when retrieving configurations, the `cla ssh pullconfig` command uses TextFSM templates. If the query
-command is included in the templates, the output will be in JSON format; otherwise, the output will be in TXT format.
+command is included in the templates, the output will be in JSON format; otherwise, the output will be in TXT format. The `cla ssh interactive` 
+command allows automating interactive CLI workflows which are often challenging. Confirmations, prompts, and unexpected inputs can easily break a script.
 
 **Usage**:
 
@@ -102,6 +103,7 @@ $ cla ssh [OPTIONS] COMMAND [ARGS]...
 * `pullconfig`: Pull config from multiple hosts
 * `onepush`: Push config to a single host
 * `pushconfig`: Push config to multiple hosts
+* `pushinteractive`: Push interactive commands to single/multiple hosts
 
 ### `cla ssh onepull`
 
@@ -139,11 +141,25 @@ $ cla ssh pullconfig [OPTIONS]
 **Options**:
 
 * `-h, --hosts FILENAME Json file`: group of hosts  [required]
-* `-c, --cmd Multiple -c parameter`: commands to execute on the device
-* `-f, --cmdf FILENAME Json file`: commands to configure on the device
+* `-c, --cmd Multiple -c parameter`: commands to execute on the device. Overrides FILENAME Json file
+* `-f, --cmdf FILENAME Json file`: commands to execute on the device
 * `-v, --verbose`: verbose level  [default: 0; 0&lt;=x&lt;=2]
 * `-o, --output FILENAME Json file`: output file  [default: output.json]
 * `--help`: Show this message and exit.
+
+```Example hosts json file:
+{
+    "devices": [
+        {
+            "host": "X.X.X.X",
+            "username": "xxxx",
+            "password": "xxxx",
+            "secret": null,
+            "device_type": "extreme_exos"
+        }
+    ]
+}
+```
 
 ### `cla ssh onepush`
 
@@ -160,7 +176,7 @@ $ cla ssh onepush [OPTIONS]
 * `-h, --host TEXT`: host name or ip address  [required]
 * `-u, --user TEXT`: username  [required]
 * `-t, --type [cisco_ios|cisco_xr|cisco_xe|cisco_nxos|juniper|juniper_junos|arista_eos|huawei|huawei_vrp|alcatel_sros|vyos|vyatta_vyos|extreme_exos|extreme]`: device type  [required]
-* `-c, --cmd Multiple -c parameter`: commands to configure the device
+* `-c, --cmd Multiple -c parameter`: commands to configure the device. Overrides FILENAME Json file
 * `-f, --cmdf FILENAME Json file`: commands to configure the device
 * `-p, --port INTEGER`: port  [default: 22]
 * `-v, --verbose`: verbose level  [default: 0; 0&lt;=x&lt;=2]
@@ -186,6 +202,51 @@ $ cla ssh pushconfig [OPTIONS]
 * `-v, --verbose`: verbose level  [default: 0; 0&lt;=x&lt;=2]
 * `-o, --output FILENAME Json file`: output file  [default: output.json]
 * `--help`: Show this message and exit.
+
+```Example cmd json file:
+{
+    "10.2.3.104": {
+        "commands": [
+            "interface loop1",
+            "ip address 192.168.11.3 255.255.255.0",
+            "description loopback 1",
+            "end",
+            "write memory"
+        ]
+    }
+}
+```
+
+### `cla ssh pushinteractive`
+
+Automating interactive CLI workflows is often challenging — confirmations, prompts, and unexpected inputs can easily break a script.
+The commands and patterns must be provided through a cmd JSON file
+
+**Usage**:
+
+```console
+$ cla ssh pushinteractive [OPTIONS]
+```
+
+**Options**:
+
+* `-h, --hosts FILENAME Json file`: group of hosts  [required]
+* `-f, --cmd FILENAME Json file`: commands and patterns to execute on the device  [required]
+* `-v, --verbose`: verbose level  [default: 0; 0&lt;=x&lt;=2]
+* `-o, --output FILENAME Json file`: output file  [default: output.json]
+* `--help`: Show this message and exit.
+
+```Example cmd json file:
+{
+    "10.2.3.104": {
+        "commands": [
+            ["del flash:/eje2.txt", "r'Delete filename'"],
+            ["\n", "r'confirm'"],
+            ["y", ""]
+        ]
+    }
+}
+```
 
 ## `cla telnet`
 

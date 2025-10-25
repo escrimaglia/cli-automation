@@ -29,11 +29,11 @@ def pull_multiple_host(
         try:
             datos = json.loads(devices.read())
         except Exception:
-            typer.echo(f"** Error reading the json file {file_name}, check the syntax")
+            typer.echo(f"** Error reading the json file '{file_name}', check the syntax")
             raise typer.Exit(code=1)
         
         if "devices" not in datos:
-            typer.echo("** Error reading json file: devices key not found or reading an incorrect json file")
+            typer.echo(f"** Error reading json file: 'devices' key not found or reading an incorrect json file '{file_name}'")
             raise typer.Exit(code=1)
         
         datos["command"] = command
@@ -41,15 +41,15 @@ def pull_multiple_host(
         if verbose == 2:
             print (f"--> data: {json.dumps(datos, indent=3)}")
         start = datetime.now()
-        logger.info(f"Running Telnet command pullconfig on devices {devices.name}")
+        logger.info(f"Running Telnet command pullconfig on devices '{devices.name}'")
         device = AsyncNetmikoTelnetPull(inst_dict)
         result = await device.run(datos)
         end = datetime.now()
         output.write(result)
-        logger.info(f"File {output.name} created")
+        logger.info(f"File '{output.name}' created")
         if verbose in [1,2]:
             print (f"\n{result}")  
-            print (f"-> Execution time: {end - start}")
+            print (f"-> Execution time: '{end - start}'")
 
     progress = ProgressBar()
     asyncio.run(progress.run_with_spinner(process))
@@ -68,11 +68,11 @@ def push_multiple_host(
         try:
             datos_devices = json.loads(devices.read())
         except Exception:
-            typer.echo(f"** Error reading the json file {file_name}, check the syntax")
+            typer.echo(f"** Error reading the json file '{file_name}', check the syntax")
             raise typer.Exit(code=1)
         
         if "devices" not in datos_devices:
-            typer.echo(f"Error reading json file: devices key not found or reading an incorrect json file {file_name}")
+            typer.echo(f"Error reading json file: 'devices' key not found or reading an incorrect json file '{file_name}'")
             raise typer.Exit(code=1)
         list_devices = datos_devices.get("devices")
 
@@ -80,16 +80,16 @@ def push_multiple_host(
         try:
             datos_cmds = json.loads(cmd_file.read())
         except Exception:
-            typer.echo(f"** Error reading the json file {file_name}, check the syntax")
+            typer.echo(f"** Error reading the json file '{file_name}', check the syntax")
             raise typer.Exit(code=1)
         
         for device in list_devices:
             if device.get("host") not in datos_cmds:
-                typer.echo(f"Error reading json file: commands not found for host {device.get("host")} or reading an incorrect json file {file_name}")
+                typer.echo(f"Error reading json file: commands not found for host '{device.get('host')}' or reading an incorrect json file '{file_name}'")
                 raise typer.Exit(code=1)
             else:
                 if "commands" not in datos_cmds.get(device.get("host")):
-                    typer.echo(f"Error reading json file: commands key not found in {cmd_file.name} for host {device.get('host')} or reading an incorrect json file {cmd_file.name}")
+                    typer.echo(f"Error reading json file: 'commands' key not found in '{cmd_file.name}' for host '{device.get('host')}' or reading an incorrect json file '{cmd_file.name}'")
                     raise typer.Exit(code=1)
         
             dic = {
@@ -102,14 +102,14 @@ def push_multiple_host(
         if verbose == 2:
             print (f"--> data: {json.dumps(datos, indent=3)}")
         start = datetime.now()
-        logger.info(f"Running Telnet command pushconfig on devices {devices.name}")
+        logger.info(f"Running Telnet command pushconfig on devices '{devices.name}'")
         netm = AsyncNetmikoTelnetPush(inst_dict=inst_dict)
         result = await netm.run(datos)
         end = datetime.now()
         output.write(result)
         if verbose in [1,2]:
             print (f"\n{result}")
-            print (f"-> Execution time: {end - start}")
+            print (f"-> Execution time: '{end - start}'")
 
     progress = ProgressBar()
     asyncio.run(progress.run_with_spinner(process))

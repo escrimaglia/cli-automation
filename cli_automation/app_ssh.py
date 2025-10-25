@@ -7,7 +7,7 @@ sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), '..', ".
 
 import typer
 from typing_extensions import Annotated
-from .svc_ssh import AsyncNetmikoPull, AsyncNetmikoPush
+from .svc_ssh import AsyncNetmikoPull, AsyncNetmikoPush, AsyncNetmikoInteractive
 import asyncio
 from typing import List
 from .svc_enums import DeviceType
@@ -55,14 +55,14 @@ def pull_single_host(
         if verbose == 2:
             print (f"--> data: {json.dumps(datos, indent=3)}")
         start = datetime.now()
-        logger.info(f"Running SSH command onepull on device {host}")
+        logger.info(f"Running SSH command onepull on device '{host}'")
         netm = AsyncNetmikoPull(inst_dict=inst_dict)
         result = await netm.run(data=datos)
         end = datetime.now()
         output.write(result)
         if verbose in [1,2]:
             print (f"\n{result}")
-            print (f"-> Execution time: {end - start}")
+            print (f"-> Execution time: '{end - start}'")
 
     progress = ProgressBar()
     asyncio.run(progress.run_with_spinner(process))
@@ -72,8 +72,8 @@ def pull_single_host(
 def pull_multiple_host(
         devices: Annotated[typer.FileText, typer.Option("--hosts", "-h", help="group of hosts", metavar="FILENAME Json file", rich_help_panel="Connection Parameters", case_sensitive=False)],
         commands: Annotated[List[str], typer.Option("--cmd", "-c", help="commands to execute on the device", metavar="Multiple -c parameter", rich_help_panel="Connection Parameters", case_sensitive=False)] = None,
-        cmd_file: Annotated[typer.FileText, typer.Option("--cmdf", "-f", help="commands to configure on the device", metavar="FILENAME Json file",rich_help_panel="Connection Parameters", case_sensitive=False)] = None,        
-        verbose: Annotated[int, typer.Option("--verbose", "-v", count=True, help="verbose level",rich_help_panel="Additional parameters", min=0, max=2)] = 0,
+        cmd_file: Annotated[typer.FileText, typer.Option("--cmdf", "-f", help="commands to execute on the device", metavar="FILENAME Json file", rich_help_panel="Connection Parameters", case_sensitive=False)] = None,
+        verbose: Annotated[int, typer.Option("--verbose", "-v", count=True, help="verbose level", rich_help_panel="Additional parameters", min=0, max=2)] = 0,
         output: Annotated[typer.FileTextWrite, typer.Option("--output", "-o", help="output file", metavar="FILENAME Json file", rich_help_panel="Additional parameters", case_sensitive=False)] = "output.json",
 
     ):
@@ -89,7 +89,7 @@ def pull_multiple_host(
             try:
                 datos_cmds = json.loads(cmd_file.read()) 
             except Exception:
-                typer.echo(f"** Error reading the json file {file_name}, check the syntax")
+                typer.echo(f"** Error reading the json file '{file_name}', check the syntax")
                 raise typer.Exit(code=1)
         else:        
             datos_cmds = commands
@@ -98,22 +98,22 @@ def pull_multiple_host(
         try:
             datos_hosts = json.loads(devices.read())
         except Exception:
-            typer.echo(f"** Error reading the json file {file_name}, check the syntax")
+            typer.echo(f"** Error reading the json file '{file_name}', check the syntax")
             raise typer.Exit(code=1)
         
         if "devices" not in datos_hosts:
-            typer.echo(f"Error reading json file: devices key not found in {devices.name} or reading an incorrect json file")
+            typer.echo(f"Error reading json file: 'devices' key not found in '{devices.name}' or reading an incorrect json file")
             raise typer.Exit(code=1)
         
         if commands == None:
             list_devices = datos_hosts.get("devices")
             for device in list_devices:
                 if device.get("host") not in datos_cmds:
-                    typer.echo(f"Error reading json file: commands not found for host {device.get('host')} or reading an incorrect json file {cmd_file.name}")
+                    typer.echo(f"Error reading json file: 'commands' not found for host '{device.get('host')}' or reading an incorrect json file '{cmd_file.name}'")
                     raise typer.Exit(code=1)
                 else:
                     if "commands" not in datos_cmds.get(device.get("host")):
-                        typer.echo(f"Error reading json file: commands key not found in {cmd_file.name} for host {device.get('host')} or reading an incorrect json file {cmd_file.name}")
+                        typer.echo(f"Error reading json file: 'commands' key not found in '{cmd_file.name}' for host '{device.get('host')}' or reading an incorrect json file '{cmd_file.name}'")
                         raise typer.Exit(code=1)
         
                 dic = {
@@ -127,14 +127,14 @@ def pull_multiple_host(
         if verbose == 2:
             print (f"--> data: {json.dumps(datos, indent=3)}")  
         start = datetime.now()
-        logger.info(f"Running SSH command pullconfig on devices {devices.name}")
+        logger.info(f"Running SSH command pullconfig on devices '{devices.name}'")
         netm = AsyncNetmikoPull(inst_dict=inst_dict)
         result = await netm.run(data=datos)
         end = datetime.now()
         output.write(result)
         if verbose in [1,2]:
             print (f"\n{result}")
-            print (f"-> Execution time: {end - start}")
+            print (f"-> Execution time: '{end - start}'")
        
     progress = ProgressBar()
     asyncio.run(progress.run_with_spinner(process))
@@ -147,7 +147,7 @@ def push_single_host(
         password: Annotated[str, typer.Option(prompt=True, help="password", metavar="password must be provided by keyboard",rich_help_panel="Connection Parameters", case_sensitive=False, hide_input=True, hidden=True)],
         secret: Annotated[str, typer.Option(prompt=True, help="enable password", metavar="password for privilege mode",rich_help_panel="Connection Parameters", case_sensitive=False, hide_input=True, hidden=True)],        
         device_type: Annotated[DeviceType, typer.Option("--type", "-t", help="device type", rich_help_panel="Connection Parameters", case_sensitive=False)],
-        commands: Annotated[List[str], typer.Option("--cmd", "-c", help="commands to configure the device", metavar="Multiple -c parameter", rich_help_panel="Connection Parameters", case_sensitive=False)] = None,
+        commands: Annotated[List[str], typer.Option("--cmd", "-c", help="commands to configure the device (overrides cmds FILENAME)", metavar="Multiple -c parameter", rich_help_panel="Connection Parameters", case_sensitive=False)] = None,
         cmd_file: Annotated[typer.FileText, typer.Option("--cmdf", "-f", help="commands to configure the device", metavar="FILENAME Json file",rich_help_panel="Connection Parameters", case_sensitive=False)] = None,
         port: Annotated[int, typer.Option("--port", "-p", help="port", rich_help_panel="Connection Parameters")] = 22,        
         verbose: Annotated[int, typer.Option("--verbose", "-v", count=True, help="verbose level",rich_help_panel="Additional Parameters", min=0, max=2)] = 0,
@@ -167,15 +167,15 @@ def push_single_host(
             try:
                 datos_cmds = json.loads(cmd_file.read()) 
             except Exception:
-                typer.echo(f"** Error reading the json file {file_name}, check the syntax")
+                typer.echo(f"** Error reading the json file '{file_name}', check the syntax")
                 raise typer.Exit(code=1)
             
             if "commands" not in datos_cmds.get(host):
-                typer.echo(f"Error reading json file: commands key not found in {cmd_file.name} for host {host} or reading an incorrect json file {cmd_file.name}")
+                typer.echo(f"Error reading json file: 'commands' key not found in '{cmd_file.name}' for host '{host}' or reading an incorrect json file '{cmd_file.name}'")
                 raise typer.Exit(code=1)
             
             if datos_cmds.get(host) is None:
-                typer.echo(f"Error reading json file: commands not found for host {host} or reading an incorrect json file {cmd_file.name}")
+                typer.echo(f"Error reading json file: 'commands' not found for host '{host}' or reading an incorrect json file '{cmd_file.name}'")
                 raise typer.Exit(code=1)
             datos_cmds = datos_cmds.get(host).get('commands')
         
@@ -200,14 +200,14 @@ def push_single_host(
         if verbose == 2:
             print (f"--> data: {json.dumps(datos, indent=3)}")
         start = datetime.now()
-        logger.info(f"Running SSH command onepush on device {host}")
+        logger.info(f"Running SSH command onepush on device '{host}'")
         netm = AsyncNetmikoPush(inst_dict=inst_dict)
         result = await netm.run(data=datos)
         end = datetime.now()
         output.write(result)
         if verbose in [1,2]:
             print (f"\n{result}")
-            print (f"-> Execution time: {end - start}")
+            print (f"-> Execution time: '{end - start}'")
 
     progress = ProgressBar()
     asyncio.run(progress.run_with_spinner(process))
@@ -228,11 +228,11 @@ def push_multiple_host(
         try:
             datos_devices = json.loads(devices.read())
         except Exception:
-            typer.echo(f"** Error reading the json file {file_name}, check the syntax")
+            typer.echo(f"** Error reading the json file '{file_name}', check the syntax")
             raise typer.Exit(code=1)
         
         if "devices" not in datos_devices:
-            typer.echo(f"Error reading json file: devices key not found or reading an incorrect json file {devices.name}")
+            typer.echo(f"Error reading json file: 'devices' key not found or reading an incorrect json file '{devices.name}'")
             raise typer.Exit(code=1)
         list_devices = datos_devices.get("devices")
 
@@ -240,16 +240,16 @@ def push_multiple_host(
         try:
             datos_cmds = json.loads(cmd_file.read())
         except Exception:
-            typer.echo(f"** Error reading the json file {file_name}, check the syntax")
+            typer.echo(f"** Error reading the json file '{file_name}', check the syntax")
             raise typer.Exit(code=1)
         
         for device in list_devices:
             if device.get("host") not in datos_cmds:
-                typer.echo(f"Error reading json file: commands not found for host {device.get("host")} or reading an incorrect json file {cmd_file.name}")
+                typer.echo(f"Error reading json file: 'commands' not found for host '{device.get('host')}' or reading an incorrect json file '{cmd_file.name}'")
                 raise typer.Exit(code=1)
             else:
                 if "commands" not in datos_cmds.get(device.get("host")):
-                    typer.echo(f"Error reading json file: commands key not found in {cmd_file.name} for host {device.get('host')} or reading an incorrect json file {cmd_file.name}")
+                    typer.echo(f"Error reading json file: 'commands' key not found in '{cmd_file.name}' for host '{device.get('host')}' or reading an incorrect json file '{cmd_file.name}'")
                     raise typer.Exit(code=1)
         
             dic = {
@@ -262,14 +262,83 @@ def push_multiple_host(
         if verbose == 2:
             print (f"--> data: {json.dumps(datos, indent=3)}")
         start = datetime.now()
-        logger.info(f"Running SSH command pushconfig on devices {devices.name}")
+        logger.info(f"Running SSH command pushconfig on devices '{devices.name}'")
         netm = AsyncNetmikoPush(inst_dict=inst_dict)
         result = await netm.run(data=datos)
         end = datetime.now()
         output.write(result)
         if verbose in [1,2]:
             print (f"\n{result}")
-            print (f"-> Execution time: {end - start}")
+            print (f"-> Execution time: '{end - start}'")
+
+    progress = ProgressBar()
+    asyncio.run(progress.run_with_spinner(process))
+
+
+@app.command("pushinteractive", short_help="Push interactive config to multiple hosts", help="the commands must be provided through a JSON file", no_args_is_help=True)
+def push_interactive_config(
+        devices: Annotated[typer.FileText, typer.Option("--hosts", "-h", help="group of hosts", metavar="FILENAME Json file", rich_help_panel="Connection Parameters", case_sensitive=False)],
+        cmd_file: Annotated[typer.FileText, typer.Option("--cmd", "-f", help="interactive commands to configure the device", metavar="FILENAME Json file",rich_help_panel="Connection Parameters", case_sensitive=False)],
+        verbose: Annotated[int, typer.Option("--verbose", "-v", count=True, help="verbose level",rich_help_panel="Additional Parameters", min=0, max=2)] = 0,
+        output: Annotated[typer.FileTextWrite, typer.Option("--output", "-o", help="output file", metavar="FILENAME Json file", rich_help_panel="Additional Parameters", case_sensitive=False)] = "output.json",
+
+    ):
+
+    async def process():
+        datos = []
+        multi_line_command = "send_multiline"
+        file_name = devices.name
+        try:
+            datos_devices = json.loads(devices.read())
+        except Exception:
+            typer.echo(f"** Error reading the json file '{file_name}', check the syntax")
+            raise typer.Exit(code=1)
+        
+        if "devices" not in datos_devices:
+            typer.echo(f"Error reading json file: 'devices' key not found or reading an incorrect json file '{devices.name}'")
+            raise typer.Exit(code=1)
+        list_devices = datos_devices.get("devices")
+
+        file_name = cmd_file.name
+        try:
+            datos_cmds = json.loads(cmd_file.read())
+        except Exception:
+            typer.echo(f"** Error reading the json file '{file_name}', check the syntax")
+            raise typer.Exit(code=1)
+        
+        for device in list_devices:
+            if device.get('host') not in datos_cmds:
+                typer.echo(f"Error reading json file: 'commands' not found for host '{device.get('host')}' or reading an incorrect json file '{cmd_file.name}'")
+                raise typer.Exit(code=1)
+            else:
+                if "commands" not in datos_cmds.get(device.get("host")):
+                    typer.echo(f"Error reading json file: 'commands' key not found in '{cmd_file.name}' for host '{device.get('host')}' or reading an incorrect json file '{cmd_file.name}'")
+                    raise typer.Exit(code=1)
+                else:
+                    commands = datos_cmds.get(device.get("host")).get("commands")
+                    has_patterns = [cmd for cmd in commands if "r" in cmd]
+                    if len(has_patterns) == 0:
+                        typer.echo(f"Error reading json file: 'commands' key does not have any regex pattern 'r' in '{cmd_file.name}' for host '{device.get('host')}'")
+                        multi_line_command = "send_multiline_timing"
+        
+            dic = {
+                "device": device,
+                "commands": datos_cmds.get(device.get("host")).get('commands')
+            }
+            datos.append(dic)
+
+        inst_dict = {"verbose": verbose, "single_host": False, "logger": logger}
+        if verbose == 2:
+            print (f"--> data: {json.dumps(datos, indent=3)}")
+        start = datetime.now()
+        logger.info(f"Running SSH command pushinteractive on devices '{devices.name}'")
+        netm = AsyncNetmikoInteractive(inst_dict=inst_dict, multi_line=multi_line_command)
+        result = await netm.run(data=datos)
+        end = datetime.now()
+        output.write(result)
+        if verbose in [1,2]:
+            print (f"\n{result}")
+            print (f"-> Execution time: '{end - start}'")
 
     progress = ProgressBar()
     asyncio.run(progress.run_with_spinner(process))

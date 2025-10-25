@@ -53,9 +53,9 @@ $ cla [OPTIONS] COMMAND [ARGS]...
 **Options**:
 
 * `-V, --version`
-* `--install-completion`: Install completion for the current shell.
-* `--show-completion`: Show completion for the current shell, to copy it or customize the installation.
-* `--help`: Show this message and exit.
+* `--install-completion`: install completion for the current shell.
+* `--show-completion`: show completion for the current shell, to copy it or customize the installation.
+* `--help`: show this message and exit.
 
 **Commands**:
 
@@ -77,8 +77,8 @@ $ cla templates [OPTIONS]
 
 **Options**:
 
-* `-v, --verbose`: Verbose level  [default: 1; 0&lt;=x&lt;=2]
-* `--help`: Show this message and exit.
+* `-v, --verbose`: verbose level  [default: 1; 0&lt;=x&lt;=2]
+* `--help`: show this message and exit.
 
 ## `cla ssh`
 
@@ -145,7 +145,7 @@ $ cla ssh pullconfig [OPTIONS]
 * `-f, --cmdf FILENAME Json file`: commands to execute on the device
 * `-v, --verbose`: verbose level  [default: 0; 0&lt;=x&lt;=2]
 * `-o, --output FILENAME Json file`: output file  [default: output.json]
-* `--help`: Show this message and exit.
+* `--help`: show this message and exit.
 
 ```Example hosts json file:
 {
@@ -183,7 +183,7 @@ $ cla ssh onepush [OPTIONS]
 * `-o, --output FILENAME Json file`: output file  [default: output.json]
 * `-d, --delay FLOAT RANGE`: global delay factor  [default: 0.1; 0.1&lt;=x&lt;=4]
 * `-s, --cfg TEXT`: ssh config file
-* `--help`: Show this message and exit.
+* `--help`: show this message and exit.
 
 ### `cla ssh pushconfig`
 
@@ -201,9 +201,9 @@ $ cla ssh pushconfig [OPTIONS]
 * `-f, --cmd FILENAME Json file`: commands to configure the device  [required]
 * `-v, --verbose`: verbose level  [default: 0; 0&lt;=x&lt;=2]
 * `-o, --output FILENAME Json file`: output file  [default: output.json]
-* `--help`: Show this message and exit.
+* `--help`: show this message and exit.
 
-```Example cmd json file:
+```Example of cmd json file:
 {
     "10.2.3.104": {
         "commands": [
@@ -234,9 +234,9 @@ $ cla ssh pushinteractive [OPTIONS]
 * `-f, --cmd FILENAME Json file`: commands and patterns to execute on the device  [required]
 * `-v, --verbose`: verbose level  [default: 0; 0&lt;=x&lt;=2]
 * `-o, --output FILENAME Json file`: output file  [default: output.json]
-* `--help`: Show this message and exit.
+* `--help`: show this message and exit.
 
-```Example cmd json file:
+```Example of cmd json file:
 {
     "10.2.3.104": {
         "commands": [
@@ -262,7 +262,7 @@ $ cla telnet [OPTIONS] COMMAND [ARGS]...
 
 **Options**:
 
-* `--help`: Show this message and exit.
+* `--help`: show this message and exit.
 
 **Commands**:
 
@@ -285,7 +285,7 @@ $ cla telnet pullconfig [OPTIONS]
 * `-c, --cmd Single -c parameter`: command to execute on the device  [required]
 * `-v, --verbose`: verbose level  [default: 0; 0&lt;=x&lt;=2]
 * `-o, --output FILENAME text file`: output file  [default: output.txt]
-* `--help`: Show this message and exit.
+* `--help`: show this message and exit.
 
 ### `cla telnet pushconfig`
 
@@ -303,7 +303,7 @@ $ cla telnet pushconfig [OPTIONS]
 * `-f, --cmdf FILENAME Json file`: commands to configure on the device  [required]
 * `-v, --verbose`: verbose level  [default: 0; 0&lt;=x&lt;=2]
 * `-o, --output FILENAME text file`: output file  [default: output.txt]
-* `--help`: Show this message and exit.
+* `--help`: show this message and exit.
 
 ## `cla tunnel`
 
@@ -322,7 +322,7 @@ $ cla tunnel [OPTIONS] COMMAND [ARGS]...
 
 **Options**:
 
-* `--help`: Show this message and exit.
+* `--help`: show this message and exit.
 
 **Commands**:
 
@@ -345,7 +345,7 @@ $ cla tunnel setup [OPTIONS]
 * `-p, --port INTEGER RANGE`: local port  [default: 1080; 1000&lt;=x&lt;=1100]
 * `-t, --timeout INTEGER RANGE`: timeout in seconds for the tunnel startup  [default: 10; 3&lt;=x&lt;=25]
 * `-v, --verbose`: verbose level  [default: 1; 0&lt;=x&lt;=2]
-* `--help`: Show this message and exit.
+* `--help`: show this message and exit.
 
 ### `cla tunnel kill`
 
@@ -358,7 +358,7 @@ $ cla tunnel kill [OPTIONS]
 **Options**:
 
 * `-v, --verbose`: verbose level  [default: 1; 0&lt;=x&lt;=2]
-* `--help`: Show this message and exit.
+* `--help`: show this message and exit.
 
 ### `cla tunnel status`
 
@@ -374,7 +374,7 @@ $ cla tunnel status [OPTIONS]
 * `-t, --timeout INTEGER RANGE`: timeout in seconds for the tunnel return its status  [default: 10; 3&lt;=x&lt;=20]
 * `-r, --test INTEGER`: remote port for testing the tunnel  [default: 22]
 * `-v, --verbose`: verbose level  [default: 1; 0&lt;=x&lt;=2]
-* `--help`: Show this message and exit.
+* `--help`: show this message and exit.
 
 **Logging**:
 

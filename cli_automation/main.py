@@ -57,12 +57,12 @@ def download_templates(
 @app.command("logs", short_help="Read logs file", help="Read service logs from the specified log file. By default, it reads from 'cla.log'", rich_help_panel="Main Commands", no_args_is_help=True)
 def read_logs(
         verbose: Annotated[int, typer.Option("--verbose", "-v", count=True, help="Verbose level", rich_help_panel="Additional parameters", min=0, max=2)] = 1,
-        log_file: Annotated[LogFileName, typer.Option("--log-file", "-l", help="Path to the log file", rich_help_panel="Additional parameters")] = "cla.log",
+        log_file: Annotated[str, typer.Option("--log-file", "-l", help="Path to the log file", rich_help_panel="Additional parameters")] = "cla.log",
     ):
     async def process():
         inst_dict = {"logger": logger, "verbose": verbose}
         log_reader = ReadLogs(inst_dict=inst_dict)
-        log_content = log_reader.read_log_file(file_path="logs/" + log_file.value)
+        log_content = log_reader.read_log_file(file_path="logs/" + log_file)
         if log_content:
             print(log_content)
         else:

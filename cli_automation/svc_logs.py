@@ -10,20 +10,7 @@ class ReadLogs():
         self.verbose = inst_dict.get('verbose')
         self.logger = inst_dict.get('logger')
 
-    # def read_config_file(self, file_path: str = "config.json") -> str:
-    #     try:
-    #         with open(file_path, 'r') as config_file:
-    #             content = config_file.read()
-    #             if self.verbose in [1,2]:
-    #                 print (f"-> Successfully read config file '{file_path}'")
-    #             self.logger.info(f"Successfully read config file '{file_path}'")
-    #             return content
-    #     except Exception as error:
-    #         if self.verbose in [1,2]:
-    #             print (f"** Error reading config file '{file_path}': '{error}'")
-    #         self.logger.error(f"Error reading config file '{file_path}': '{error}'")
-    #         return ""
-        
+   
     def read_log_file(self, file_path: str = "cla.log") -> str:
         try:
             with open(file_path, 'r') as log_file:

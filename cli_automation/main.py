@@ -13,6 +13,7 @@ from cli_automation import app_telnet
 from cli_automation import app_tunnel
 from cli_automation import app_ssh
 from cli_automation.svc_logs import ReadLogs
+from pathlib import Path
 
 app = typer.Typer(no_args_is_help=True, pretty_exceptions_short=True)
 
@@ -21,15 +22,16 @@ app.add_typer(app_telnet.app, name="telnet", rich_help_panel="Main Commands")
 app.add_typer(app_tunnel.app, name="tunnel", rich_help_panel="Main Commands")
 
 def complete_log_files(incomplete: str):
-    logs_dir = os.path.join(os.path.dirname(__file__), "logs")
-    if not os.path.exists(logs_dir):
+    #logs_dir = os.path.join(os.path.dirname(__file__), "logs")
+    log_dir = Path(__file__).parent / "logs"
+
+    if not log_dir.exists():
         return []
     try:
         log_files = []
-        for file in os.listdir(logs_dir):
-            file_path = os.path.join(logs_dir, file)
-            if os.path.isfile(file_path):
-                log_files.append(file)        
+        for file in log_dir.iterdir():
+            if file.is_file():
+                log_files.append(file.name)
         if incomplete:
             log_files = [f for f in log_files if f.lower().startswith(incomplete.lower())]
         

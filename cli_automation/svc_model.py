@@ -18,6 +18,10 @@ class ModelSingleSsh(BaseModel):
     device: Device
     commands: List[str]
 
+class ModelSingleInteractive(BaseModel):
+    device: Device
+    commands: List[List[str]]
+
 class TelnetPush(BaseModel):
     device: Device
     commands: List[str]
@@ -35,3 +39,11 @@ class MultipleSsh(BaseModel):
 
 class ModelMultipleSsh(BaseModel):
     device: List[MultipleSsh]
+
+class MultipleInteractive(BaseModel):
+    device: Device
+    commands: List[List[str]]
+
+class ModelMultipleInteractive(BaseModel):
+    device: List[MultipleInteractive]
+

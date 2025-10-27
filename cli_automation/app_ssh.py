@@ -286,7 +286,6 @@ def push_interactive_config(
 
     async def process():
         datos = []
-        multi_line_command = "send_multiline"
         file_name = devices.name
         try:
             datos_devices = json.loads(devices.read())
@@ -332,7 +331,7 @@ def push_interactive_config(
             print (f"--> data: {json.dumps(datos, indent=3)}")
         start = datetime.now()
         logger.info(f"Running SSH command pushinteractive on devices '{devices.name}'")
-        netm = AsyncNetmikoInteractive(inst_dict=inst_dict, multi_line=multi_line_command)
+        netm = AsyncNetmikoInteractive(inst_dict=inst_dict)
         result = await netm.run(data=datos)
         end = datetime.now()
         output.write(result)

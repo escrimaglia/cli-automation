@@ -13,7 +13,7 @@ from netmiko import ConnectHandler, NetmikoAuthenticationException, NetMikoTimeo
 import paramiko
 from paramiko.ssh_exception import SSHException
 from pydantic import ValidationError
-from .svc_model import ModelMultipleSsh, ModelSingleSsh
+from .svc_model import ModelMultipleSsh, ModelSingleSsh, ModelMultipleInteractive, ModelSingleInteractive
 from typing import List
 import json
 from .svc_proxy import TunnelProxy
@@ -32,6 +32,12 @@ class AsyncNetmikoPull():
     async def netmiko_connection(self, device: dict, commands: List[str]) -> str:
         try:
             connection = await asyncio.to_thread(ConnectHandler, **device)
+            if connection.is_alive():
+                self.logger.debug(f"Connection to {device['host']} is active")
+            else:
+                self.logger.debug(f"Connection to {device['host']} failed")
+                connection.disconnect()
+                return f"** Connection to device {device['host']} failed"
             connection.enable()
             output = []
             for command in commands:
@@ -47,7 +53,7 @@ class AsyncNetmikoPull():
         except NetMikoTimeoutException:
             self.logger.error(f"Error connecting to {device['host']}, Timeout error")
             return f"** Error connecting to {device['host']}, Timeout error"
-        except (paramiko.SSHException) as error:
+        except paramiko.SSHException as error:
             self.logger.error(f"Error connecting to {device['host']}, Paramiko error: {error}")
             return f"** Error connecting to {device['host']}, Paramiko error: {error}"
         except (SSHException, socket.timeout, socket.error) as error:
@@ -122,7 +128,13 @@ class AsyncNetmikoPush():
     async def netmiko_connection(self, device: dict, commands: List[str]) -> str:
         try:
             connection = await asyncio.to_thread(ConnectHandler, **device)
-            #connection.enable()
+            if connection.is_alive():
+                self.logger.debug(f"Connection to {device['host']} is active")
+            else:
+                self.logger.debug(f"Connection to {device['host']} failed")
+                connection.disconnect()
+                return f"** Connection to device {device['host']} failed"
+            connection.enable()
             self.logger.debug(f"Detected prompt {connection.find_prompt()}")
             output = []
             self.logger.debug(f"Configuring the following commands {commands} on device {device['host']}")
@@ -137,7 +149,7 @@ class AsyncNetmikoPush():
         except NetMikoTimeoutException:
             self.logger.error(f"Error connecting to {device['host']}, Timeout error")
             return f"** Error connecting to {device['host']}, Timeout error"
-        except (paramiko.SSHException) as error:
+        except paramiko.SSHException as error:
             self.logger.error(f"Error connecting to {device['host']}, Paramiko error: {error}")
             return f"** Error connecting to {device['host']}, Paramiko error: {error}"
         except (SSHException, socket.timeout, socket.error) as error:
@@ -202,11 +214,10 @@ class AsyncNetmikoPush():
     
     
 class AsyncNetmikoInteractive():
-    def __init__(self, inst_dict: dict, multi_line: str = "send_multiline"):
+    def __init__(self, inst_dict: dict):
         self.verbose = inst_dict.get('verbose')
         self.single_host = inst_dict.get('single_host')
         self.logger = inst_dict.get('logger')
-        self.multi_line_command = multi_line
         proxy = TunnelProxy(logger=self.logger, verbose=self.verbose)
         proxy.set_proxy()
 
@@ -214,11 +225,17 @@ class AsyncNetmikoInteractive():
     async def netmiko_connection(self, device: dict, commands_pattern: List[str]) -> ConnectHandler:
         try:
             connection = await asyncio.to_thread(ConnectHandler, **device)
+            if connection.is_alive():
+                self.logger.debug(f"Connection to {device['host']} is active")
+            else:
+                self.logger.debug(f"Connection to {device['host']} failed")
+                connection.disconnect()
+                return f"** Connection to device {device['host']} failed"
             connection.enable()
             self.logger.debug(f"Detected prompt {connection.find_prompt()}")
             output = []
             self.logger.debug(f"Configuring the following commands and patterns {commands_pattern} on device {device['host']}")
-            result = await asyncio.to_thread(connection, self.multi_line_command, commands_pattern)
+            result = await asyncio.to_thread(connection.send_multiline, commands_pattern)
             self.logger.debug(f"Output: {result}")
             output.append(result)
             await asyncio.to_thread(connection.disconnect)
@@ -229,10 +246,10 @@ class AsyncNetmikoInteractive():
         except NetMikoTimeoutException:
             self.logger.error(f"Error connecting to {device['host']}, Timeout error")
             return f"** Error connecting to {device['host']}, Timeout error"
-        except (paramiko.SSHException) as error:
+        except paramiko.SSHException as error:
             self.logger.error(f"Error connecting to {device['host']}, Paramiko error: {error}")
             return f"** Error connecting to {device['host']}, Paramiko error: {error}"
-        except (SSHException, socket.timeout, socket.error) as error:
+        except (SSHException,socket.timeout, socket.error) as error:
             self.logger.error(f"Error connecting to {device['host']}, SSH error: {error}")
             return f"** Error connecting to {device['host']}, SSH error: {error}"
         except Exception as error:
@@ -245,9 +262,9 @@ class AsyncNetmikoInteractive():
             print ("->", f"About to execute Data Validation")
         try:
             if self.single_host:
-                ModelSingleSsh(device=data.get('device'), commands=data.get('commands'))
+                ModelSingleInteractive(device=data.get('device'), commands=data.get('commands'))
             else:
-                ModelMultipleSsh(device=data)
+                ModelMultipleInteractive(device=data)
         except ValidationError as error:
             self.logger.error(f"Data validation error: {error}")
             print (f" ->, {error}")
@@ -258,13 +275,13 @@ class AsyncNetmikoInteractive():
         self.data_validation(data=data)   
         tasks = []
         if self.single_host:
-            tasks.append(self.netmiko_connection(device=data.get('device'), commands=data.get('commands')))
+            tasks.append(self.netmiko_connection(device=data.get('device'), commands_pattern=data.get('commands')))
             if self.verbose in [1,2]:
                 print (f"-> Connecting to device {data.get('device').get('host')}, configuring commands {data.get('commands')}")
             self.logger.info(f"Connecting to device {data.get('device').get('host')}, executing commands {data.get('commands')}")
         else:
             for device in data:
-                tasks.append(self.netmiko_connection(device=device.get('device'), commands=device.get('commands')))
+                tasks.append(self.netmiko_connection(device=device.get('device'), commands_pattern=device.get('commands')))
                 if self.verbose in [1,2]:
                     print (f"-> Connecting to device {device.get('device').get('host')}, configuring commands {device.get('commands')}")
                 self.logger.info(f"Connecting to device {device.get('device').get('host')}, executing commands {device.get('commands')}")

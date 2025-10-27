@@ -241,8 +241,8 @@ $ cla ssh pushinteractive [OPTIONS]
 {
     "10.2.3.104": {
         "commands": [
-            ["del flash:/eje2.txt", "r'Delete filename'"],
-            ["\n", "r'confirm'"],
+            ["del flash:/file2.txt", "Delete filename"],
+            ["\n", "confirm"],
             ["y", ""]
         ]
     }

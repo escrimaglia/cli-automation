@@ -22,7 +22,6 @@ app.add_typer(app_telnet.app, name="telnet", rich_help_panel="Main Commands")
 app.add_typer(app_tunnel.app, name="tunnel", rich_help_panel="Main Commands")
 
 def complete_log_files(incomplete: str):
-    #logs_dir = os.path.join(os.path.dirname(__file__), "logs")
     log_dir = Path(__file__).parent / "logs"
 
     if not log_dir.exists():

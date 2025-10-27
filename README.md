@@ -379,4 +379,5 @@ $ cla tunnel status [OPTIONS]
 
 **Logging**:
 
-CLA includes an efficient Log System that allows you to view INFO, DEBUG, CRITICAL, and ERROR details for each operation performed by CLA. The Log System includes a log file rotation based on file size. Each time the log file exceeds 5 MB, a new log file will be created.
+CLA includes an efficient logging system that allows you to view INFO, DEBUG, CRITICAL, and ERROR details for each operation performed by CLA.
+The logging system implements time-based log rotation, specifically by day. Each time the day changes, a new log file is automatically created.
